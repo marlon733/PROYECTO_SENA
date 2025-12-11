@@ -1,7 +1,7 @@
 # Nombre del Proyecto
 PROYECTO PESCADERIA HUINA
 ## Descripción
-Breve descripción del proyecto
+Proyecto de aplicación web para la gestión de la pescaderia de la Huina.
 ## Tecnologías
 - Python 3.x
 - Django 4.x
@@ -14,5 +14,7 @@ Breve descripción del proyecto
 5. Crear superusuario: python manage.py createsuperuser
 6. Ejecutar servidor: python manage.py runserver
 ## Equipo
-- Estudiante 1 - Rol
-- Estudiante 2 - Rol
+- Kamila vargas 
+- Carlos Medina 
+- Santiago Espitia
+- cristian bohorquez
