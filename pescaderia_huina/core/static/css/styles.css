@@ -1,0 +1,381 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #ffffff;
+}
+
+header {
+
+    background-image: url(images/fondo1.jpg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.menu {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
+}
+
+.logo {
+    width: 150px;
+}
+
+.menu .navbar ul {
+    list-style: none;
+}
+
+.menu .navbar ul li {
+    position: relative;
+    float: left;
+}
+
+.menu .navbar ul li a {
+    font-size: 18px;
+    padding: 20px;
+    color: #000000;
+    display: block;
+    text-transform: uppercase;
+}
+
+.menu .navbar ul li a:hover {
+    color: #297c9a;
+}
+
+#menu {
+    display: none;
+}
+
+.menu-icono {
+    width: 25px;
+}
+
+.menu label {
+    cursor: pointer;
+    display: none;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    padding: 200px 0 15px 0;
+}
+
+.header-txt {
+    width: 40%;
+    padding-right: 25px;
+}
+
+.header-txt h1 {
+    font-size: 55px;
+    line-height: 70px;
+    font-weight: 1000;
+    color: #000000;
+    margin-bottom: 25px;
+}
+
+.header-txt p {
+    font-size: 18px;
+    color: #323232;
+}
+
+.header-img {
+    width: 60%;
+}
+
+.Pescado {
+    width: 100%;
+
+}
+.Platillo {
+    width: 100%;
+
+}
+
+
+
+
+.info {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(images/bar-info.jpg);
+   background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 70vh;
+}
+
+.info-content {
+    display: flex;
+    position: relative;
+}
+
+.info-txt {
+    width: 60%;
+    margin-top: 85px;
+}
+
+.info-txt h2 {
+    color: #dfdfdf;
+    font-size: 55px;
+    margin-bottom: 25px;
+}
+
+.info-txt p {
+    font-size: 20px;
+    color: #a0a0a0;
+    margin-bottom: 25px;
+}
+
+.info-sec {
+    display: flex;
+}
+
+.info-1 {
+    display: flex;
+}
+
+.info-2 {
+    margin-left: 25px;
+
+}
+
+.info-2 h3 {
+    color: #dfdfdf;
+    font-size: 25px;
+}
+
+.info-2 p {
+    color: #a0a0a0;
+    font-size: 16px;
+}
+
+
+.info-img {
+    position: absolute;
+    right: -35px;
+    top: -13px;
+}
+
+.info-img img {
+    width: 530px;
+}
+
+.footer {
+    padding: 150px 0 100px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo-2 {
+    width: 150px;
+}
+
+.links h4 {
+    color: #000000;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+}
+
+.links ul li a {
+    color: #000000;
+    font-size: 16px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.socials {
+    display: flex;
+}
+
+.social {
+    margin: 0 10px;
+    height: 40px;
+    width: 40px;
+    border: 1px solid #297c9a;
+    border-radius: 50%;
+}
+
+.social:hover {
+    background-color: #297c9a;
+}
+
+.social img {
+    margin: 8px 0 0 10px;
+}
+
+@media(max-width: 991px ) {
+
+    .menu {
+        padding: 20px;
+    }
+
+    .menu label {
+        display: initial;
+    }
+
+    .menu .navbar {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #297c9a;
+        display: none;
+    }
+
+    .menu .navbar ul li {
+        width: 100%;
+    }
+
+    .menu .navbar ul li a:hover {
+        color: #000000;
+    }
+
+    #menu:checked ~ .navbar {
+        display: initial;
+    }
+
+    .header-content {
+        flex-direction: column;
+        padding: 180px 30px 30px 30px;
+    }
+
+    .header-txt {
+        width: 100%;
+        padding: 0;
+        text-align: center;
+    }
+
+    .header-txt h1 {
+        font-size: 40px;
+    }
+
+    .botones {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-1 {
+        margin: 0 0 20px 0;
+    }
+
+    .btn-2 {
+        margin: 0 0 20px 0;
+    }
+
+ .header-img {
+    width: 100%;
+    margin-top: 45px;
+ }
+
+ .product-menu {
+    padding: 30px;
+ }
+
+ .title {
+    margin-bottom: 20px;
+ }
+
+ .hoja {
+    display: none;
+ }
+ .menu-nav {
+    flex-direction: column;
+    align-items: center;
+ }
+
+ .tab {
+    margin-bottom: 25px;
+ }
+
+ .box-container {
+    grid-template-columns: 1fr;
+ }
+
+ .box .image {
+    height: 200px;
+ }
+
+ .info {
+padding: 30px;
+height: 80vh;
+ }
+
+ .info-txt h2 {
+    font-size: 40px;
+ }
+
+ .info-content {
+flex-direction: column;
+align-items: center;
+text-align: center;
+ }
+
+ .info-txt {
+    width: 100%;
+    margin-top: 0px;
+ }
+
+ .info-txt p {
+    margin-bottom: 5px;
+ }
+
+ .info-sec {
+    flex-direction: column;
+    padding: 0px 35px;
+ }
+
+ .info-1 {
+    flex-direction: column;
+    align-items: center;
+    padding-top: 15px;
+ }
+
+ .info-2 {
+     margin-top: 10px;
+     margin-left: 0;
+ }
+
+ .info-img img {
+    width: 1150px;
+      width: 100%;
+    
+ }
+
+ .socials {
+    justify-content: center;
+ }
+
+ .social img {
+    margin:  8px 0 0 0;
+ }
+
+ .footer {
+    padding: 30px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+ }
+
+ .links h4 {
+    margin: 25px 0 10px 0;
+ }
+    
+}

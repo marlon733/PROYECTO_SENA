@@ -1,0 +1,64 @@
+{% extends 'master.html' %}
+{% block title %} Pagina principal {% endblock %}
+
+{% block content %}
+<style>
+    /* 1. Estilo del contenedor principal de la navegación */
+    .nav-content {
+        background-color: #1998a9ff; /* Fondo blanco limpio */
+        padding: 15px 20px; /* Espaciado interno */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Sombra suave y moderna */
+        margin-bottom: 30px; /* Separación del contenido que venga abajo */
+        border-bottom: 3px solid #2670a9; /* Una línea de acento azul abajo */
+    }
+
+    /* 2. Estilos base para los enlaces */
+    .nav-link {
+        /* CORREGIDO: El color anterior tenía un error de sintaxis */
+        color: #ffffffff; 
+        font-weight: 600; /* Letra un poco más gruesa */
+        padding: 8px 15px !important; /* Ajuste del espaciado */
+        border-radius: 5px;
+        transition: all 0.3s ease; /* Suaviza los cambios de color */
+    }
+
+    /* 3. Nuevo efecto al pasar el mouse por encima (Hover) */
+    .nav-link:hover {
+        color: #093f51ff; /* Un azul más oscuro */
+        background-color: rgba(38, 112, 169, 0.1); /* Fondo azul muy clarito */
+    }
+
+    /* 4. Estilo para el enlace activo (si lo usaras) */
+    .nav-link.active {
+        color: #005570;
+        font-weight: 700;
+    }
+
+    /* 5. Asegurar que el deshabilitado se vea gris */
+    .nav-link.disabled {
+        color: #ffffffff !important;
+    }
+</style>
+
+<div class="nav-content">
+    <ul class="nav justify-content-end align-items-center">
+      <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="#">REGISTRAR VENTAS</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">INVENTARIO</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">PROVEEDORES</a>
+      </li>
+      <li class="nav-item ms-3"> <a class="nav-link disabled btn btn-outline-secondary btn-sm px-3" aria-disabled="true" style="border: 1px solid #e6eaedff;">
+            CERRAR SESION
+        </a>
+      </li>
+    </ul>
+</div>
+
+
+
+{% endblock %}
