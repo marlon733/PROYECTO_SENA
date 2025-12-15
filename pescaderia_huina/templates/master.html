@@ -1,20 +1,24 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
   <title>{% block title %}{% endblock %}</title>
+   {% load static %}
    {% load bootstrap5 %}
+   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
    {% bootstrap_css %}
    {% bootstrap_javascript %}
-   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+   
+  
+  
+  
 </head>
 <body>
+
     <header>
         <nav>
             <ul>
-                <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'about' %}">About</a></li>
-                <li><a href="{% url 'contact' %}">Contact</a></li>
+               
             </ul>
         </nav>
     </header> 
@@ -23,7 +27,7 @@
         {% endblock %}
     </main>
     <footer>
-        <p> 2025 pagina web</p> 
+        
     </footer>
 
 </body>
