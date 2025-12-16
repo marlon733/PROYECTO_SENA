@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+{% extends "master.html" %}
+{% load static %}
+<html lang="es">
+{% block title %}
+    Restablecer Contraseña
+{% endblock %}
+{%block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Restablecer Contraseña</title>
+     <a href="/login"> <img src="{% static "img/logooo-Photoroom.png" %}" class="logo" alt=""></a>
+     <link rel="stylesheet" href="{% static "css/restablecer.css" %}">
+    <style>
+        body {
+             background-image: url("{% static "img/fondo-base.jpg" %}");
+        }
+    
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>¿Olvidaste tu contraseña?</h2>
+    <p>Ingresa tu correo electrónico para restablecer tu contraseña.</p>
+    <form id="resetForm">
+        <input type="email" id="email" placeholder="Tu correo electrónico" required>
+        <input type="submit" value="Enviar enlace">
+        <p class="success-message" id="successMsg">Se ha enviado un enlace a tu correo.</p>
+    </form>
+</div>
+
+<script>
+    document.getElementById("resetForm").addEventListener("submit", function(event){
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+
+        // Aquí podrías enviar el correo al backend usando fetch o AJAX
+        console.log("Correo ingresado: " + email);
+
+        // Mostrar mensaje de éxito simulado
+        document.getElementById("successMsg").style.display = "block";
+    });
+</script>
+
+</body>
+</html>
+{% endblock %}

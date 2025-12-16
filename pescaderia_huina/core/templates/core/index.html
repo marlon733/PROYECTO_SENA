@@ -1,64 +1,81 @@
-{% extends 'master.html' %}
-{% block title %} Pagina principal {% endblock %}
+<!DOCTYPE html>
+{% extends "master.html" %}
+{% load static %}
+<html lang="es">
 
+
+{% block title %}
+    HUINA
+{% endblock %}
 {% block content %}
-<style>
-    /* 1. Estilo del contenedor principal de la navegación */
-    .nav-content {
-        background-color: #1998a9ff; /* Fondo blanco limpio */
-        padding: 15px 20px; /* Espaciado interno */
-        border-radius: 8px; /* Bordes redondeados */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Sombra suave y moderna */
-        margin-bottom: 30px; /* Separación del contenido que venga abajo */
-        border-bottom: 3px solid #2670a9; /* Una línea de acento azul abajo */
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUINA</title>
+     <link rel="icon" type="ICONOVENTANA/jpg" href= "{% static "img/IconoVENTANA.png" %}">
+    <link rel="stylesheet" href="{% static "css/index.css" %}">
+</head>
+<body>
 
-    /* 2. Estilos base para los enlaces */
-    .nav-link {
-        /* CORREGIDO: El color anterior tenía un error de sintaxis */
-        color: #ffffffff; 
-        font-weight: 600; /* Letra un poco más gruesa */
-        padding: 8px 15px !important; /* Ajuste del espaciado */
-        border-radius: 5px;
-        transition: all 0.3s ease; /* Suaviza los cambios de color */
-    }
+        
 
-    /* 3. Nuevo efecto al pasar el mouse por encima (Hover) */
-    .nav-link:hover {
-        color: #093f51ff; /* Un azul más oscuro */
-        background-color: rgba(38, 112, 169, 0.1); /* Fondo azul muy clarito */
-    }
+        <div class="header-content container">
+            <div class="header-txt">
+                <h1>INVENTARIO🎣</h1>
+                <h1>PESCADERIA HUINA</h1>
+  
+                <p>
+                   AYUDAMOS A MANEJAR MEJOR SUS PRODUCTOS </p>
 
-    /* 4. Estilo para el enlace activo (si lo usaras) */
-    .nav-link.active {
-        color: #005570;
-        font-weight: 700;
-    }
+                    <p> Manejamos todo tipo de pescados, mariscos, y pollo
+                </p>
+               
 
-    /* 5. Asegurar que el deshabilitado se vea gris */
-    .nav-link.disabled {
-        color: #ffffffff !important;
-    }
-</style>
+            </div>
+            <div class="header-img">
+                <img src={% static "img/img-1.png" %} class="Pescado" alt="">
+            </div>
+        </div>
+   
+    
+  <section class="info">
 
-<div class="nav-content">
-    <ul class="nav justify-content-end align-items-center">
-      <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="#">REGISTRAR VENTAS</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">INVENTARIO</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">PROVEEDORES</a>
-      </li>
-      <li class="nav-item ms-3"> <a class="nav-link disabled btn btn-outline-secondary btn-sm px-3" aria-disabled="true" style="border: 1px solid #e6eaedff;">
-            CERRAR SESION
-        </a>
-      </li>
-    </ul>
-</div>
+        <div class="info-content container">
+
+            <div class="info-txt">
+                <p>Conoce un poco sobre nosotros </p>
+                <h2>¿Que haremos?</h2>
+
+                <div class="info-sec">
 
 
+                    <div class="info-1">
+                        <img src= {% static "img/logo-info1.png" %} alt="">
+                        <div class="info-2">
+                            <h3>  UN MEJOR MANEJO DE SU INVENTARIO </h3>
+                            <p>
+                                Gestionamos todos los productos que ingresen al inventario y los que salgan 
+                            </p>
 
+                        </div>
+
+                    
+
+                </div>
+
+            </div>
+            <div class="info-img">
+                <img src={% static "img/info1.png" %} class="latillo" alt="">
+
+            </div>
+        </div>
+    </section>
+
+
+    
+
+    <script src="script.js"></script>
+</body>
+
+</html>
 {% endblock %}
