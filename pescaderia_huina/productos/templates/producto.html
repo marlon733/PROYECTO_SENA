@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Productos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">📦 Lista de Productos</h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td>1</td>
+                            <td>Teclado Mecánico</td>
+                            <td>Accesorios</td>
+                            <td>$180.000</td>
+                            <td>25</td>
+                            <td>
+                                <span class="badge bg-success">Disponible</span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-info">Ver</button>
+                                <button class="btn btn-sm btn-warning">Editar</button>
+                                <button class="btn btn-sm btn-danger">Eliminar</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>2</td>
+                            <td>Mouse Gamer</td>
+                            <td>Accesorios</td>
+                            <td>$95.000</td>
+                            <td>8</td>
+                            <td>
+                                <span class="badge bg-warning text-dark">Stock Bajo</span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-info">Ver</button>
+                                <button class="btn btn-sm btn-warning">Editar</button>
+                                <button class="btn btn-sm btn-danger">Eliminar</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>3</td>
+                            <td>Monitor 24"</td>
+                            <td>Pantallas</td>
+                            <td>$750.000</td>
+                            <td>0</td>
+                            <td>
+                                <span class="badge bg-danger">Agotado</span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-info" disabled>Ver</button>
+                                <button class="btn btn-sm btn-warning" disabled>Editar</button>
+                                <button class="btn btn-sm btn-danger" disabled>Eliminar</button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-end">
+                <button class="btn btn-success mt-3">
+                    ➕ Agregar Producto
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
