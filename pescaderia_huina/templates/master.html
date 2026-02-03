@@ -1,151 +1,129 @@
-
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <title>{% block title %}{% endblock %}</title>
-   {% load static %}
-   {% load bootstrap5 %}
-   <link rel="stylesheet" href="{% static 'css/index.css' %}">
-   <link rel="icon" type="ICONOVENTANA/jpg" href= "{% static "img/IconoVENTANA.png" %}">
-   {% bootstrap_css %}
-   {% bootstrap_javascript %}
-   
-  
-  
-  
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-
-   <header>
-        <div class="menu container">
-            <a href="/"> <img src={% static "img/logooo-Photoroom.png" %} class="logo" alt=""></a>
-            <input type="checkbox" id="menu">
-            <label for="menu"><img src={% static "img/Menudez.png" %} class="menu-icono" alt=""></label>
-            <nav class="navbar">
-                <ul>
-                    <li><a href="ventas.html"> Registrar Ventas</a></li>
-                    <li><a href="inventario.html">Lista de productos</a></li>
-                    <li><a href="index/">Proveedores</a></li>
-                    <li><a href="#" onclick="abrirModalLogin()">Agregar Usuario</a></li>
-                     <li><a href="login/">Cerrar Sesion</a></li>
-                      <!-- Menú con botón -->
-  <ul>
-  
-  </ul>
-
-  <!-- Modal de login -->
-  <div id="modalLogin" class="modal">
-    <div class="modal-content">
-      <h2>Administrador</h2>
-      <input type="text" id="usuario" placeholder="Usuario administrador">
-      <input type="password" id="contraseña" placeholder="Contraseña">
-      <br>
-      <button class="btn-aceptar" onclick="validar()">Ingresar</button>
-      <button class="btn-cerrar" onclick="cerrarModalLogin()">Cancelar</button>
-    </div>
-  </div>
-
-  <!-- Modal de mensajes -->
-  <div id="modalMensaje" class="modal">
-    <div class="modal-content">
-      <h2 id="mensajeTexto"></h2>
-      <button class="btn-aceptar" onclick="cerrarModalMensaje()">Aceptar</button>
-    </div>
-  </div>
-                   
-                </ul>
-
-            </nav>
-        </div>
-      </header> 
-    <main>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'core:index' %}">
+                    <img src="{% static 'img/Logo.png' %}" alt="Logo" height="30" class="d-inline-block">
+                    PESCADERIA HUINA
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" 
+                            href="{% url 'core:index' %}">
+                                <i class="bi bi-house"></i> Inicio
+                            </a>
+                        </li>
+                        
+                        {% if user.is_authenticated %}
+                            <!-- Usuario autenticado -->
+                            {% if user.is_staff %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'core:panel_admin_base' %}">
+                                        <i class="bi bi-speedometer2"></i> Panel Admin
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" 
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {% if user.perfil.foto_perfil %}
+                                        <img src="{{ user.perfil.foto_perfil.url }}" 
+                                            alt="{{ user.get_full_name }}" 
+                                            class="rounded-circle" 
+                                            width="30" height="30">
+                                    {% else %}
+                                        <i class="bi bi-person-circle fs-5"></i>
+                                    {% endif %}
+                                    {{ user.get_full_name|default:user.username }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'usuarios:perfil' %}">
+                                            <i class="bi bi-person"></i> Mi Perfil
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{% url 'usuarios:logout' %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <!-- Usuario NO autenticado -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'usuarios:login' %}">
+                                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-outline-light ms-2" href="{% url 'usuarios:registro' %}">
+                                    <i class="bi bi-person-plus"></i> Registrarse
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main> 
         {% block content %}
         {% endblock %}
     </main>
-    <footer class="footer container">
 
-        <img class="logo-2" src={% static "img/logooo-Photoroom.png" %} alt="">
-
-        <div class="links">
-            <h4>Santiago</h4>
-            
-            <ul>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-            </ul>
-
-        </div>
-        <div class="links">
-            <h4>Sneider</h4>
-            
-            <ul>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-            </ul>
-
-        </div>
-        <div class="links">
-            <h4>Marlon</h4>
-           
-            <ul>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-            </ul>
-
-        </div>
-
-        <div class="links">
-            <h4>Kamila</h4> 
-             
-            <ul>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-            </ul>
-
-        </div>
-
-        <div class="links">
-            <h4>Carlos</h4>
-           
-            <ul>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-                <li> <a href="#">Lorem</a></li>
-            </ul>
-
-        </div>
-
-        <div class="links">
-            <h4>REDES SOCIALES</h4>
-            <div class="socials">
-                <a href="http://www.fb.com/profile.php">
-                    <div class="social">
-                        <img src={% static "img/s1.png" %} alt="">
-                    </div>
-                </a>
-                <a href="#">
-                    <div class="social">
-                        <img src={% static "img/s2.png" %} alt="">
-                    </div>
-                </a>
-                <a href="#">
-                    <div class="social">
-                        <img src={% static "img/s3.png" %} alt="">
-                    </div>
-                </a>
-
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Mi Proyecto</h5>
+                    <p>Descripción breve del proyecto desarrollado por estudiantes de Análisis y Desarrollo de Software.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'core:index' %}" class="text-white-50">Inicio</a></li>
+                        <li><a href="/" class="text-white-50">Acerca de</a></li>
+                        <li><a href="/" class="text-white-50">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contacto</h5>
+                    <p class="text-white-50">
+                        Email: info@proyecto.com<br>
+                        Teléfono: (123) 456-7890<br>
+                        Tunja, Boyacá, Colombia
+                    </p>
+                </div>
+            </div>
+            <hr class="bg-white">
+            <div class="row">
+                <div class="col text-center">
+                    <p class="mb-0">&copy; {% now "Y" %} Mi Proyecto. Todos los derechos reservados.</p>
+                </div>
             </div>
         </div>
-
     </footer>
 
 </body>

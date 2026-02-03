@@ -1,0 +1,21 @@
+{% extends "master.html" %}
+
+{% block title %}
+Mi Perfil
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header">
+            <h4>Mi Perfil</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Usuario:</strong> {{ request.user.username }}</p>
+            <p><strong>Nombre:</strong> {{ request.user.first_name }}</p>
+            <p><strong>Apellido:</strong> {{ request.user.last_name }}</p>
+            <p><strong>Email:</strong> {{ request.user.email }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

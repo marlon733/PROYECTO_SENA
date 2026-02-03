@@ -1,0 +1,28 @@
+{% extends "master.html" %}
+
+{% block title %}
+Registro
+{% endblock %}
+
+{% block content %}
+<h1>Registro</h1>
+    <form method="post" action="">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary w-100">
+            Registrarse
+        </button>
+    </form>
+{% endblock %}
