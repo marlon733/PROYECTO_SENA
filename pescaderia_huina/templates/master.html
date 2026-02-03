@@ -2,84 +2,247 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <style>
+        :root {
+            --main-navy: #0f2c59;
+            --secondary-blue: #1d4e89;
+            --accent-gray: #f8f9fa;
+            --text-light-gray: #cfd8dc;
+            --text-dark: #333333;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--accent-gray);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        /* --- Navbar Ajustado (Más alto) --- */
+        .navbar-custom {
+            background-color: var(--main-navy);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            /* Aumentamos el padding vertical para dar altura */
+            padding-top: 1.2rem; 
+            padding-bottom: 1.2rem;
+            transition: padding 0.3s ease;
+        }
+
+        /* Control del Logo */
+        .navbar-brand img {
+            height: 55px; /* Altura aumentada para escritorio */
+            width: auto;
+            transition: height 0.3s ease;
+        }
+
+        /* Texto de la marca más grande para compensar el logo */
+        .brand-text {
+            font-size: 1.5rem; /* Letra más grande */
+            font-weight: 700;  /* Más gruesa */
+            letter-spacing: 1px;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .nav-link {
+            color: var(--text-light-gray) !important;
+            font-weight: 500; /* Un poco más de peso para legibilidad */
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            position: relative;
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #fff !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 3px; /* Línea un poco más gruesa */
+            background: #fff;
+            transition: width .3s;
+            position: absolute;
+            bottom: -5px;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Dropdown */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 15px; /* Separación del navbar más alto */
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+            color: var(--text-dark);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--accent-gray);
+            color: var(--main-navy);
+        }
+
+        /* --- Ajustes Responsivos (Móvil) --- */
+        @media (max-width: 991px) {
+            .navbar-custom {
+                padding-top: 0.8rem; /* Menos altura en móvil para no estorbar */
+                padding-bottom: 0.8rem;
+            }
+            .navbar-brand img {
+                height: 40px; /* Logo un poco más pequeño en móvil */
+            }
+            .brand-text {
+                font-size: 1.2rem;
+            }
+            .nav-link::after {
+                display: none; /* Quitamos la animación de línea en móvil */
+            }
+        }
+
+        /* --- Footer --- */
+        .footer-custom {
+            background-color: var(--main-navy);
+            color: #fff;
+            border-top: 5px solid var(--secondary-blue);
+        }
+
+        .footer-heading {
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: #fff;
+        }
+
+        .footer-link {
+            color: var(--text-light-gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .footer-link:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+
+        .social-icon {
+            font-size: 1.2rem;
+            margin-right: 15px;
+            color: var(--text-light-gray);
+            transition: color 0.3s ease;
+        }
+
+        .social-icon:hover {
+            color: #fff;
+        }
+        
+        .contact-info i {
+            width: 25px;
+            color: var(--secondary-blue);
+        }
+    </style>
 </head>
 <body>
+
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
             <div class="container">
-                <a class="navbar-brand" href="{% url 'core:index' %}">
-                    <img src={% static 'img/logo.png' %} alt="logo" height="30" class="d-inline-block">
-                    PESCADERIA HUINA
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'core:index' %}">
+                    <img src="{% static 'img/logo.png' %}" alt="logo" class="d-inline-block me-3">
+                    <span class="brand-text">PESCADERÍA HUINA</span>
                 </a>
                 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" 
-                            href="{% url 'core:index' %}">
-                                <i class="bi bi-house"></i> Inicio
-                            </a>
+                               href="{% url 'core:index' %}">Inicio</a>
                         </li>
+                        <li class="nav-item"><a class="nav-link" href="#">Proveedores</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Pedidos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Ventas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Administración</a></li>
                         
+                        <li class="nav-item d-none d-lg-block mx-2 text-white-50">|</li>
+
                         {% if user.is_authenticated %}
-                            <!-- Usuario autenticado -->
                             {% if user.is_staff %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url 'core:panel_admin_base' %}">
-                                        <i class="bi bi-speedometer2"></i> Panel Admin
+                                        <i class="bi bi-speedometer2"></i> Admin
                                     </a>
                                 </li>
                             {% endif %}
                             
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" 
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="nav-item dropdown ms-2">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" 
+                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     {% if user.perfil.foto_perfil %}
                                         <img src="{{ user.perfil.foto_perfil.url }}" 
-                                            alt="{{ user.get_full_name }}" 
-                                            class="rounded-circle" 
-                                            width="30" height="30">
+                                             alt="{{ user.get_full_name }}" 
+                                             class="rounded-circle border border-2 border-light me-2" 
+                                             width="35" height="35" style="object-fit: cover;">
                                     {% else %}
-                                        <i class="bi bi-person-circle fs-5"></i>
+                                        <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center me-2" style="width: 35px; height: 35px;">
+                                            <i class="bi bi-person text-white"></i>
+                                        </div>
                                     {% endif %}
-                                    {{ user.get_full_name|default:user.username }}
+                                    <span class="fw-normal">{{ user.get_full_name|default:user.username }}</span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <ul class="dropdown-menu dropdown-menu-end animate slideIn" aria-labelledby="userDropdown">
                                     <li>
                                         <a class="dropdown-item" href="{% url 'usuarios:perfil' %}">
-                                            <i class="bi bi-person"></i> Mi Perfil
+                                            <i class="bi bi-person me-2"></i> Mi Perfil
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <form method="POST" action="{% url 'usuarios:logout' %}" class="d-inline">
+                                        <form method="POST" action="{% url 'usuarios:logout' %}">
                                             {% csrf_token %}
                                             <button type="submit" class="dropdown-item text-danger">
-                                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                                <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
                                             </button>
                                         </form>
                                     </li>
                                 </ul>
                             </li>
                         {% else %}
-                            <!-- Usuario NO autenticado -->
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'usuarios:login' %}">
-                                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
-                                </a>
+                                <a class="nav-link" href="{% url 'usuarios:login' %}">Iniciar Sesión</a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-outline-light ms-2" href="{% url 'usuarios:registro' %}">
-                                    <i class="bi bi-person-plus"></i> Registrarse
+                                <a class="btn btn-outline-light btn-sm ms-lg-3 px-4 rounded-pill" style="border-width: 2px; font-weight: 500;" href="{% url 'usuarios:registro' %}">
+                                    Registrarse
                                 </a>
                             </li>
                         {% endif %}
@@ -88,40 +251,48 @@
             </div>
         </nav>
     </header>
-    <main> 
+
+    <main class="py-4"> 
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="bg-dark text-white mt-5 py-4">
+    <footer class="footer-custom pt-5 pb-3 mt-auto">
         <div class="container">
-            <div class="row">
+            <div class="row g-4">
                 <div class="col-md-4">
-                    <h5>Pescaderia Huina</h5>
-                    <p>Vendo pescado, pollo y mariscos 🤑.</p>
+                    <h5 class="footer-heading">PESCADERÍA HUINA</h5>
+                    <p class="text-white-50 small pe-md-4">
+                        Ofrecemos la mejor calidad en pescados, pollos y mariscos frescos. 
+                        Comprometidos con la frescura y el servicio al cliente en la región.
+                    </p>
+                    <div class="mt-3">
+                        <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="bi bi-whatsapp"></i></a>
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <h5>Enlaces Rápidos</h5>
+                    <h5 class="footer-heading">Enlaces Rápidos</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{% url 'core:index' %}" class="text-white-50">Inicio</a></li>
-                        <li><a href="/" class="text-white-50">Acerca de</a></li>
-                        <li><a href="/" class="text-white-50">Contacto</a></li>
+                        <li><a href="{% url 'core:index' %}" class="footer-link">Inicio</a></li>
+                        <li><a href="/" class="footer-link">Acerca de</a></li>
+                        <li><a href="/" class="footer-link">Contacto</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
-                    <h5>Contacto</h5>
-                    <p class="text-white-50">
-                        Facebook:pescaderia huina
-                        Instagram:@pescaderia_huina<br>
-                        Teléfono: (320) 737-4401<br>
-                        chocó, Colombia
-                    </p>
+                    <h5 class="footer-heading">Contacto</h5>
+                    <ul class="list-unstyled text-white-50 contact-info small">
+                        <li class="mb-2"><i class="bi bi-geo-alt-fill"></i> Chocó, Colombia</li>
+                        <li class="mb-2"><i class="bi bi-telephone-fill"></i> (320) 737-4401</li>
+                        <li class="mb-2"><i class="bi bi-envelope-fill"></i> contacto@pescaderiahuina.com</li>
+                    </ul>
                 </div>
             </div>
-            <hr class="bg-white">
-            <div class="row">
-                <div class="col text-center">
-                    <p class="mb-0">&copy; {% now "Y" %} Pescaderia huina. Todos los derechos reservados.</p>
+            <hr class="my-4 border-secondary">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 small text-white-50">&copy; {% now "Y" %} Pescadería Huina. Todos los derechos reservados.</p>
                 </div>
             </div>
         </div>
