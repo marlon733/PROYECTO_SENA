@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registrar Nueva Venta{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2><i class="fas fa-plus-circle"></i> Registrar Nueva Venta</h2>
+            <hr>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" id="ventaForm">
+        {% csrf_token %}
+        
+        <!-- Observaciones -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-comment"></i> Observaciones (Opcional)
+            </div>
+            <div class="card-body">
+                {{ form.observaciones }}
+            </div>
+        </div>
+
+        <!-- Productos -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-shopping-basket"></i> Productos de la Venta
+            </div>
+            <div class="card-body">
+                {{ formset.management_form }}
+                
+                <div id="productos-container">
+                    {% for form in formset %}
+                    <div class="producto-item border rounded p-3 mb-3">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <label>{{ form.producto.label }}</label>
+                                {{ form.producto }}
+                                {% if form.producto.errors %}
+                                    <div class="text-danger">{{ form.producto.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <label>{{ form.cantidad.label }}</label>
+                                {{ form.cantidad }}
+                                <small class="text-muted stock-info"></small>
+                                {% if form.cantidad.errors %}
+                                    <div class="text-danger">{{ form.cantidad.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <label>{{ form.precio_unitario.label }}</label>
+                                {{ form.precio_unitario }}
+                                {% if form.precio_unitario.errors %}
+                                    <div class="text-danger">{{ form.precio_unitario.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                {% if not forloop.first %}
+                                <button type="button" class="btn btn-danger btn-sm remove-producto">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {{ form.id }}
+                        {{ form.DELETE }}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" class="btn btn-success" id="add-producto">
+                    <i class="fas fa-plus"></i> Agregar Producto
+                </button>
+            </div>
+        </div>
+
+        <!-- Resumen -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <i class="fas fa-calculator"></i> Resumen de la Venta
+            </div>
+            <div class="card-body">
+                <h3>Total: $<span id="total-venta">0.00</span></h3>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Registrar Venta
+                </button>
+                <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+// Datos de productos disponibles
+const productosData = {{ productos|safe }};
+
+// Función para actualizar el precio y stock cuando se selecciona un producto
+function actualizarProducto(selectProducto) {
+    const productoId = selectProducto.value;
+    const container = selectProducto.closest('.producto-item');
+    const precioInput = container.querySelector('.precio-input');
+    const cantidadInput = container.querySelector('.cantidad-input');
+    const stockInfo = container.querySelector('.stock-info');
+    
+    if (productoId) {
+        const producto = productosData.find(p => p.id == productoId);
+        if (producto) {
+            precioInput.value = producto.precio_base;
+            cantidadInput.max = producto.cantidad_disponible;
+            stockInfo.textContent = `Stock: ${producto.cantidad_disponible} ${producto.unidad_medida}`;
+        }
+    } else {
+        precioInput.value = '';
+        stockInfo.textContent = '';
+    }
+    
+    calcularTotal();
+}
+
+// Función para calcular el total de la venta
+function calcularTotal() {
+    let total = 0;
+    document.querySelectorAll('.producto-item').forEach(item => {
+        const cantidad = parseFloat(item.querySelector('.cantidad-input').value) || 0;
+        const precio = parseFloat(item.querySelector('.precio-input').value) || 0;
+        const deleteCheckbox = item.querySelector('input[name$="-DELETE"]');
+        
+        if (!deleteCheckbox || !deleteCheckbox.checked) {
+            total += cantidad * precio;
+        }
+    });
+    
+    document.getElementById('total-venta').textContent = total.toFixed(2);
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Actualizar productos existentes
+    document.querySelectorAll('.producto-select').forEach(select => {
+        actualizarProducto(select);
+        select.addEventListener('change', function() {
+            actualizarProducto(this);
+        });
+    });
+    
+    // Actualizar total cuando cambian cantidades
+    document.querySelectorAll('.cantidad-input, .precio-input').forEach(input => {
+        input.addEventListener('input', calcularTotal);
+    });
+    
+    // Botón para agregar producto
+    document.getElementById('add-producto').addEventListener('click', function() {
+        const container = document.getElementById('productos-container');
+        const totalForms = document.querySelector('#id_detalles-TOTAL_FORMS');
+        const formIdx = parseInt(totalForms.value);
+        
+        // Clonar el primer formulario
+        const newForm = container.querySelector('.producto-item').cloneNode(true);
+        
+        // Actualizar índices en el nuevo formulario
+        newForm.innerHTML = newForm.innerHTML.replace(/detalles-0-/g, `detalles-${formIdx}-`);
+        newForm.innerHTML = newForm.innerHTML.replace(/detalles-0-/g, `detalles-${formIdx}-`);
+        
+        // Limpiar valores
+        newForm.querySelectorAll('input, select').forEach(field => {
+            if (field.type !== 'hidden' && !field.name.includes('DELETE')) {
+                field.value = '';
+            }
+        });
+        
+        // Agregar botón de eliminar si no existe
+        const deleteBtn = newForm.querySelector('.remove-producto');
+        if (!deleteBtn) {
+            const btnCol = newForm.querySelector('.col-md-1');
+            btnCol.innerHTML = '<button type="button" class="btn btn-danger btn-sm remove-producto"><i class="fas fa-trash"></i></button>';
+        }
+        
+        // Agregar al contenedor
+        container.appendChild(newForm);
+        
+        // Actualizar contador
+        totalForms.value = formIdx + 1;
+        
+        // Agregar event listeners al nuevo formulario
+        const newSelect = newForm.querySelector('.producto-select');
+        newSelect.addEventListener('change', function() {
+            actualizarProducto(this);
+        });
+        
+        newForm.querySelectorAll('.cantidad-input, .precio-input').forEach(input => {
+            input.addEventListener('input', calcularTotal);
+        });
+        
+        newForm.querySelector('.remove-producto').addEventListener('click', function() {
+            eliminarProducto(this);
+        });
+    });
+    
+    // Botones de eliminar producto
+    document.querySelectorAll('.remove-producto').forEach(btn => {
+        btn.addEventListener('click', function() {
+            eliminarProducto(this);
+        });
+    });
+});
+
+function eliminarProducto(btn) {
+    const item = btn.closest('.producto-item');
+    const deleteCheckbox = item.querySelector('input[name$="-DELETE"]');
+    
+    if (deleteCheckbox) {
+        deleteCheckbox.checked = true;
+        item.style.display = 'none';
+    } else {
+        item.remove();
+        // Actualizar contador
+        const totalForms = document.querySelector('#id_detalles-TOTAL_FORMS');
+        totalForms.value = parseInt(totalForms.value) - 1;
+    }
+    
+    calcularTotal();
+}
+</script>
+{% endblock %}
