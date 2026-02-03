@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}{% endblock %}</title>
+   {% load static %}
+   {% load bootstrap5 %}
+   <link rel="stylesheet" href="{% static 'css/index.css' %}">
+   <link rel="icon" type="ICONOVENTANA/jpg" href= "{% static "img/IconoVENTANA.png" %}">
+   {% bootstrap_css %}
+   {% bootstrap_javascript %}
+   
+  
+  
+  
+</head>
+<body>
+
+   <header>
+        <div class="menu container">
+            <a href="/"> <img src={% static "img/logooo-Photoroom.png" %} class="logo" alt=""></a>
+            <input type="checkbox" id="menu">
+            <label for="menu"><img src={% static "img/Menudez.png" %} class="menu-icono" alt=""></label>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="ventas.html"> Registrar Ventas</a></li>
+                    <li><a href="inventario.html">Lista de productos</a></li>
+                    <li><a href="index/">Proveedores</a></li>
+                    <li><a href="#" onclick="abrirModalLogin()">Agregar Usuario</a></li>
+                     <li><a href="login/">Cerrar Sesion</a></li>
+                      <!-- Menú con botón -->
+  <ul>
+  
+  </ul>
+
+  <!-- Modal de login -->
+  <div id="modalLogin" class="modal">
+    <div class="modal-content">
+      <h2>Administrador</h2>
+      <input type="text" id="usuario" placeholder="Usuario administrador">
+      <input type="password" id="contraseña" placeholder="Contraseña">
+      <br>
+      <button class="btn-aceptar" onclick="validar()">Ingresar</button>
+      <button class="btn-cerrar" onclick="cerrarModalLogin()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Modal de mensajes -->
+  <div id="modalMensaje" class="modal">
+    <div class="modal-content">
+      <h2 id="mensajeTexto"></h2>
+      <button class="btn-aceptar" onclick="cerrarModalMensaje()">Aceptar</button>
+    </div>
+  </div>
+                   
+                </ul>
+
+            </nav>
+        </div>
+      </header> 
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer class="footer container">
+
+        <img class="logo-2" src={% static "img/logooo-Photoroom.png" %} alt="">
+
+        <div class="links">
+            <h4>Santiago</h4>
+            
+            <ul>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+            </ul>
+
+        </div>
+        <div class="links">
+            <h4>Sneider</h4>
+            
+            <ul>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+            </ul>
+
+        </div>
+        <div class="links">
+            <h4>Marlon</h4>
+           
+            <ul>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+            </ul>
+
+        </div>
+
+        <div class="links">
+            <h4>Kamila</h4> 
+             
+            <ul>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+            </ul>
+
+        </div>
+
+        <div class="links">
+            <h4>Carlos</h4>
+           
+            <ul>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+                <li> <a href="#">Lorem</a></li>
+            </ul>
+
+        </div>
+
+        <div class="links">
+            <h4>REDES SOCIALES</h4>
+            <div class="socials">
+                <a href="http://www.fb.com/profile.php">
+                    <div class="social">
+                        <img src={% static "img/s1.png" %} alt="">
+                    </div>
+                </a>
+                <a href="#">
+                    <div class="social">
+                        <img src={% static "img/s2.png" %} alt="">
+                    </div>
+                </a>
+                <a href="#">
+                    <div class="social">
+                        <img src={% static "img/s3.png" %} alt="">
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+    </footer>
+
+</body>
+</html>
