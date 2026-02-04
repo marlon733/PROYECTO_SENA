@@ -61,28 +61,32 @@
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm rounded-4 border-bottom border-info border-4">
-            <div class="card-body text-center p-4">
-                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                    <i class="bi bi-truck text-info fs-3"></i>
-                </div>
-                <h5 class="card-title fw-bold text-info">Ventas</h5>
-                <p class="text-muted small">Aqui  se realizan las ventas al cliente.</p>
-                <div class="d-flex justify-content-around align-items-center mb-3">
-                    <div>
-                        <small class="text-muted d-block">Total</small>
-                        <span class="fw-bold">{{ total_cursos }}</span>
-                    </div>
-                    <div class="vr"></div>
-                    <div>
-                        <small class="text-muted d-block">Activos</small>
-                        <span class="fw-bold text-success">{{ cursos_activos }}</span>
-                    </div>
-                </div>
-                <a href="#" class="btn btn-info text-white w-100 rounded-pill">Monitorear</a>
+
+<div class="col-md-6 col-lg-3">
+    <div class="card h-100 border-0 shadow-sm rounded-4 border-bottom border-info border-4">
+        <div class="card-body text-center p-4">
+            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                 style="width: 60px; height: 60px;">
+                <i class="bi bi-truck text-info fs-3"></i>
             </div>
+            <h5 class="card-title fw-bold text-info">Ventas</h5>
+            <p class="text-muted small">Aquí se realizan las ventas al cliente.</p>
+            <div class="d-flex justify-content-around align-items-center mb-3">
+                <div>
+                    <small class="text-muted d-block">Total</small>
+                    <span class="fw-bold">{{ total_cursos }}</span>
+                </div>
+                <div class="vr"></div>
+                <div>
+                    <small class="text-muted d-block">Activos</small>
+                    <span class="fw-bold text-success">{{ cursos_activos }}</span>
+                </div>
+            </div>
+            <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-info text-white w-100 rounded-pill">Monitorear</a>
         </div>
     </div>
 </div>
-{% endblock %}
+
+
+
+   {% endblock %}
