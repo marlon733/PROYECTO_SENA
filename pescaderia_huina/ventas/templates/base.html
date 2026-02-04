@@ -1,105 +1,87 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Pescadería{% endblock %}</title>
+{% extends "core/panel_admin_base.html" %}
+{% load static %}
+{% load bootstrap5 %}
+
+{% block sidebar_extra_items %}
+<li class="nav-item">
+    <a href="{% url 'ventas:lista_ventas' %}" class="nav-link {% if request.resolver_match.url_name == 'lista_ventas' %}active{% endif %}">
+        <i class="bi bi-cart3"></i>
+        <span>Lista de Ventas</span>
+    </a>
+</li>
+<li class="nav-item">
+    <a href="{% url 'ventas:crear_venta' %}" class="nav-link {% if request.resolver_match.url_name == 'crear_venta' %}active{% endif %}">
+        <i class="bi bi-plus-circle"></i>
+        <span>Nueva Venta</span>
+    </a>
+</li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-card {
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: none;
+    }
     
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
     
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+    .badge {
+        padding: 0.5em 0.8em;
+        font-size: 0.85em;
+    }
+    
+    .btn-action {
+        margin: 0 2px;
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 600;
+    }
+    
+    .producto-item {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        transition: background 0.2s;
+    }
+    
+    .producto-item:hover {
+        background: #e9ecef;
+    }
+    
+    @media print {
+        .btn, nav, .alert, .sidebar, .topbar, footer, .no-print {
+            display: none !important;
         }
         
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .content {
-            flex: 1;
-            padding-bottom: 2rem;
-        }
-        
-        footer {
-            background-color: #f8f9fa;
-            padding: 1rem 0;
-            margin-top: auto;
+        .main-content {
+            margin: 0;
+            padding: 0;
         }
         
         .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
-            margin-bottom: 1.5rem;
+            box-shadow: none;
+            border: 1px solid #000;
         }
-        
-        .alert {
-            border-radius: 0.5rem;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        }
-    </style>
-    
-    {% block extra_css %}{% endblock %}
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-fish"></i> Sistema Pescadería
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'ventas:lista_ventas' %}">
-                            <i class="fas fa-shopping-cart"></i> Ventas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'ventas:crear_venta' %}">
-                            <i class="fas fa-plus-circle"></i> Nueva Venta
-                        </a>
-                    </li>
-                    <!-- Aquí puedes agregar más enlaces a otros módulos -->
-                </ul>
-            </div>
-        </div>
-    </nav>
+    }
+</style>
+{% block extra_css_custom %}{% endblock %}
+{% endblock %}
 
-    <!-- Contenido principal -->
-    <main class="content">
-        {% block content %}
-        {% endblock %}
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container text-center">
-            <p class="mb-0 text-muted">
-                <i class="fas fa-fish"></i> Sistema de Gestión de Pescadería &copy; 2024
-            </p>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    {% block extra_js %}{% endblock %}
-</body>
-</html>
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block extra_js_custom %}{% endblock %}
+{% endblock %}

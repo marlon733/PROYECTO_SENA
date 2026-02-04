@@ -1,30 +1,25 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, DeleteView, DetailView, ListView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy, reverse
 from django.db.models import Q, Sum
 from django.db import transaction
-from datetime import datetime
+from django.utils import timezone
+from .models import Venta, DetalleVenta
+from .forms import VentaForm, DetalleVentaFormSet, CancelarVentaForm, BusquedaVentaForm
+from productos.models import Producto  # Ajustar según tu app
+import json
 
-from .models import Venta, DetalleVenta, Producto
-from .forms import VentaForm, DetalleVentaForm, DetalleVentaFormSet, BuscarVentaForm, CancelarVentaForm
-
-
-class ListaVentasView(ListView):
-    """
-    Vista para listar todas las ventas con filtros de búsqueda (Historia #11, #19)
-    """
+class ListaVentasView(LoginRequiredMixin, ListView):
     model = Venta
-    template_name = 'lista_ventas.html'
+    template_name = 'ventas/lista_ventas.html'
     context_object_name = 'ventas'
     paginate_by = 20
     
     def get_queryset(self):
-        queryset = Venta.objects.all().prefetch_related('detalles__producto')
-        
-        # Aplicar filtros de búsqueda
-        form = BuscarVentaForm(self.request.GET)
+        queryset = super().get_queryset()
+        form = BusquedaVentaForm(self.request.GET)
         
         if form.is_valid():
             fecha_inicio = form.cleaned_data.get('fecha_inicio')
@@ -33,63 +28,30 @@ class ListaVentasView(ListView):
             buscar = form.cleaned_data.get('buscar')
             
             if fecha_inicio:
-                queryset = queryset.filter(fecha_venta__date__gte=fecha_inicio)
-            
+                queryset = queryset.filter(fecha_venta__gte=fecha_inicio)
             if fecha_fin:
-                queryset = queryset.filter(fecha_venta__date__lte=fecha_fin)
-            
+                queryset = queryset.filter(fecha_venta__lte=fecha_fin)
             if estado:
                 queryset = queryset.filter(estado=estado)
-            
             if buscar:
-                queryset = queryset.filter(
-                    Q(id__icontains=buscar) |
-                    Q(observaciones__icontains=buscar)
-                )
+                queryset = queryset.filter(id__icontains=buscar)
         
         return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form_busqueda'] = BuscarVentaForm(self.request.GET)
-        
-        # Agregar estadísticas
-        ventas = self.get_queryset()
-        context['total_ventas'] = ventas.filter(estado='COMPLETADA').count()
-        context['total_ingresos'] = ventas.filter(estado='COMPLETADA').aggregate(
-            total=Sum('total')
-        )['total'] or 0
-        
+        context['total_ventas'] = Venta.objects.filter(estado='COMPLETADA').count()
+        context['total_ingresos'] = Venta.objects.filter(
+            estado='COMPLETADA'
+        ).aggregate(total=Sum('total'))['total'] or 0
+        context['form_busqueda'] = BusquedaVentaForm(self.request.GET)
         return context
 
 
-# ========== DETALLE DE VENTA (Historia #11) ==========
-class DetalleVentaView(DetailView):
-    """
-    Vista para ver el detalle completo de una venta (Historia #11)
-    Muestra productos, cantidades, precios y estado
-    """
-    model = Venta
-    template_name = 'detalle_venta.html'
-    context_object_name = 'venta'
-    pk_url_kwarg = 'venta_id'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['detalles'] = self.object.detalles.select_related('producto').all()
-        return context
-
-
-# ========== CREAR VENTA (Historia #10) ==========
-class CrearVentaView(CreateView):
-    """
-    Vista para registrar una nueva venta al detalle (Historia #10)
-    Permite asociar productos y cantidades, procesando la transacción
-    y descontando del inventario
-    """
+class CrearVentaView(LoginRequiredMixin, CreateView):
     model = Venta
     form_class = VentaForm
-    template_name = 'crear_venta.html'
+    template_name = 'ventas/crear_venta.html'
     success_url = reverse_lazy('ventas:lista_ventas')
     
     def get_context_data(self, **kwargs):
@@ -99,198 +61,166 @@ class CrearVentaView(CreateView):
         else:
             context['formset'] = DetalleVentaFormSet()
         
-        # Agregar lista de productos disponibles para JavaScript
-        context['productos'] = Producto.objects.filter(
-            activo=True,
-            cantidad_disponible__gt=0
-        ).values('id', 'nombre', 'precio_base', 'cantidad_disponible', 'unidad_medida')
-        
+        # Pasar productos como JSON para el JavaScript
+        productos = Producto.objects.all().values(
+            'id', 'nombre', 'precio_base', 'cantidad_disponible', 'unidad_medida'
+        )
+        context['productos'] = json.dumps(list(productos))
         return context
     
     def form_valid(self, form):
-        """
-        Procesar la venta y descontar del inventario (Historia #10)
-        """
         context = self.get_context_data()
         formset = context['formset']
         
-        # Validar el formset
-        if not formset.is_valid():
-            messages.error(
-                self.request,
-                'Por favor, corrija los errores en los productos.'
-            )
-            return self.form_invalid(form)
-        
-        # Usar transacción para garantizar consistencia de datos
-        with transaction.atomic():
-            # Guardar la venta
-            self.object = form.save(commit=False)
-            self.object.estado = 'COMPLETADA'
-            self.object.save()
-            
-            # Guardar los detalles y actualizar el inventario
-            total = 0
-            for detalle_form in formset:
-                if detalle_form.cleaned_data and not detalle_form.cleaned_data.get('DELETE'):
-                    detalle = detalle_form.save(commit=False)
-                    detalle.venta = self.object
-                    
-                    # Descontar del inventario
-                    producto = detalle.producto
-                    if producto.cantidad_disponible >= detalle.cantidad:
-                        producto.cantidad_disponible -= detalle.cantidad
-                        producto.save()
-                        
-                        detalle.save()
-                        total += detalle.subtotal
-                    else:
-                        messages.error(
-                            self.request,
-                            f'Stock insuficiente para {producto.nombre}'
-                        )
-                        raise ValueError("Stock insuficiente")
-            
-            # Actualizar el total de la venta
-            self.object.total = total
-            self.object.save()
-        
-        messages.success(
-            self.request,
-            f'Venta #{self.object.id} registrada exitosamente por un total de ${self.object.total:,.2f}'
-        )
-        return redirect(self.success_url)
-    
-    def form_invalid(self, form):
-        """Mostrar mensaje de error si el formulario es inválido (Historia #17)"""
-        messages.error(
-            self.request,
-            'Por favor, corrija los errores en el formulario.'
-        )
-        return super().form_invalid(form)
-
-
-# ========== CANCELAR VENTA (Historia #12) ==========
-def cancelar_venta(request, venta_id):
-    """
-    Vista para cancelar o corregir una venta registrada (Historia #12)
-    Revierte el stock al inventario
-    """
-    venta = get_object_or_404(Venta, id=venta_id)
-    
-    if venta.estado == 'CANCELADA':
-        messages.warning(request, 'Esta venta ya ha sido cancelada.')
-        return redirect('ventas:detalle_venta', venta_id=venta_id)
-    
-    if request.method == 'POST':
-        form = CancelarVentaForm(request.POST)
-        
-        if form.is_valid():
-            motivo = form.cleaned_data['motivo']
-            
-            # Usar transacción para garantizar consistencia
+        if formset.is_valid():
             with transaction.atomic():
-                # Revertir el stock
-                for detalle in venta.detalles.all():
-                    producto = detalle.producto
-                    producto.cantidad_disponible += detalle.cantidad
-                    producto.save()
+                # Guardar la venta
+                self.object = form.save(commit=False)
+                total = 0
                 
-                # Actualizar la venta
-                venta.estado = 'CANCELADA'
-                venta.observaciones = f"CANCELADA: {motivo}\n\n{venta.observaciones or ''}"
-                venta.save()
-            
-            messages.success(
-                request,
-                f'La venta #{venta.id} ha sido cancelada exitosamente. El stock ha sido revertido.'
-            )
-            return redirect('ventas:lista_ventas')
-    else:
-        form = CancelarVentaForm()
+                # Guardar detalles y calcular total
+                formset.instance = self.object
+                detalles = formset.save(commit=False)
+                
+                for detalle in detalles:
+                    # Validar stock
+                    if detalle.cantidad > detalle.producto.cantidad_disponible:
+                        messages.error(
+                            self.request, 
+                            f'No hay suficiente stock de {detalle.producto.nombre}'
+                        )
+                        return self.form_invalid(form)
+                    
+                    # Actualizar stock
+                    detalle.producto.cantidad_disponible -= detalle.cantidad
+                    detalle.producto.save()
+                    
+                    total += detalle.subtotal
+                
+                # Guardar venta con el total calculado
+                self.object.total = total
+                self.object.save()
+                
+                # Guardar detalles
+                for detalle in detalles:
+                    detalle.save()
+                
+                messages.success(self.request, 'Venta registrada exitosamente')
+                return redirect(self.success_url)
+        else:
+            return self.form_invalid(form)
+
+
+class DetalleVentaView(LoginRequiredMixin, DetailView):
+    model = Venta
+    template_name = 'ventas/detalle_venta.html'
+    context_object_name = 'venta'
     
-    context = {
-        'venta': venta,
-        'form': form,
-    }
-    return render(request, 'cancelar_venta.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['detalles'] = self.object.detalles.all()
+        return context
 
 
-# ========== EDITAR VENTA (Funcionalidad adicional) ==========
-class EditarVentaView(UpdateView):
-    """
-    Vista para editar una venta existente (solo si no está cancelada)
-    """
+class EditarVentaView(LoginRequiredMixin, UpdateView):
     model = Venta
     form_class = VentaForm
-    template_name = 'editar_venta.html'
-    pk_url_kwarg = 'venta_id'
+    template_name = 'ventas/editar_venta.html'
     
     def get_success_url(self):
-        return reverse_lazy('ventas:detalle_venta', kwargs={'venta_id': self.object.id})
-    
-    def dispatch(self, request, *args, **kwargs):
-        """Verificar que la venta no esté cancelada"""
-        venta = self.get_object()
-        if venta.estado == 'CANCELADA':
-            messages.error(request, 'No se puede editar una venta cancelada.')
-            return redirect('ventas:detalle_venta', venta_id=venta.id)
-        return super().dispatch(request, *args, **kwargs)
+        return reverse('ventas:detalle_venta', kwargs={'pk': self.object.pk})
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
-            context['formset'] = DetalleVentaFormSet(self.request.POST, instance=self.object)
+            context['formset'] = DetalleVentaFormSet(
+                self.request.POST, 
+                instance=self.object
+            )
         else:
             context['formset'] = DetalleVentaFormSet(instance=self.object)
         
-        context['productos'] = Producto.objects.filter(
-            activo=True
-        ).values('id', 'nombre', 'precio_base', 'cantidad_disponible', 'unidad_medida')
-        
+        productos = Producto.objects.all().values(
+            'id', 'nombre', 'precio_base', 'cantidad_disponible', 'unidad_medida'
+        )
+        context['productos'] = json.dumps(list(productos))
         return context
     
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context['formset']
         
-        if not formset.is_valid():
-            messages.error(self.request, 'Por favor, corrija los errores en los productos.')
-            return self.form_invalid(form)
-        
-        with transaction.atomic():
-            self.object = form.save()
-            
-            # Revertir cambios anteriores en el inventario
-            for detalle in self.object.detalles.all():
-                producto = detalle.producto
-                producto.cantidad_disponible += detalle.cantidad
-                producto.save()
-            
-            # Eliminar detalles antiguos
-            self.object.detalles.all().delete()
-            
-            # Guardar nuevos detalles
-            total = 0
-            for detalle_form in formset:
-                if detalle_form.cleaned_data and not detalle_form.cleaned_data.get('DELETE'):
-                    detalle = detalle_form.save(commit=False)
-                    detalle.venta = self.object
+        if formset.is_valid():
+            with transaction.atomic():
+                # Revertir stock anterior
+                for detalle in self.object.detalles.all():
+                    detalle.producto.cantidad_disponible += detalle.cantidad
+                    detalle.producto.save()
+                
+                # Guardar cambios
+                self.object = form.save(commit=False)
+                total = 0
+                
+                formset.instance = self.object
+                detalles = formset.save(commit=False)
+                
+                # Procesar detalles eliminados
+                for detalle in formset.deleted_objects:
+                    detalle.delete()
+                
+                # Guardar nuevos detalles
+                for detalle in detalles:
+                    if detalle.cantidad > detalle.producto.cantidad_disponible:
+                        messages.error(
+                            self.request,
+                            f'No hay suficiente stock de {detalle.producto.nombre}'
+                        )
+                        return self.form_invalid(form)
                     
-                    # Descontar del inventario
-                    producto = detalle.producto
-                    if producto.cantidad_disponible >= detalle.cantidad:
-                        producto.cantidad_disponible -= detalle.cantidad
-                        producto.save()
-                        
-                        detalle.save()
-                        total += detalle.subtotal
-                    else:
-                        messages.error(self.request, f'Stock insuficiente para {producto.nombre}')
-                        raise ValueError("Stock insuficiente")
+                    detalle.producto.cantidad_disponible -= detalle.cantidad
+                    detalle.producto.save()
+                    total += detalle.subtotal
+                
+                self.object.total = total
+                self.object.save()
+                
+                for detalle in detalles:
+                    detalle.save()
+                
+                messages.success(self.request, 'Venta actualizada exitosamente')
+                return redirect(self.get_success_url())
+        else:
+            return self.form_invalid(form)
+
+
+class CancelarVentaView(LoginRequiredMixin, FormView):
+    template_name = 'ventas/cancelar_venta.html'
+    form_class = CancelarVentaForm
+    
+    def dispatch(self, request, *args, **kwargs):
+        self.venta = get_object_or_404(Venta, pk=kwargs['pk'])
+        if self.venta.estado == 'CANCELADA':
+            messages.warning(request, 'Esta venta ya está cancelada')
+            return redirect('ventas:detalle_venta', pk=self.venta.pk)
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['venta'] = self.venta
+        return context
+    
+    def form_valid(self, form):
+        with transaction.atomic():
+            # Revertir stock
+            for detalle in self.venta.detalles.all():
+                detalle.producto.cantidad_disponible += detalle.cantidad
+                detalle.producto.save()
             
-            self.object.total = total
-            self.object.save()
-        
-        messages.success(self.request, f'Venta #{self.object.id} actualizada exitosamente.')
-        return redirect(self.get_success_url())
+            # Actualizar venta
+            self.venta.estado = 'CANCELADA'
+            self.venta.motivo_cancelacion = form.cleaned_data['motivo']
+            self.venta.fecha_cancelacion = timezone.now()
+            self.venta.save()
+            
+            messages.success(self.request, 'Venta cancelada exitosamente')
+            return redirect('ventas:detalle_venta', pk=self.venta.pk)
