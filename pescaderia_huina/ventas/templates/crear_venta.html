@@ -1,0 +1,339 @@
+{% extends 'ventas/base.html' %}
+{% load static %}
+
+{% block title %}Registrar Nueva Venta{% endblock %}
+{% block page_title %}Registrar Nueva Venta{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'ventas:lista_ventas' %}">Ventas</a></li>
+<li class="breadcrumb-item active">Nueva Venta</li>
+{% endblock %}
+
+{% block extra_css_custom %}
+<style>
+    .form-control, .form-select {
+        border-radius: 8px;
+    }
+    
+    .producto-item {
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <form method="post" id="ventaForm">
+        {% csrf_token %}
+        
+        <!-- Observaciones -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <i class="bi bi-chat-left-text"></i> Observaciones
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="{{ form.observaciones.id_for_label }}" class="form-label">
+                        Notas o comentarios sobre la venta (opcional)
+                    </label>
+                    {{ form.observaciones }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos de la Venta -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <i class="bi bi-basket"></i> Productos de la Venta
+            </div>
+            <div class="card-body">
+                {{ formset.management_form }}
+                
+                <div id="productos-container">
+                    {% for form in formset %}
+                    <div class="producto-item border rounded p-3 mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-box-seam"></i> Producto
+                                </label>
+                                {{ form.producto }}
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-123"></i> Cantidad
+                                </label>
+                                {{ form.cantidad }}
+                                <small class="stock-info d-block mt-1"></small>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-currency-dollar"></i> Precio Unitario
+                                </label>
+                                {{ form.precio_unitario }}
+                            </div>
+                            
+                            <div class="col-md-1 d-flex align-items-end">
+                                {% if not forloop.first %}
+                                <button type="button" class="btn btn-danger btn-sm w-100 remove-producto">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="alert alert-secondary mb-0 py-2">
+                                    <strong>Subtotal:</strong> $<span class="subtotal-item">0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {{ form.id }}
+                        {{ form.DELETE }}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" class="btn btn-success" id="add-producto">
+                    <i class="bi bi-plus-circle"></i> Agregar Otro Producto
+                </button>
+            </div>
+        </div>
+
+        <!-- Resumen Total -->
+        <div class="card shadow-sm mb-4 border-success">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-calculator"></i> Resumen de la Venta
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Cantidad de Productos: <span id="cantidad-productos" class="badge bg-primary">0</span></h5>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <h3 class="text-success mb-0">
+                            Total: $<span id="total-venta">0.00</span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-circle"></i> Registrar Venta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js_custom %}
+<script>
+const productosData = {{ productos|safe }};
+
+function actualizarProducto(selectProducto) {
+    const productoId = selectProducto.value;
+    const container = selectProducto.closest('.producto-item');
+    const precioInput = container.querySelector('.precio-input');
+    const cantidadInput = container.querySelector('.cantidad-input');
+    const stockInfo = container.querySelector('.stock-info');
+    
+    if (productoId) {
+        const producto = productosData.find(p => p.id == productoId);
+        if (producto) {
+            precioInput.value = producto.precio_base;
+            cantidadInput.max = producto.cantidad_disponible;
+            
+            if (producto.cantidad_disponible > 0) {
+                stockInfo.innerHTML = `<span class="text-success"><i class="bi bi-check-circle"></i> Stock: ${producto.cantidad_disponible} ${producto.unidad_medida}</span>`;
+            } else {
+                stockInfo.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-triangle"></i> Sin stock</span>`;
+                cantidadInput.value = '';
+            }
+        }
+    } else {
+        precioInput.value = '';
+        cantidadInput.value = '';
+        stockInfo.textContent = '';
+    }
+    
+    calcularTotal();
+}
+
+function calcularSubtotal(item) {
+    const cantidad = parseFloat(item.querySelector('.cantidad-input').value) || 0;
+    const precio = parseFloat(item.querySelector('.precio-input').value) || 0;
+    const subtotal = cantidad * precio;
+    item.querySelector('.subtotal-item').textContent = subtotal.toFixed(2);
+    return subtotal;
+}
+
+function calcularTotal() {
+    let total = 0;
+    let cantidadProductos = 0;
+    
+    document.querySelectorAll('.producto-item').forEach(item => {
+        const deleteCheckbox = item.querySelector('input[name$="-DELETE"]');
+        
+        if (!deleteCheckbox || !deleteCheckbox.checked) {
+            const subtotal = calcularSubtotal(item);
+            total += subtotal;
+            
+            const cantidad = parseFloat(item.querySelector('.cantidad-input').value) || 0;
+            if (cantidad > 0) {
+                cantidadProductos++;
+            }
+        }
+    });
+    
+    document.getElementById('total-venta').textContent = total.toFixed(2);
+    document.getElementById('cantidad-productos').textContent = cantidadProductos;
+}
+
+function agregarProducto() {
+    const container = document.getElementById('productos-container');
+    const totalForms = document.querySelector('#id_detalles-TOTAL_FORMS');
+    const formIdx = parseInt(totalForms.value);
+    
+    const primerForm = container.querySelector('.producto-item');
+    const nuevoForm = primerForm.cloneNode(true);
+    
+    nuevoForm.innerHTML = nuevoForm.innerHTML.replace(/detalles-\d+-/g, `detalles-${formIdx}-`);
+    
+    nuevoForm.querySelectorAll('input, select').forEach(field => {
+        if (field.type !== 'hidden' && !field.name.includes('DELETE')) {
+            field.value = '';
+        }
+        if (field.name.includes('DELETE')) {
+            field.checked = false;
+        }
+    });
+    
+    nuevoForm.querySelector('.stock-info').textContent = '';
+    nuevoForm.querySelector('.subtotal-item').textContent = '0.00';
+    
+    const btnCol = nuevoForm.querySelector('.col-md-1');
+    btnCol.innerHTML = '<button type="button" class="btn btn-danger btn-sm w-100 remove-producto"><i class="bi bi-trash"></i></button>';
+    
+    nuevoForm.style.opacity = '0';
+    container.appendChild(nuevoForm);
+    setTimeout(() => nuevoForm.style.opacity = '1', 10);
+    
+    totalForms.value = formIdx + 1;
+    
+    configurarEventListeners(nuevoForm);
+    calcularTotal();
+}
+
+function eliminarProducto(btn) {
+    const item = btn.closest('.producto-item');
+    const deleteCheckbox = item.querySelector('input[name$="-DELETE"]');
+    const container = document.getElementById('productos-container');
+    const totalItems = container.querySelectorAll('.producto-item:not([style*="display: none"])').length;
+    
+    if (totalItems <= 1) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atención',
+            text: 'Debe haber al menos un producto en la venta',
+            confirmButtonColor: '#667eea'
+        });
+        return;
+    }
+    
+    if (deleteCheckbox) {
+        deleteCheckbox.checked = true;
+        item.style.display = 'none';
+    } else {
+        item.remove();
+        const totalForms = document.querySelector('#id_detalles-TOTAL_FORMS');
+        totalForms.value = parseInt(totalForms.value) - 1;
+    }
+    
+    calcularTotal();
+}
+
+function configurarEventListeners(form) {
+    const select = form.querySelector('.producto-select');
+    const cantidadInput = form.querySelector('.cantidad-input');
+    const precioInput = form.querySelector('.precio-input');
+    const removeBtn = form.querySelector('.remove-producto');
+    
+    if (select) {
+        select.addEventListener('change', function() {
+            actualizarProducto(this);
+        });
+    }
+    
+    if (cantidadInput) {
+        cantidadInput.addEventListener('input', calcularTotal);
+    }
+    
+    if (precioInput) {
+        precioInput.addEventListener('input', calcularTotal);
+    }
+    
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+            eliminarProducto(this);
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.producto-item').forEach(form => {
+        configurarEventListeners(form);
+        const select = form.querySelector('.producto-select');
+        if (select && select.value) {
+            actualizarProducto(select);
+        }
+    });
+    
+    document.getElementById('add-producto').addEventListener('click', agregarProducto);
+    
+    document.getElementById('ventaForm').addEventListener('submit', function(e) {
+        const productosValidos = Array.from(document.querySelectorAll('.producto-item'))
+            .filter(item => {
+                const deleteCheckbox = item.querySelector('input[name$="-DELETE"]');
+                return !deleteCheckbox || !deleteCheckbox.checked;
+            })
+            .filter(item => {
+                const select = item.querySelector('.producto-select');
+                return select && select.value;
+            });
+        
+        if (productosValidos.length === 0) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Debe agregar al menos un producto a la venta',
+                confirmButtonColor: '#667eea'
+            });
+            return false;
+        }
+    });
+    
+    calcularTotal();
+});
+</script>
+{% endblock %}
