@@ -1,81 +1,88 @@
 <!DOCTYPE html>
 {% extends "master.html" %}
-{% load static %}
-<html lang="es">
 
+{% block title %}Panel de Control - Pescadería Ocean{% endblock %}
 
-{% block title %}
-    HUINA
-{% endblock %}
 {% block content %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUINA</title>
-     <link rel="icon" type="ICONOVENTANA/jpg" href= "{% static "img/IconoVENTANA.png" %}">
-    <link rel="stylesheet" href="{% static "css/index.css" %}">
-</head>
-<body>
-
-        
-
-        <div class="header-content container">
-            <div class="header-txt">
-                <h1>INVENTARIO🎣</h1>
-                <h1>PESCADERIA HUINA</h1>
-  
-                <p>
-                   AYUDAMOS A MANEJAR MEJOR SUS PRODUCTOS </p>
-
-                    <p> Manejamos todo tipo de pescados, mariscos, y pollo
-                </p>
-               
-
-            </div>
-            <div class="header-img">
-                <img src={% static "img/img-1.png" %} class="Pescado" alt="">
+<div class="row">
+    <div class="col-12">
+        <div class="p-5 mb-4 rounded-4 shadow-sm text-white" 
+             style="background: linear-gradient(135deg, #0f3460 0%, #16213e 100%); border-left: 8px solid #4cc9f0;">
+            <div class="container-fluid py-2">
+                <h1 class="display-5 fw-bold"><i class="bi bi-water me-2"></i>Gestión Huina</h1>
+                <p class="col-md-8 fs-5 opacity-75">Panel centralizado para el control de inventario, proveedores y distribución de productos del mar.</p>
+                
+                <hr class="my-4 opacity-25">
             </div>
         </div>
-   
-    
-  <section class="info">
+    </div>
+</div>
 
-        <div class="info-content container">
-
-            <div class="info-txt">
-                <p>Conoce un poco sobre nosotros </p>
-                <h2>¿Que haremos?</h2>
-
-                <div class="info-sec">
-
-
-                    <div class="info-1">
-                        <img src= {% static "img/logo-info1.png" %} alt="">
-                        <div class="info-2">
-                            <h3>  UN MEJOR MANEJO DE SU INVENTARIO </h3>
-                            <p>
-                                Gestionamos todos los productos que ingresen al inventario y los que salgan 
-                            </p>
-
-                        </div>
-
-                    
-
+<div class="row g-4 mt-2">
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body text-center p-4">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="bi bi-fish text-primary fs-3"></i>
                 </div>
-
-            </div>
-            <div class="info-img">
-                <img src={% static "img/info1.png" %} class="latillo" alt="">
-
+                <h5 class="card-title fw-bold">Productos</h5>
+                <p class="text-muted small">Catálogo de especies y mariscos disponibles.</p>
+                <div class="display-6 fw-bold mb-3 text-primary">{{ total_aprendices }}</div>
+                <a href="#" class="btn btn-primary w-100 rounded-pill">Gestionar</a>
             </div>
         </div>
-    </section>
+    </div>
 
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body text-center p-4">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="bi bi-person-badge text-primary fs-3"></i>
+                </div>
+                <h5 class="card-title fw-bold">Proveedores</h5>
+                <p class="text-muted small">Colaboradores e instructores de planta.</p>
+                <div class="display-6 fw-bold mb-3 text-primary">{{ total_instructores }}</div>
+                <a href= "#" class="btn btn-primary w-100 rounded-pill">Ver Nómina</a>
+            </div>
+        </div>
+    </div>
 
-    
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body text-center p-4">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="bi bi-tags text-primary fs-3"></i>
+                </div>
+                <h5 class="card-title fw-bold">Pedidos</h5>
+                <p class="text-muted small">Aqui se realizan los pedidos a los proveedores.</p>
+                <div class="display-6 fw-bold mb-3 text-primary">{{ total_programas }}</div>
+                <a href="#" class="btn btn-primary w-100 rounded-pill">Configurar</a>
+            </div>
+        </div>
+    </div>
 
-    <script src="script.js"></script>
-</body>
-
-</html>
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm rounded-4 border-bottom border-info border-4">
+            <div class="card-body text-center p-4">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="bi bi-truck text-info fs-3"></i>
+                </div>
+                <h5 class="card-title fw-bold text-info">Ventas</h5>
+                <p class="text-muted small">Aqui  se realizan las ventas al cliente.</p>
+                <div class="d-flex justify-content-around align-items-center mb-3">
+                    <div>
+                        <small class="text-muted d-block">Total</small>
+                        <span class="fw-bold">{{ total_cursos }}</span>
+                    </div>
+                    <div class="vr"></div>
+                    <div>
+                        <small class="text-muted d-block">Activos</small>
+                        <span class="fw-bold text-success">{{ cursos_activos }}</span>
+                    </div>
+                </div>
+                <a href="#" class="btn btn-info text-white w-100 rounded-pill">Monitorear</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
