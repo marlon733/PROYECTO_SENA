@@ -1,13 +1,5 @@
 from django.contrib import admin
-from .models import Producto, Venta, DetalleVenta
-
-
-@admin.register(Producto)
-class ProductoAdmin(admin.ModelAdmin):
-    list_display = ['nombre', 'unidad_medida', 'precio_base', 'cantidad_disponible', 'activo']
-    list_filter = ['activo', 'unidad_medida']
-    search_fields = ['nombre']
-    list_editable = ['activo']
+from .models import Venta, DetalleVenta
 
 
 class DetalleVentaInline(admin.TabularInline):

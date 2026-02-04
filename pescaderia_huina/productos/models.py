@@ -4,7 +4,7 @@ TIPO_PRODUCTO = [
         ('PE', 'Pescado'),
         ('PO', 'Pollo'),
     ]
-class Prodcuto(models.Model):
+class Producto(models.Model):
     tipo_producto = models.CharField(max_length=3, choices=TIPO_PRODUCTO, default='MA')
     nombre = models.CharField(max_length=100)
     procedencia = models.CharField(max_length=100)

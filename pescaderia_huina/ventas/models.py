@@ -42,8 +42,8 @@ class DetalleVenta(models.Model):
         related_name='detalles'
     )
     producto = models.ForeignKey(
-        'productos.Producto',  # Ajustar según tu modelo
-        on_delete=models.PROTECT
+        'productos.Producto', 
+        on_delete=models.CASCADE
     )
     cantidad = models.DecimalField(
         max_digits=10, 
@@ -66,3 +66,12 @@ class DetalleVenta(models.Model):
     @property
     def subtotal(self):
         return self.cantidad * self.precio_unitario
+    
+from django.db import models
+TIPO_PRODUCTO = [
+        ('MA', 'Mariscos'),
+        ('PE', 'Pescado'),
+        ('PO', 'Pollo'),
+    ]
+
+
