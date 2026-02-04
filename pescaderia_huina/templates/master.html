@@ -191,7 +191,7 @@
                         <li class="nav-item"><a class="nav-link" href="#">Pedidos</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Ventas</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'productos:producto' %}">Productos</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Administración</a></li>
+                      
                         
                         <li class="nav-item d-none d-lg-block mx-2 text-white-50">|</li>
 
@@ -225,6 +225,16 @@
                                             <i class="bi bi-person me-2"></i> Mi Perfil
                                         </a>
                                     </li>
+                                     <li>
+                                        <a class="dropdown-item" href="{% url 'core:dashboard' %}">
+                                            <i class="bi bi-person me-2"></i> Administración
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'usuarios:registro' %}">
+                                            <i class="bi bi-person me-2"></i> Registrar
+                                        </a>
+                                    </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form method="POST" action="{% url 'usuarios:logout' %}">
@@ -240,11 +250,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'usuarios:login' %}">Iniciar Sesión</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="btn btn-outline-light btn-sm ms-lg-3 px-4 rounded-pill" style="border-width: 2px; font-weight: 500;" href="{% url 'usuarios:registro' %}">
-                                    Registrarse
-                                </a>
-                            </li>
+                            
                         {% endif %}
                     </ul>
                 </div>
