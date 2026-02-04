@@ -17,6 +17,6 @@ def restablecer(request):
 
 def PanelAdmin_base(request):
     return render(request, 'core/panel_admin_base.html')
-
-def producto(request):
+  
+def productos(request):
     return render(request, 'producto.html')
