@@ -1,0 +1,64 @@
+{% extends 'master.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="card-title mb-0 text-center">Registrar Nuevo Proveedor</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.nit.label }}</label>
+                                {{ form.nit }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.nombre_contacto.label }}</label>
+                                {{ form.nombre_contacto }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">{{ form.correo.label }}</label>
+                                {{ form.correo }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.telefono.label }}</label>
+                                {{ form.telefono }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.ciudad.label }}</label>
+                                {{ form.ciudad }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">{{ form.direccion.label }}</label>
+                                {{ form.direccion }}
+                            </div>
+                            <div class="col-12 mt-4">
+                                <div class="form-check form-switch">
+                                    {{ form.estado }}
+                                    <label class="form-check-label ms-2" for="{{ form.estado.id_for_label }}">Proveedor Activo</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                           <a href="{% url 'proveedores:lista_proveedores' %}" ...> Volver </a>
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-success px-5">
+                                <i class="bi bi-check-lg"></i> Guardar Proveedor
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
