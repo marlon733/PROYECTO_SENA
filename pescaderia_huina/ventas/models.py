@@ -10,40 +10,15 @@ class Venta(models.Model):
         ('PENDIENTE', 'Pendiente'),
     ]
     
-    fecha_venta = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True)
-    total = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2,
-        validators=[MinValueValidator(Decimal('0.01'))]
-    )
-    observaciones = models.TextField(blank=True, null=True)
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='COMPLETADA')
-    motivo_cancelacion = models.TextField(blank=True, null=True)
-    fecha_cancelacion = models.DateTimeField(blank=True, null=True)
+    # Cliente
+    nombre_cliente = models.CharField(max_length=100)
+    documento_cliente = models.CharField(max_length=20)
     
-    class Meta:
-        verbose_name = 'Venta'
-        verbose_name_plural = 'Ventas'
-        ordering = ['-fecha_venta']
-    
-    def __str__(self):
-        return f"Venta #{self.id} - ${self.total}"
-    
-    @property
-    def cantidad_productos(self):
-        return self.detalles.count()
-
-
-class DetalleVenta(models.Model):
-    venta = models.ForeignKey(
-        Venta, 
-        on_delete=models.CASCADE, 
-        related_name='detalles'
-    )
+    # Producto
     producto = models.ForeignKey(
         'productos.Producto', 
-        on_delete=models.CASCADE
+        on_delete=models.PROTECT,
+        related_name='ventas'
     )
     cantidad = models.DecimalField(
         max_digits=10, 
@@ -56,22 +31,34 @@ class DetalleVenta(models.Model):
         validators=[MinValueValidator(Decimal('0.01'))]
     )
     
+    # Detalles de la venta
+    fecha_venta = models.DateTimeField(default=timezone.now)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+    total = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.01'))]
+    )
+    observaciones = models.TextField(blank=True, null=True)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='COMPLETADA')
+    
+    # Campos para cancelación
+    motivo_cancelacion = models.TextField(blank=True, null=True)
+    fecha_cancelacion = models.DateTimeField(blank=True, null=True)
+    
     class Meta:
-        verbose_name = 'Detalle de Venta'
-        verbose_name_plural = 'Detalles de Venta'
+        verbose_name = 'Venta'
+        verbose_name_plural = 'Ventas'
+        ordering = ['-fecha_venta']
     
     def __str__(self):
-        return f"{self.producto.nombre} - {self.cantidad}"
+        return f"Venta #{self.id} - {self.nombre_cliente} - ${self.total}"
     
-    @property
-    def subtotal(self):
-        return self.cantidad * self.precio_unitario
+    def save(self, *args, **kwargs):
+        # Calcular el total automáticamente
+        if self.cantidad and self.precio_unitario:
+            self.total = self.cantidad * self.precio_unitario
+        super().save(*args, **kwargs)
     
-from django.db import models
-TIPO_PRODUCTO = [
-        ('MA', 'Mariscos'),
-        ('PE', 'Pescado'),
-        ('PO', 'Pollo'),
-    ]
-
-
+    def get_cliente_completo(self):
+        return f"{self.nombre_cliente} - {self.documento_cliente}"
