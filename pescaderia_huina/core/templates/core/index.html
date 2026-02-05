@@ -10,7 +10,7 @@
              style="background: linear-gradient(135deg, #0f3460 0%, #16213e 100%); border-left: 8px solid #4cc9f0;">
             <div class="container-fluid py-2">
                 <h1 class="display-5 fw-bold"><i class="bi bi-water me-2"></i>Gestión Huina</h1>
-                <p class="col-md-8 fs-5 opacity-75">Panel centralizado para el control de inventario, proveedores y distribución de productos del mar.</p>
+                <p class="col-md-8 fs-5 opacity-75">"Gestione sus pedidos con total claridad a través de nuestro inventario en tiempo real. Aquí encontrará nuestra disponibilidad exacta en pescados, mariscos y pollo, asegurando que cada producto seleccionado llegue con la frescura que nos distingue. Un sistema rápido y confiable diseñado para facilitar su compra y garantizar el abastecimiento de su cocina sin complicaciones."</p>
                 
                 <hr class="my-4 opacity-25">
             </div>
@@ -28,7 +28,7 @@
                 <h5 class="card-title fw-bold">Productos</h5>
                 <p class="text-muted small">Catálogo de especies y mariscos disponibles.</p>
                 <div class="display-6 fw-bold mb-3 text-primary">{{ total_aprendices }}</div>
-                <a href="#" class="btn btn-primary w-100 rounded-pill">Gestionar</a>
+                <a href="{% url 'productos:producto' %}" class="btn btn-primary w-100 rounded-pill">Gestionar</a>
             </div>
         </div>
     </div>
@@ -85,8 +85,5 @@
             <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-info text-white w-100 rounded-pill">Monitorear</a>
         </div>
     </div>
-</div>
-
-
-
-   {% endblock %}
+</div>  
+{% endblock %}

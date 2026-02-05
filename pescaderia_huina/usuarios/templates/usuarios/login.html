@@ -1,82 +1,292 @@
-{% extends 'master.html' %}
 {% load static %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Acceso Profesional{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'usuarios/css/login.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+
+
+
+<style>
+    :root {
+        --primary-dark: #0f2c59;
+        --secondary-blue: #3e78b2;
+        --accent-cyan: #00d2ff;
+        --soft-white: #f8fafc;
+        --text-main: #1e293b;
+    }
+
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: 'Inter', sans-serif;
+        background-color: white;
+    }
+
+    .split-screen {
+        display: flex;
+        flex-direction: row;
+        height: 100vh;
+        width: 100%;
+    }
+
+    /* --- LADO IZQUIERDO: VISUAL --- */
+    .visual-side {
+        flex: 1.2;
+        background: linear-gradient(135deg, var(--primary-dark) 0%, #06142e 100%);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        padding: 40px;
+        overflow: hidden;
+    }
+
+    /* Espacio para la imagen solicitado */
+    .image-placeholder {
+        width: 80%;
+        max-width: 500px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+        border-radius: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        transition: transform 0.5s ease;
+        overflow: hidden;
+    }
+
+    .image-placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Esto hará que tu imagen se vea perfecta */
+    }
+
+    .visual-side:hover .image-placeholder {
+        transform: scale(1.02);
+    }
+
+    /* Elementos decorativos abstractos */
+    .blob {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: var(--secondary-blue);
+        filter: blur(80px);
+        border-radius: 50%;
+        z-index: 1;
+        opacity: 0.2;
+    }
+
+    /* --- LADO DERECHO: FORMULARIO --- */
+    .form-side {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        background-color: white;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 400px;
+        animation: fadeInRight 0.8s ease-out;
+    }
+
+    .brand-logo {
+        margin-bottom: 2rem;
+        color: var(--primary-dark);
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    h2 {
+        color: var(--text-main);
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+        color: #64748b;
+        margin-bottom: 2.5rem;
+    }
+
+    /* Inputs Estilizados Premium */
+    .input-group-custom {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .input-group-custom label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 14px 16px;
+        font-size: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background-color: #f8fafc;
+        box-sizing: border-box;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: var(--secondary-blue);
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(62, 120, 178, 0.1);
+    }
+
+    /* Botón de Acción */
+    .btn-submit {
+        width: 100%;
+        padding: 16px;
+        background-color: var(--primary-dark);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+        background-color: var(--secondary-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(15, 44, 89, 0.2);
+    }
+
+    /* Alertas */
+    .alert {
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        border-left: 5px solid #ef4444;
+        background-color: #fef2f2;
+        color: #b91c1c;
+    }
+
+    @keyframes fadeInRight {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .visual-side { display: none; }
+        .form-side { flex: 1; }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <i class="bi bi-person-circle"></i>
-                <h2>INICIAR SESIÓN</h2>
-                <p class="text-muted">Ingresa tus credenciales para continuar</p>
+<div class="split-screen">
+    <div class="visual-side">
+        <div class="blob" style="top: -10%; left: -10%;"></div>
+        <div class="blob" style="bottom: -10%; right: -10%; background: var(--accent-cyan);"></div>
+        
+        <div class="image-placeholder">
+            <img src="{% static 'img/LGO.png' %}" alt="Representación Visual">
             </div>
-            
+
+        <div style="margin-top: 3rem; text-align: center; z-index: 2;">
+            <h3 style="font-weight: 700; font-size: 1.5rem;">Gestión Huina</h3>
+            <p style="opacity: 0.7; max-width: 400px;">Ingresa a nuestro software de inventario.</p>
+        </div>
+    </div>
+
+    <div class="form-side">
+        <div class="login-box">
+           <div class="brand-logo">
+           <p><span style="font-family: 'Cormorant Garamond', serif; font-size:40px;">PESCADERIA HUINA </span></p>
+
+            </div>
+
+            <h2>Iniciar Sesión</h2>
+            <p class="subtitle">Bienvenido de nuevo. Por favor ingresa tus datos.</p>
+
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div class="alert">
+                        <i class="bi bi-exclamation-circle me-2"></i> {{ message }}
                     </div>
                 {% endfor %}
             {% endif %}
-            
+
             <form method="POST" novalidate>
                 {% csrf_token %}
-                
-                <div class="form-floating mb-3">
-                    {{ form.username }}
-                    <label for="{{ form.username.id_for_label }}">
-                        <i class="bi bi-file-text"></i> Documento
-                    </label>
+
+                <div class="input-group-custom">
+                    <label for="{{ form.username.id_for_label }}">Documento de Identidad</label>
+                    <div class="position-relative">
+                        {{ form.username }}
+                    </div>
                     {% if form.username.errors %}
-                        <div class="invalid-feedback d-block">
-                            {{ form.username.errors }}
-                        </div>
+                        <small style="color: #ef4444;">{{ form.username.errors.0 }}</small>
                     {% endif %}
                 </div>
-                
-                <div class="form-floating mb-3">
+
+                <div class="input-group-custom">
+                    <label for="{{ form.password.id_for_label }}">Contraseña</label>
                     {{ form.password }}
-                    <label for="{{ form.password.id_for_label }}">
-                        <i class="bi bi-lock"></i> Contraseña
-                    </label>
                     {% if form.password.errors %}
-                        <div class="invalid-feedback d-block">
-                            {{ form.password.errors }}
-                        </div>
+                        <small style="color: #ef4444;">{{ form.password.errors.0 }}</small>
                     {% endif %}
                 </div>
-                
-                <div class="form-check mb-3">
-                    {{ form.remember_me }}
-                    <label class="form-check-label" for="{{ form.remember_me.id_for_label }}">
-                        Recordarme
-                    </label>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        {{ form.remember_me }}
+                        <label class="form-check-label" style="font-size: 0.85rem; color: #64748b;" for="{{ form.remember_me.id_for_label }}">
+                            Mantener sesión iniciada
+                        </label>
+                    </div>
+                    <a href="#" style="font-size: 0.85rem; color: var(--secondary-blue); text-decoration: none; font-weight: 600;">¿Olvidaste tu clave?</a>
                 </div>
-                
-                <button type="submit" class="btn btn-login">
-                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+
+                <button type="submit" class="btn-submit">
+                    Entrar al Sistema
                 </button>
             </form>
-            
-            <div class="register-link">
-                <p class="mb-0">¿No tienes cuenta? 
-                    <a href="{% url 'usuarios:registro' %}" class="text-primary fw-bold">Regístrate aquí</a>
-                </p>
-            </div>
-            
-            <div class="text-center mt-3">
-                <a href="{% url 'core:index' %}" class="text-muted">
-                    <i class="bi bi-arrow-left"></i> Volver al inicio
+
+            <div class="text-center mt-5">
+                <a href="{% url 'core:index' %}" style="color: #64748b; text-decoration: none; font-size: 0.9rem;">
+                    <i class="bi bi-arrow-left me-2"></i> Volver al inicio
                 </a>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Inyectar clases dinámicamente a los inputs de Django para que coincidan con el estilo
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('input[type="text"], input[type="password"], input[type="number"]');
+        inputs.forEach(input => {
+            input.classList.add('form-control-custom');
+            input.setAttribute('placeholder', ' '); // Necesario para efectos de label si se desea
+        });
+    });
+</script>
 {% endblock %}
