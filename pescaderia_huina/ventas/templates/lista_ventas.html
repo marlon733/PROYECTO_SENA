@@ -1,0 +1,218 @@
+{% extends 'ventas/base.html' %}
+{% load static %}
+
+{% block title %}Gestión de Ventas{% endblock %}
+{% block page_title %}Gestión de Ventas{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">Ventas</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <!-- Estadísticas Resumidas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card stats-card border-start border-primary border-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Ventas</h6>
+                            <h2 class="mb-0 fw-bold">{{ total_ventas }}</h2>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-cart3 fs-1 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card stats-card border-start border-success border-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Ingresos Totales</h6>
+                            <h2 class="mb-0 fw-bold text-success">${{ total_ingresos|floatformat:2 }}</h2>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-currency-dollar fs-1 text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card stats-card bg-primary text-white">
+                <div class="card-body text-center d-flex align-items-center justify-content-center">
+                    <a href="{% url 'ventas:crear_venta' %}" class="btn btn-light btn-lg w-100">
+                        <i class="bi bi-plus-circle"></i> Registrar Nueva Venta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de Búsqueda y Filtros -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <i class="bi bi-search"></i> Filtros de Búsqueda
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Inicio</label>
+                    {{ form_busqueda.fecha_inicio }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Fin</label>
+                    {{ form_busqueda.fecha_fin }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    {{ form_busqueda.estado }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    {{ form_busqueda.buscar }}
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Limpiar Filtros
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Ventas -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <i class="bi bi-list-ul"></i> Listado de Ventas
+        </div>
+        <div class="card-body">
+            {% if ventas %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th><i class="bi bi-hash"></i> ID</th>
+                            <th><i class="bi bi-calendar3"></i> Fecha</th>
+                            <th><i class="bi bi-currency-dollar"></i> Total</th>
+                            <th><i class="bi bi-box-seam"></i> Productos</th>
+                            <th><i class="bi bi-info-circle"></i> Estado</th>
+                            <th class="text-center"><i class="bi bi-gear"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venta in ventas %}
+                        <tr>
+                            <td class="fw-bold">#{{ venta.id }}</td>
+                            <td>{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td>
+                            <td class="text-success fw-bold">${{ venta.total|floatformat:2 }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ venta.cantidad_productos }} items</span>
+                            </td>
+                            <td>
+                                {% if venta.estado == 'COMPLETADA' %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> {{ venta.get_estado_display }}
+                                    </span>
+                                {% elif venta.estado == 'CANCELADA' %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i> {{ venta.get_estado_display }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning">
+                                        <i class="bi bi-clock"></i> {{ venta.get_estado_display }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'ventas:detalle_venta' venta.id %}" 
+                                       class="btn btn-sm btn-info btn-action" 
+                                       title="Ver detalle">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if venta.estado == 'COMPLETADA' %}
+                                    <a href="{% url 'ventas:editar_venta' venta.id %}" 
+                                       class="btn btn-sm btn-warning btn-action" 
+                                       title="Editar venta">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'ventas:cancelar_venta' venta.id %}" 
+                                       class="btn btn-sm btn-danger btn-action" 
+                                       title="Cancelar venta"
+                                       onclick="return confirm('¿Está seguro de cancelar esta venta?')">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if is_paginated %}
+            <nav aria-label="Navegación de páginas" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">
+                            <i class="bi bi-chevron-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                            <i class="bi bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle fs-1 d-block mb-3"></i>
+                <h5>No hay ventas registradas</h5>
+                <p class="mb-0">
+                    <a href="{% url 'ventas:crear_venta' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Crear Primera Venta
+                    </a>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

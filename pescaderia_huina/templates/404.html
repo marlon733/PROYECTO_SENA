@@ -1,0 +1,18 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block content %}
+<main class="error-404">
+  <div class="error-container">
+
+    <center><img src="{% static 'img/pez-404.png' %}" class="error-image"></center>
+
+    <center><h1 class="error-code">404</h1></center>
+
+    <center><p class="error-text">
+      Lo sentimos, no pudimos encontrar la página.
+    </p> </center>
+
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cancelar Venta #{{ venta.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2><i class="fas fa-exclamation-triangle text-danger"></i> Cancelar Venta #{{ venta.id }}</h2>
+            <hr>
+        </div>
+    </div>
+
+    <!-- Advertencia -->
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading"><i class="fas fa-exclamation-circle"></i> ¡Atención!</h4>
+        <p>Está a punto de cancelar esta venta. Esta acción:</p>
+        <ul>
+            <li>Revertirá el stock de todos los productos vendidos al inventario</li>
+            <li>Cambiará el estado de la venta a "CANCELADA"</li>
+            <li>No se podrá deshacer esta acción</li>
+        </ul>
+    </div>
+
+    <!-- Información de la venta -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-info-circle"></i> Información de la Venta
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>ID:</strong> {{ venta.id }}</p>
+                    <p><strong>Fecha:</strong> {{ venta.fecha_venta|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Total:</strong> ${{ venta.total|floatformat:2 }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Productos:</strong> {{ venta.cantidad_productos }}</p>
+                    <p><strong>Estado:</strong> <span class="badge bg-success">{{ venta.get_estado_display }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos que se revertirán -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-undo"></i> Productos que se revertirán al inventario
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad a Revertir</th>
+                            <th>Stock Actual</th>
+                            <th>Stock Después</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detalle in venta.detalles.all %}
+                        <tr>
+                            <td>{{ detalle.producto.nombre }}</td>
+                            <td class="text-success">+ {{ detalle.cantidad }} {{ detalle.producto.get_unidad_medida_display }}</td>
+                            <td>{{ detalle.producto.cantidad_disponible }} {{ detalle.producto.get_unidad_medida_display }}</td>
+                            <td><strong>{{ detalle.producto.cantidad_disponible|add:detalle.cantidad }} {{ detalle.producto.get_unidad_medida_display }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de cancelación -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <i class="fas fa-clipboard-list"></i> Motivo de Cancelación
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    {{ form.motivo.label_tag }}
+                    {{ form.motivo }}
+                    {% if form.motivo.errors %}
+                        <div class="text-danger">{{ form.motivo.errors }}</div>
+                    {% endif %}
+                    <small class="text-muted">Explique el motivo de la cancelación (mínimo 10 caracteres)</small>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="fas fa-check-circle"></i> Confirmar Cancelación
+                    </button>
+                    <a href="{% url 'ventas:detalle_venta' venta.id %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-times"></i> No Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
