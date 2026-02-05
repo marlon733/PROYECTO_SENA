@@ -4,173 +4,167 @@
 {% block title %}Panel Administrativo{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
+    :root {
+        --primary: #4f46e5;
+        --bg-main: #f8fafc;
+    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); }
+    
+    /* Stats Cards Modernos */
     .stats-card {
-        border-radius: 10px;
-        padding: 25px;
-        margin-bottom: 20px;
+        border-radius: 16px;
+        padding: 1.5rem;
         color: white;
-        transition: transform 0.3s;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        border: none;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
-    
-    .stats-card:hover {
-        transform: translateY(-5px);
-    }
-    
+    .stats-card:hover { transform: translateY(-5px); }
     .stats-card .icon {
-        font-size: 3rem;
-        opacity: 0.3;
+        font-size: 4rem;
         position: absolute;
-        right: 20px;
-        top: 20px;
+        right: -10px;
+        bottom: -10px;
+        opacity: 0.2;
+        transform: rotate(-15deg);
     }
-    
-    .stats-card h3 {
-        font-size: 2.5rem;
-        font-weight: bold;
+    .card-usuarios { background: linear-gradient(135deg, #4f46e5, #3730a3); }
+    .card-activos { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+    .card-staff { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+    .card-nuevos { background: linear-gradient(135deg, #10b981, #059669); }
+
+    /* Estilo de Tabla y Cards Blancas */
+    .custom-card {
+        background: white;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
     }
-    
-    .card-usuarios {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .table thead th {
+        background: #f1f5f9;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        border: none;
     }
-    
-    .card-activos {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
-    
-    .card-staff {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    }
-    
-    .card-nuevos {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    }
+    .badge { border-radius: 8px; padding: 0.5em 0.8em; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
-    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="display-5 fw-bold">
-                <i class="bi bi-speedometer2"></i> Panel de Administración
-            </h1>
-            <p class="text-muted">Bienvenido, {{ request.user.get_full_name }}</p>
+            <h1 class="fw-800" style="letter-spacing: -1px;">Panel de Control</h1>
+            <p class="text-muted">Gestión de plataforma | {{ request.user.get_full_name|default:"Administrador" }}</p>
         </div>
     </div>
-    
-    <!-- Tarjetas de Estadísticas -->
-    <div class="row">
+
+    <div class="row g-4">
         <div class="col-md-3">
             <div class="stats-card card-usuarios">
                 <i class="bi bi-people icon"></i>
-                <p class="mb-0">Total Usuarios</p>
-                <h3>{{ total_usuarios }}</h3>
+                <span class="small fw-bold opacity-75">TOTAL USUARIOS</span>
+                <h2 class="counter fw-bold m-0" data-target="{{ total_usuarios|default:0 }}">0</h2>
             </div>
         </div>
-        
         <div class="col-md-3">
             <div class="stats-card card-activos">
                 <i class="bi bi-check-circle icon"></i>
-                <p class="mb-0">Usuarios Activos</p>
-                <h3>{{ usuarios_activos }}</h3>
+                <span class="small fw-bold opacity-75">ACTIVOS</span>
+                <h2 class="counter fw-bold m-0" data-target="{{ usuarios_activos|default:0 }}">0</h2>
             </div>
         </div>
-        
         <div class="col-md-3">
             <div class="stats-card card-staff">
                 <i class="bi bi-shield-check icon"></i>
-                <p class="mb-0">Administradores</p>
-                <h3>{{ usuarios_staff }}</h3>
+                <span class="small fw-bold opacity-75">STAFF</span>
+                <h2 class="counter fw-bold m-0" data-target="{{ usuarios_staff|default:0 }}">0</h2>
             </div>
         </div>
-        
         <div class="col-md-3">
             <div class="stats-card card-nuevos">
                 <i class="bi bi-person-plus icon"></i>
-                <p class="mb-0">Nuevos Este Mes</p>
-                <h3>{{ nuevos_usuarios_mes }}</h3>
+                <span class="small fw-bold opacity-75">ESTE MES</span>
+                <h2 class="counter fw-bold m-0" data-target="{{ nuevos_usuarios_mes|default:0 }}">0</h2>
             </div>
         </div>
     </div>
-    
-    <!-- Acciones Rápidas -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-lightning"></i> Acciones Rápidas</h5>
-                </div>
-                <div class="card-body">
-                    <a href="{% url 'usuarios:crear_usuario' %}" class="btn btn-primary me-2">
-                        <i class="bi bi-person-plus"></i> Crear Usuario
-                    </a>
-                    <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-outline-primary me-2">
-                        <i class="bi bi-people"></i> Ver Usuarios
-                    </a>
-                    <a href="{% url 'usuarios:perfil' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-person-circle"></i> Mi Perfil
-                    </a>
-                </div>
-            </div>
+
+    <div class="card custom-card mt-5">
+        <div class="card-header bg-transparent border-0 pt-4 px-4">
+            <h5 class="fw-bold"><i class="bi bi-clock-history me-2 text-primary"></i>Registros Recientes</h5>
         </div>
-    </div>
-    
-    <!-- Últimos Usuarios Registrados -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Últimos Usuarios Registrados</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Documento</th>
-                                    <th>Nombre</th>
-                                    <th>Email</th>
-                                    <th>Fecha de Registro</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for usuario in ultimos_usuarios %}
-                                <tr>
-                                    <td>{{ usuario.perfil.documento }}</td>
-                                    <td>{{ usuario.get_full_name }}</td>
-                                    <td>{{ usuario.email }}</td>
-                                    <td>{{ usuario.date_joined|date:"d/m/Y H:i" }}</td>
-                                    <td>
-                                        {% if usuario.is_active %}
-                                            <span class="badge bg-success">Activo</span>
-                                        {% else %}
-                                            <span class="badge bg-danger">Inactivo</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'usuarios:editar_usuario' usuario.id %}" 
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted">
-                                        No hay usuarios registrados aún
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <div class="card-body px-4 pb-4">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Usuario</th>
+                            <th>Registro</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in ultimos_usuarios %}
+                        <tr>
+                            <td class="fw-bold">{{ usuario.perfil.documento }}</td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold">{{ usuario.get_full_name }}</span>
+                                    <span class="small text-muted">{{ usuario.email }}</span>
+                                </div>
+                            </td>
+                            <td class="text-muted">{{ usuario.date_joined|date:"d M, Y" }}</td>
+                            <td>
+                                {% if usuario.is_active %}
+                                <span class="badge bg-success text-success bg-opacity-10">Activo</span>
+                                {% else %}
+                                <span class="badge bg-danger text-danger bg-opacity-10">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'usuarios:editar_usuario' usuario.id %}" class="btn btn-sm btn-light border">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center py-4 text-muted">No hay registros recientes.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            const inc = target / 50;
+            const update = () => {
+                const count = +counter.innerText;
+                if(count < target) {
+                    counter.innerText = Math.ceil(count + inc);
+                    setTimeout(update, 20);
+                } else { counter.innerText = target; }
+            };
+            update();
+        });
+    });
+</script>
 {% endblock %}
