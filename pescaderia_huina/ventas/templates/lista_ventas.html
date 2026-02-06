@@ -100,7 +100,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% if lista_ventas %}
+                     {% if lista_ventas %}
                             {% for venta in lista_ventas %}
                             <tr>
                                 <td>{{ venta.id }}</td>
@@ -108,7 +108,7 @@
                                 <td>{{ venta.documento_cliente }}</td>
                                 <td>{{ venta.producto.nombre }}</td>
                                 <td>{{ venta.cantidad }}</td>
-                                <td>${{ venta.total|floatformat:2 }}</td>
+                                <td>{{ venta.total|floatformat:2 }}</td>
                                 <td>{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td>
                                 <td>
                                     {% if venta.estado == 'COMPLETADA' %}
@@ -131,11 +131,11 @@
                                 </td>
                             </tr>
                             {% endfor %}
-                        {% else %}
+                         {% else %}
                             <tr>
                                 <td colspan="9" class="text-center">No hay ventas registradas</td>
                             </tr>
-                        {% endif %}
+                     {% endif %}
                     </tbody>
                 </table>
             </div>

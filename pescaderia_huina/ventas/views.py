@@ -57,6 +57,7 @@ def ventas(request):
 
 @login_required
 def detalle_venta(request, id_venta):
+    """Vista para ver el detalle de una venta"""
     venta = Venta.objects.get(id=id_venta)
     template = loader.get_template('detalle_venta.html')
     context = {
@@ -70,7 +71,7 @@ class VentaCreateView(LoginRequiredMixin, generic.CreateView):
     """Vista para crear una nueva venta"""
     model = Venta
     form_class = VentaForm
-    template_name = 'agregar_venta.html'
+    template_name = 'crear_venta.html'
     success_url = reverse_lazy('ventas:lista_ventas')
     
     def form_valid(self, form):

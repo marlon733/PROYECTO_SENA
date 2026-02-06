@@ -23,11 +23,13 @@ class Venta(models.Model):
     cantidad = models.DecimalField(
         max_digits=10, 
         decimal_places=2,
+        default=0.00,
         validators=[MinValueValidator(Decimal('0.01'))]
     )
     precio_unitario = models.DecimalField(
         max_digits=10, 
         decimal_places=2,
+        default=0.00,
         validators=[MinValueValidator(Decimal('0.01'))]
     )
     
@@ -37,6 +39,8 @@ class Venta(models.Model):
     total = models.DecimalField(
         max_digits=10, 
         decimal_places=2,
+        null=True,
+        blank=True,
         validators=[MinValueValidator(Decimal('0.01'))]
     )
     observaciones = models.TextField(blank=True, null=True)
@@ -61,4 +65,9 @@ class Venta(models.Model):
         super().save(*args, **kwargs)
     
     def get_cliente_completo(self):
+        """Método para obtener el nombre y documento del cliente"""
         return f"{self.nombre_cliente} - {self.documento_cliente}"
+    
+    def get_info_venta(self):
+        """Método para obtener información resumida de la venta"""
+        return f"Venta #{self.id} - {self.producto.nombre} x {self.cantidad}"
