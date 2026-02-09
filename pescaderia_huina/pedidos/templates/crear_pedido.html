@@ -1,63 +1,55 @@
 {% extends 'master.html' %}
-{% load bootstrap5 %}
 
 {% block content %}
-<div class="container-fluid bg-white py-4 border-bottom">
-    <div class="container">
-        <h1 class="text-primary fw-bold" style="color: #0d6efd !important;">Registrar Nuevo Pedido</h1>
-        <p class="text-muted">Completa los datos para generar una orden de compra a tus proveedores.</p>
-    </div>
-</div>
-
-<div class="container mt-5 mb-5">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-dark text-white py-3">
-                    <h5 class="mb-0">Formulario de Pedido</h5>
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="card-title mb-0 text-center">Registrar Nuevo Pedido</h4>
                 </div>
                 <div class="card-body p-4">
-                    <form method="POST">
+                    <form method="POST" class="needs-validation">
                         {% csrf_token %}
                         
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Seleccionar Proveedor (NIT):</label>
-                            <select name="proveedor" class="form-select border-2" required>
-                                <option value="">Seleccione un proveedor...</option>
-                                {% for prov in proveedores %}
-                                    <option value="{{ prov.nit }}">{{ prov.nombre }} - NIT: {{ prov.nit }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Proveedor (NIT)</label>
+                                {{ form_pedido.proveedor }}
+                            </div>
 
-                        <div class="p-3 mb-4 rounded-3" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
-                            <h5 class="text-primary mb-3">Elegir Producto</h5>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Producto:</label>
-                                    <select name="producto" class="form-select">
-                                        {% for prod in productos %}
-                                            <option value="{{ prod.id }}">{{ prod.nombre }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label fw-bold">Cantidad:</label>
-                                    <input type="number" id="id_cantidad" name="cantidad" class="form-control" min="1" value="1">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label fw-bold">Total:</label>
-                                    <input type="number" id="id_total" class="form-control bg-white" readonly placeholder="0.00">
-                                </div>
+                            <hr class="my-3">
+                            <h5 class="text-secondary">Detalles del Producto</h5>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Producto</label>
+                                {{ form_detalle.producto }}
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Cantidad</label>
+                                {{ form_detalle.cantidad }}
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Total Compra</label>
+                                <input type="text" id="id_total" class="form-control bg-light fw-bold text-success" readonly placeholder="0.00">
+                            </div>
+
+                            <div class="col-12 mt-3">
+                                <label class="form-label fw-bold">Estado del Pedido</label>
+                                {{ form_pedido.estado }}
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end gap-2">
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
                             <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-outline-secondary px-4">
-                                Cancelar
+                                <i class="bi bi-arrow-left"></i> Volver
                             </a>
-                            <button type="submit" class="btn btn-dark px-4 fw-bold" style="background-color: #000; border: none;">
-                                Guardar Pedido
+                            <button type="submit" class="btn btn-success px-5 fw-bold">
+                                <i class="bi bi-check-lg"></i> Guardar Pedido
                             </button>
                         </div>
                     </form>
@@ -68,18 +60,17 @@
 </div>
 
 <script>
-    const inputCantidad = document.getElementById('id_cantidad');
-    const inputPrecio = document.getElementById('id_precio');
-    const inputTotal = document.getElementById('id_total');
+    const inputCant = document.getElementById('id_cantidad');
+    const inputPrec = document.getElementById('id_precio');
+    const inputTot = document.getElementById('id_total');
 
-    function calcularTotal() {
-        const cantidad = parseFloat(inputCantidad.value) || 0;
-        const precio = parseFloat(inputPrecio.value) || 0;
-        const total = cantidad * precio;
-        inputTotal.value = total.toFixed(2);
+    function actualizarTotal() {
+        const c = parseFloat(inputCant.value) || 0;
+        const p = parseFloat(inputPrec.value) || 0;
+        inputTot.value = (c * p).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
     }
 
-    inputCantidad.addEventListener('input', calcularTotal);
-    inputPrecio.addEventListener('input', calcularTotal);
+    inputCant.addEventListener('input', actualizarTotal);
+    inputPrec.addEventListener('input', actualizarTotal);
 </script>
 {% endblock %}

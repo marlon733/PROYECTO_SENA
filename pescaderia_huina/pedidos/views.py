@@ -14,18 +14,15 @@ def crear_pedido(request):
         form_detalle = DetallePedidoForm(request.POST)
         
         if form_pedido.is_valid() and form_detalle.is_valid():
-            # 1. Guardar el pedido (sin commit para calcular el total)
             nuevo_pedido = form_pedido.save(commit=False)
             
-            # 2. Obtener datos del detalle para calcular el total
+            # Cálculo del total
             cantidad = form_detalle.cleaned_data['cantidad']
             precio = form_detalle.cleaned_data['precio_unitario']
             nuevo_pedido.valor_total = cantidad * precio
             
-            # 3. Guardar el pedido definitivamente
             nuevo_pedido.save()
             
-            # 4. Guardar el detalle vinculándolo al pedido
             detalle = form_detalle.save(commit=False)
             detalle.pedido = nuevo_pedido
             detalle.save()
@@ -36,10 +33,51 @@ def crear_pedido(request):
         form_pedido = PedidoForm()
         form_detalle = DetallePedidoForm()
 
-    # Mantenemos la compatibilidad con tu HTML de proveedores y productos
     return render(request, 'crear_pedido.html', {
         'form_pedido': form_pedido,
         'form_detalle': form_detalle,
         'proveedores': Proveedor.objects.all(),
         'productos': Producto.objects.all()
     })
+
+def editar_pedido(request, id):
+    pedido = get_object_or_404(Pedido, id=id)
+    # Obtenemos el primer detalle asociado al pedido
+    detalle = get_object_or_404(DetallePedido, pedido=pedido)
+
+    if request.method == 'POST':
+        form_pedido = PedidoForm(request.POST, instance=pedido)
+        form_detalle = DetallePedidoForm(request.POST, instance=detalle)
+
+        if form_pedido.is_valid() and form_detalle.is_valid():
+            # Actualizar el valor total basado en los nuevos cambios del detalle
+            cantidad = form_detalle.cleaned_data['cantidad']
+            precio = form_detalle.cleaned_data['precio_unitario']
+            
+            pedido_obj = form_pedido.save(commit=False)
+            pedido_obj.valor_total = cantidad * precio
+            pedido_obj.save()
+            
+            form_detalle.save()
+            
+            messages.info(request, f"Pedido #{pedido.id} actualizado correctamente.")
+            return redirect('lista_pedidos')
+    else:
+        form_pedido = PedidoForm(instance=pedido)
+        form_detalle = DetallePedidoForm(instance=detalle)
+
+    return render(request, 'editar_pedido.html', {
+        'form_pedido': form_pedido,
+        'form_detalle': form_detalle,
+        'pedido': pedido
+    })
+
+def eliminar_pedido(request, id):
+    pedido = get_object_or_404(Pedido, id=id)
+    
+    if request.method == 'POST':
+        pedido.delete()
+        messages.warning(request, f"El pedido #{id} ha sido eliminado permanentemente.")
+        return redirect('lista_pedidos')
+        
+    return render(request, 'eliminar_pedido.html', {'pedido': pedido})
