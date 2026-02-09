@@ -1,21 +1,25 @@
 from django.contrib import admin
-from .models import Venta, DetalleVenta
-
-
-class DetalleVentaInline(admin.TabularInline):
-    model = DetalleVenta
-    extra = 1
-    readonly_fields = ['subtotal']
-
+from .models import Venta
 
 @admin.register(Venta)
 class VentaAdmin(admin.ModelAdmin):
-    list_display = ['id', 'fecha_venta', 'total', 'estado', 'cantidad_productos']
+    list_display = ['id', 'nombre_cliente', 'documento_cliente', 'producto', 'cantidad', 'total', 'estado', 'fecha_venta']
     list_filter = ['estado', 'fecha_venta']
-    search_fields = ['id', 'observaciones']
+    search_fields = ['nombre_cliente', 'documento_cliente', 'producto__nombre']
     readonly_fields = ['fecha_venta', 'fecha_modificacion', 'total']
-    inlines = [DetalleVentaInline]
     
-    def cantidad_productos(self, obj):
-        return obj.cantidad_productos()
-    cantidad_productos.short_description = 'Productos'
+    fieldsets = (
+        ('Información del Cliente', {
+            'fields': ('nombre_cliente', 'documento_cliente')
+        }),
+        ('Detalles de la Venta', {
+            'fields': ('producto', 'cantidad', 'precio_unitario', 'total')
+        }),
+        ('Estado y Observaciones', {
+            'fields': ('estado', 'observaciones', 'fecha_venta', 'fecha_modificacion')
+        }),
+        ('Cancelación', {
+            'fields': ('motivo_cancelacion', 'fecha_cancelacion'),
+            'classes': ('collapse',)
+        }),
+    )
