@@ -11,20 +11,17 @@
                     </h4>
                 </div>
                 <div class="card-body p-4">
-                    <p class="text-muted mb-4">Realice los cambios necesarios y presione guardar para actualizar la información.</p>
-                    
                     <form method="POST" class="needs-validation">
                         {% csrf_token %}
-                        
                         <div class="row g-3">
                             {% for field in form %}
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">{{ field.label }}</label>
+                            <div class="col-md-{% if field.name == 'tipo_persona' or field.name == 'correo' or field.name == 'direccion' %}12{% else %}6{% endif %} mb-3">
+                                <label class="form-label fw-semibold" {% if field.name == 'nit' %}id="label_nit_mod"{% endif %}>
+                                    {{ field.label }}
+                                </label>
                                 {{ field }}
                                 {% if field.errors %}
-                                <div class="text-danger small">
-                                    {{ field.errors }}
-                                </div>
+                                <div class="text-danger small">{{ field.errors }}</div>
                                 {% endif %}
                             </div>
                             {% endfor %}
@@ -33,9 +30,7 @@
                         <hr class="my-4">
 
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-light border px-4">
-                                Cancelar
-                            </a>
+                            <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-light border px-4">Cancelar</a>
                             <button type="submit" class="btn btn-warning px-4 fw-bold">
                                 <i class="bi bi-check-circle"></i> Guardar Cambios
                             </button>
@@ -43,14 +38,19 @@
                     </form>
                 </div>
             </div>
-            
-            <div class="alert alert-info mt-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i>
-                <div>
-                    Recuerda que al modificar el nombre o NIT, los productos vinculados por tu compañero se mantendrán asociados automáticamente.
-                </div>
-            </div>
         </div>
     </div>
 </div>
+
+<script>
+    const tipoSelectMod = document.getElementById('id_tipo_persona');
+    const nitLabelMod = document.getElementById('label_nit_mod');
+
+    function actualizarLabelMod() {
+        nitLabelMod.innerText = (tipoSelectMod.value === 'natural') ? 'Cédula' : 'NIT';
+    }
+
+    tipoSelectMod.addEventListener('change', actualizarLabelMod);
+    window.addEventListener('DOMContentLoaded', actualizarLabelMod);
+</script>
 {% endblock %}

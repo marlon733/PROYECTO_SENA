@@ -5,16 +5,21 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-lg border-0">
-                <div class="card-header bg-primary text-white py-3">
-                    <h4 class="card-title mb-0 text-center">Registrar Nuevo Proveedor</h4>
+                <div class="card-header text-white py-3"
+                    style="background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); border:none;">
+                    <h4 class="mb-0 fw-bold">Registrar Nuevo Proveedor</h4>
                 </div>
                 <div class="card-body p-4">
                     <form method="POST" class="needs-validation">
                         {% csrf_token %}
-                        
+
                         <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">{{ form.tipo_persona.label }}</label>
+                                {{ form.tipo_persona }}
+                            </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">{{ form.nit.label }}</label>
+                                <label class="form-label fw-bold" id="label_nit">{{ form.nit.label }}</label>
                                 {{ form.nit }}
                             </div>
                             <div class="col-md-6">
@@ -40,25 +45,65 @@
                             <div class="col-12 mt-4">
                                 <div class="form-check form-switch">
                                     {{ form.estado }}
-                                    <label class="form-check-label ms-2" for="{{ form.estado.id_for_label }}">Proveedor Activo</label>
+                                    <label class="form-check-label ms-2" for="{{ form.estado.id_for_label }}">Proveedor
+                                        Activo</label>
                                 </div>
                             </div>
                         </div>
+                        <form method="POST" class="needs-validation" novalidate> {% csrf_token %}
 
-                        <hr class="my-4">
+                            {% if form.errors %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong><i class="bi bi-exclamation-triangle-fill"></i> Atención:</strong>
+                                <ul>
+                                    {% for field in form %}
+                                    {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                    {% endfor %}
+                                    {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>
+                            {% endif %}
 
-                        <div class="d-flex justify-content-between">
-                           <a href="{% url 'proveedores:lista_proveedores' %}" ...> Volver </a>
-                                
-                            </a>
-                            <button type="submit" class="btn btn-success px-5">
-                                <i class="bi bi-check-lg"></i> Guardar Proveedor
-                            </button>
-                        </div>
-                    </form>
+                            <div class="row g-3">
+                                ...
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'proveedores:lista_proveedores' %}"
+                                    class="btn btn-secondary px-4">Volver</a>
+
+                                <button type="submit" class="btn btn-success px-5">
+                                    <i class="bi bi-check-lg"></i> Guardar Proveedor
+                                </button>
+                            </div>
+                        </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    const tipoPersonaSelect = document.getElementById('id_tipo_persona');
+    const nitLabel = document.getElementById('label_nit');
+
+    function actualizarLabel() {
+        if (tipoPersonaSelect.value === 'natural') {
+            nitLabel.innerText = 'Cédula';
+        } else {
+            nitLabel.innerText = 'NIT';
+        }
+    }
+
+    tipoPersonaSelect.addEventListener('change', actualizarLabel);
+    window.onload = actualizarLabel;
+</script>
 {% endblock %}

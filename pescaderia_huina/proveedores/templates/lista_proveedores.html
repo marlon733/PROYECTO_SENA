@@ -1,29 +1,32 @@
 {% extends 'master.html' %}
 
 {% block content %}
-<div class="card-header text-white py-3" 
-             style="background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-pencil-square fs-4 me-3"></i>
-                <div>
-                    <h4 class="mb-0 fw-bold">Lista de Proveedores</h4>
-                    <small class="opacity-75">se aprecian los proveedores</small>
+<div class="container-fluid py-4">
+    <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="card-header text-white py-3"
+            style="background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); border:none;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-people-fill fs-4 me-3"></i>
+                    <div>
+                        <h4 class="mb-0 fw-bold">Lista de Proveedores</h4>
+                        <small class="opacity-75">Gestión de contactos y entidades</small>
+                    </div>
                 </div>
+                <a href="{% url 'proveedores:agregar_proveedores' %}"
+                    class="btn btn-light rounded-pill px-4 fw-bold text-primary">
+                    <i class="bi bi-plus-lg"></i> Nuevo Proveedor
+                </a>
             </div>
         </div>
-        <br>
-        <a href="{% url 'proveedores:agregar_proveedores' %}" 
-            class="btn btn-primary w-100 rounded-pill"></i> + Nuevo Proveedor
-        </a>
-    </div>
 
-    <div class="card border-0 shadow-sm">
-         <div class="card-body p-4">
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">NIT</th>
+                            <th class="ps-4">Tipo</th>
+                            <th>Identificación</th>
                             <th>Nombre de Contacto</th>
                             <th>Teléfono</th>
                             <th>Ciudad</th>
@@ -34,39 +37,51 @@
                     <tbody>
                         {% for p in proveedores %}
                         <tr>
-                            <td class="ps-4 fw-bold text-dark">{{ p.nit }}</td>
+                            <td class="ps-4">
+                                {% if p.tipo_persona == 'natural' %}
+                                <span class="badge bg-info-subtle text-info border border-info">Natural</span>
+                                {% else %}
+                                <span
+                                    class="badge bg-secondary-subtle text-secondary border border-secondary">Jurídica</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold text-dark">{{ p.nit }}</td>
                             <td>{{ p.nombre_contacto }}</td>
                             <td>{{ p.telefono }}</td>
                             <td>{{ p.ciudad }}</td>
                             <td>
                                 {% if p.estado %}
-                                <span class="badge rounded-pill bg-success-subtle text-success border border-success">Activo</span>
+                                <span
+                                    class="badge rounded-pill bg-success-subtle text-success border border-success">Activo</span>
                                 {% else %}
-                                <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger">Inactivo</span>
+                                <span
+                                    class="badge rounded-pill bg-danger-subtle text-danger border border-danger">Inactivo</span>
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                <div class="btn-group" role="group">
-                                    <a href="{% url 'proveedores:detalle_proveedores' p.id %}" class="btn btn-outline-info btn-sm" title="Ver Detalle">
-                                        Detalle
+                                <div class="btn-group" role="group" aria-label="Acciones">
+
+                                    <a href="{% url 'proveedores:detalle_proveedores' p.id %}"
+                                        class="btn btn-sm btn-outline-info" title="Ver Detalle">
+                                        <i class="bi bi-eye-fill"></i>
                                     </a>
-                                    <a href="{% url 'proveedores:modificar_proveedores' p.id %}" class="btn btn-outline-warning btn-sm" title="Editar">
-                                        Editar
+
+                                    <a href="{% url 'proveedores:modificar_proveedores' p.id %}"
+                                        class="btn btn-sm btn-outline-warning" title="Editar">
+                                        <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <a href="{% url 'proveedores:eliminar_proveedores' p.id %}" class="btn btn-outline-danger btn-sm" title="Eliminar">
-                                        Eliminar
+
+                                    <a href="{% url 'proveedores:eliminar_proveedores' p.id %}"
+                                        class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="bi bi-trash-fill"></i>
                                     </a>
+
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <div class="text-muted">
-                                    <p class="mb-2">No hay proveedores registrados.</p>
-                                    <a href="{% url 'proveedores:agregar_proveedores' %}" class="btn btn-sm btn-primary">Crea el primero aquí</a>
-                                </div>
-                            </td>
+                            <td colspan="7" class="text-center py-5 text-muted">No hay proveedores registrados.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
