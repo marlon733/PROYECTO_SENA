@@ -1,0 +1,78 @@
+{% extends 'master.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary">Directorio de Pedidos</h2>
+            <p class="text-muted">Gestiona las órdenes de compra y suministros de la pescadería</p>
+        </div>
+        <a href="{% url 'pedidos:crear_pedido' %}" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-lg"></i> + Nuevo Pedido
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Proveedor (NIT)</th>
+                            <th>Fecha</th>
+                            <th>Valor Total</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pedidos %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">#{{ p.id }}</td>
+                            <td>
+                                <span class="fw-bold">{{ p.proveedor.nombre }}</span><br>
+                                <small class="text-muted">NIT: {{ p.proveedor.nit }}</small>
+                            </td>
+                            <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
+                            <td class="fw-bold text-success">${{ p.valor_total }}</td>
+                            <td>
+                                {% if p.estado == 'REC' %}
+                                <span class="badge rounded-pill bg-success-subtle text-success border border-success">Recibido</span>
+                                {% elif p.estado == 'PEN' %}
+                                <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning">Pendiente</span>
+                                {% else %}
+                                <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger">Cancelado</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="#" class="btn btn-outline-info btn-sm" title="Ver Detalle">
+                                        👁️
+                                    </a>
+                                    <a href="#" class="btn btn-outline-warning btn-sm" title="Editar">
+                                        ✏️
+                                    </a>
+                                    <a href="#" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                        🗑️
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="text-muted">
+                                    <p class="mb-2">No hay pedidos registrados en el historial.</p>
+                                    <a href="{% url 'pedidos:crear_pedido' %}" class="btn btn-sm btn-primary">Crea el primero aquí</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
