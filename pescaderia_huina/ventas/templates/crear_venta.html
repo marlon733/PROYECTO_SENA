@@ -11,14 +11,30 @@
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-dark: #0a3d62;
+            --primary-blue: #1e5a7d;
+        }
+        
+        .card-header-custom {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
+            border: none;
+        }
+        
+        .section-border {
+            border-bottom: 2px solid var(--primary-blue);
+        }
+    </style>
 </head>
 <body class="bg-light">
 
 <div class="container my-5">
 
     <div class="card shadow">
-        <div class="card-header bg-success text-white">
-            <h4 class="mb-0">➕ Agregar Nueva Venta</h4>
+        <div class="card-header card-header-custom text-white">
+            <h4 class="mb-0"> Agregar Nueva Venta</h4>
         </div>
 
         <div class="card-body">
@@ -44,7 +60,7 @@
                 {% csrf_token %}
 
                 <!-- Información del Cliente -->
-                <h5 class="border-bottom pb-2 mb-3">Información del Cliente</h5>
+                <h5 class="section-border pb-2 mb-3">Información del Cliente</h5>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">{{ form.nombre_cliente.label }}</label>
@@ -63,7 +79,7 @@
                 </div>
 
                 <!-- Información del Producto -->
-                <h5 class="border-bottom pb-2 mb-3 mt-4">Información del Producto</h5>
+                <h5 class="section-border pb-2 mb-3 mt-4">Información del Producto</h5>
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <label class="form-label">{{ form.producto.label }}</label>
@@ -92,7 +108,7 @@
                 </div>
 
                 <!-- Observaciones -->
-                <h5 class="border-bottom pb-2 mb-3 mt-4">Observaciones</h5>
+                <h5 class="section-border pb-2 mb-3 mt-4">Observaciones</h5>
                 <div class="mb-3">
                     <label class="form-label">{{ form.observaciones.label }}</label>
                     {{ form.observaciones }}
