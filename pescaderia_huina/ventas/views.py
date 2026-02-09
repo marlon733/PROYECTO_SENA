@@ -67,6 +67,7 @@ def detalle_venta(request, id_venta):
 
 
 # CREATE - VENTA
+
 class VentaCreateView(LoginRequiredMixin, generic.CreateView):
     """Vista para crear una nueva venta"""
     model = Venta
