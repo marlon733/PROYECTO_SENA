@@ -1,157 +1,221 @@
+{% load static %}
+{% load bootstrap5 %}
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Panel Administrativo{% endblock %} - Mi Proyecto SENA</title>
         
-    <!-- Bootstrap Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
-    <!-- Chart.js para gráficos -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
-    
-    <!-- CSS personalizado del dashboard -->
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'core/css/panel_admin_base.css' %}">
-    
-    <!-- CSS adicional de cada página -->
-    {% block extra_css %}{% endblock %}
-
-    {% load bootstrap5 %}
     {% bootstrap_css %}
-    {% bootstrap_javascript %}
+
+    <style>
+        :root {
+            /* Paleta de Colores Elevada */
+            --primary: #6366f1; /* Indigo Moderno */
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #0ea5e9;
+            
+            --bg-body: #f1f5f9;
+            --sidebar-bg: #1e293b; /* Sidebar Oscuro para contraste Premium */
+            --sidebar-text: #94a3b8;
+            --sidebar-active: #ffffff;
+            
+            --sidebar-width: 270px;
+            --sidebar-collapsed: 85px;
+            --topbar-height: 75px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.dashboard-body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: #1e293b;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, .user-name {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* --- SIDEBAR PRO --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0; top: 0;
+            background: var(--sidebar-bg);
+            z-index: 1050;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.collapsed { width: var(--sidebar-collapsed); }
+
+        .sidebar-header { 
+            padding: 2rem 1.5rem; 
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 1rem;
+        }
+        
+        .user-avatar {
+            width: 65px; height: 65px; margin: 0 auto 1rem;
+            border-radius: 18px; overflow: hidden;
+            background: var(--primary-gradient);
+            padding: 2px;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .sidebar.collapsed .user-avatar { width: 45px; height: 45px; border-radius: 12px; }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+        .avatar-placeholder i { font-size: 2rem; color: white; line-height: 60px; }
+
+        .user-name { color: white; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
+        .user-role { font-size: 0.7rem; color: var(--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+        .sidebar.collapsed .user-name, .sidebar.collapsed .user-role, 
+        .sidebar.collapsed .nav-link span, .sidebar.collapsed .nav-header { display: none; }
+
+        /* --- NAVEGACIÓN --- */
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 0 1rem; }
+        
+        .nav-header {
+            font-size: 0.65rem; font-weight: 800; color: #475569;
+            padding: 1.5rem 1rem 0.5rem; letter-spacing: 1.2px; text-transform: uppercase;
+        }
+
+        .nav-link {
+            display: flex; align-items: center; padding: 0.8rem 1.2rem;
+            color: var(--sidebar-text); border-radius: 12px;
+            margin-bottom: 0.3rem; transition: var(--transition);
+            text-decoration: none !important; font-weight: 500;
+        }
+
+        .nav-link i { font-size: 1.2rem; margin-right: 12px; transition: var(--transition); }
+        .sidebar.collapsed .nav-link { justify-content: center; padding: 0.8rem 0; }
+        .sidebar.collapsed .nav-link i { margin-right: 0; }
+
+        .nav-link:hover { 
+            background: rgba(255,255,255,0.05); 
+            color: var(--primary); 
+            transform: translateX(5px);
+        }
+
+        .nav-link.active { 
+            background: var(--primary-gradient); 
+            color: white !important; 
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4); 
+        }
+
+        /* Colores dinámicos para iconos */
+        .nav-link:not(.active) i.bi-calendar3 { color: var(--info); }
+        .nav-link:not(.active) i.bi-chat-dots { color: var(--warning); }
+        .nav-link:not(.active) i.bi-people { color: var(--success); }
+        .nav-link:not(.active) i.bi-graph-up { color: var(--danger); }
+
+        /* --- TOPBAR GLASS --- */
+        .topbar {
+            height: var(--topbar-height);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 2rem; position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .main-content { margin-left: var(--sidebar-width); transition: var(--transition); }
+        .main-content.expanded { margin-left: var(--sidebar-collapsed); }
+
+        .btn-toggle { background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 12px; color: var(--sidebar-bg); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+
+        .search-box input { 
+            border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; 
+            padding: 10px 15px 10px 40px; font-size: 0.9rem; width: 300px; transition: var(--transition);
+        }
+        .search-box input:focus { width: 350px; background: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); outline: none; }
+
+        /* --- CARDS & CONTENT --- */
+        .content-wrapper { padding: 2.5rem; }
+        
+        .breadcrumb-item a { color: var(--primary); font-weight: 600; text-decoration: none; }
+        
+        .alert { border: none; border-radius: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+
+        @media (max-width: 992px) {
+            .sidebar { left: -100%; }
+            .sidebar.mobile-active { left: 0; width: var(--sidebar-width); }
+            .main-content { margin-left: 0 !important; }
+        }
+    </style>
 </head>
 <body class="dashboard-body">
     
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <!-- Avatar del usuario -->
-            <div class="user-avatar">
+            <div class="user-avatar text-center">
                 {% if user.perfil.foto_perfil %}
-                    <img src="{{ user.perfil.foto_perfil.url }}" alt="{{ user.get_full_name }}" class="avatar-img">
+                    <img src="{{ user.perfil.foto_perfil.url }}" alt="Perfil" class="avatar-img">
                 {% else %}
-                    <div class="avatar-placeholder">
-                        <i class="bi bi-person-circle"></i>
-                    </div>
+                    <div class="avatar-placeholder"><i class="bi bi-person-fill"></i></div>
                 {% endif %}
             </div>
-            
-            <!-- Nombre del usuario -->
-            <h6 class="user-name">{{ user.get_full_name|default:user.username }}</h6>
-            <p class="user-role text-muted">
-                {% if user.is_superuser %}
-                    Superadministrador
-                {% elif user.is_staff %}
-                    Administrador
-                {% else %}
-                    Usuario
-                {% endif %}
-            </p>
-            <div class="divider"></div>
+            <div class="text-center">
+                <h6 class="user-name">{{ user.get_full_name|default:user.username }}</h6>
+                <p class="user-role">ADMIN PRO</p>
+            </div>
         </div>
         
-        <!-- Menú de navegación -->
         <nav class="sidebar-nav">
             <ul class="nav flex-column">
+                <li class="nav-header">Principal</li>
                 <li class="nav-item">
                     <a href="{% url 'core:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                        <i class="bi bi-speedometer2"></i>
-                        <span>Dashboard</span>
+                        <i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span>
                     </a>
                 </li>
-                
+                <li class="nav-item">
+                    <a href="#" class="nav-link"><i class="bi bi-calendar3"></i> <span>Calendario</span></a>
+                </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="bi bi-calendar3"></i>
-                        <span>Calendario</span>
+                        <i class="bi bi-chat-dots"></i> <span>Mensajes</span>
+                        <span class="badge bg-danger rounded-pill ms-auto">7</span>
                     </a>
                 </li>
-                
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-inbox-fill"></i>
-                        <span>Mensajes</span>
-                        <span class="badge bg-danger ms-auto">7</span>
+                    <a href="{% url 'usuarios:lista_usuarios' %}" class="nav-link {% if 'usuarios' in request.path %}active{% endif %}">
+                        <i class="bi bi-people"></i> <span>Usuarios</span>
                     </a>
                 </li>
-                
+
+                <li class="nav-header">Gestión</li>
                 <li class="nav-item">
-                    <a href="{% url 'usuarios:lista_usuarios' %}" class="nav-link {% if request.resolver_match.url_name == 'lista_usuarios' %}active{% endif %}">
-                        <i class="bi bi-people"></i>
-                        <span>Usuarios</span>
-                    </a>
+                    <a href="#" class="nav-link"><i class="bi bi-box-seam"></i> <span>Productos</span></a>
                 </li>
-                
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-list-check"></i>
-                        <span>Tareas</span>
-                        <span class="badge bg-success ms-auto">4</span>
-                    </a>
+                    <a href="#" class="nav-link"><i class="bi bi-cart3"></i> <span>Ventas</span></a>
                 </li>
-                
                 <li class="nav-item">
-                    <a href="{% url 'usuarios:perfil' %}" class="nav-link">
-                        <i class="bi bi-person-circle"></i>
-                        <span>Mi Perfil</span>
-                    </a>
+                    <a href="#" class="nav-link"><i class="bi bi-graph-up"></i> <span>Reportes</span></a>
                 </li>
-                
-                <!-- Sección de Apps del proyecto -->
-                <li class="nav-header">
-                    <span>MÓDULOS DEL SISTEMA</span>
-                </li>
-                
-                {% block sidebar_extra_items %}
-                <!-- Aquí las apps hijas pueden agregar sus propios items del menú -->
-                {% endblock %}
-                
-                <!-- Ejemplo de items adicionales -->
+
+                <li class="nav-header">Cuenta</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-box-seam"></i>
-                        <span>Productos</span>
-                    </a>
+                    <a href="{% url 'usuarios:perfil' %}" class="nav-link"><i class="bi bi-person-badge"></i> <span>Mi Perfil</span></a>
                 </li>
-                
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-cart3"></i>
-                        <span>Ventas</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Reportes</span>
-                    </a>
-                </li>
-                
-                <!-- Configuración -->
-                <li class="nav-header">
-                    <span>CONFIGURACIÓN</span>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-gear"></i>
-                        <span>Ajustes</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="{% url 'core:index' %}" class="nav-link">
-                        <i class="bi bi-house-door"></i>
-                        <span>Ir al Sitio</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="{% url 'usuarios:logout' %}" class="nav-link text-danger" onclick="return confirm('¿Seguro que deseas cerrar sesión?')">
+                   <a href="{% url 'usuarios:logout' %}" class="nav-link text-danger" onclick="return confirm('¿Seguro que deseas cerrar sesión?')">
                         <i class="bi bi-box-arrow-right"></i>
                         <span>Cerrar Sesión</span>
                     </a>
@@ -160,157 +224,83 @@
         </nav>
     </div>
     
-    <!-- Main Content -->
     <div class="main-content" id="main-content">
-        
-        <!-- Top Bar -->
         <div class="topbar">
-            <div class="topbar-left">
-                <button class="btn btn-toggle" id="sidebar-toggle">
-                    <i class="bi bi-list"></i>
-                </button>
-                <h4 class="page-title mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
+            <div class="d-flex align-items-center">
+                <button class="btn-toggle me-4" id="sidebar-toggle"><i class="bi bi-list fs-4"></i></button>
+                <div class="search-box d-none d-lg-block">
+                    <i class="bi bi-search position-absolute ms-3 mt-2 text-muted"></i>
+                    <input type="text" class="form-control" placeholder="Buscar reporte, venta o usuario...">
+                </div>
             </div>
             
-            <div class="topbar-right">
-                <!-- Barra de búsqueda -->
-                <div class="search-box">
-                    <i class="bi bi-search"></i>
-                    <input type="text" class="form-control" placeholder="Buscar...">
-                </div>
-                
-                <!-- Notificaciones -->
+            <div class="d-flex align-items-center gap-4">
                 <div class="dropdown">
-                    <button class="btn btn-icon" data-bs-toggle="dropdown">
-                        <i class="bi bi-bell"></i>
-                        <span class="badge-dot"></span>
+                    <button class="btn border-0 position-relative" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell-fill fs-5 text-secondary"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end notification-dropdown">
-                        <div class="dropdown-header">
-                            <h6>Notificaciones</h6>
-                            <span class="badge bg-primary">3 nuevas</span>
-                        </div>
-                        <div class="dropdown-body">
-                            <a href="#" class="notification-item">
-                                <div class="notification-icon bg-primary">
-                                    <i class="bi bi-person-plus"></i>
-                                </div>
-                                <div class="notification-content">
-                                    <p class="notification-title">Nuevo usuario registrado</p>
-                                    <span class="notification-time">Hace 5 minutos</span>
-                                </div>
-                            </a>
-                            <a href="#" class="notification-item">
-                                <div class="notification-icon bg-success">
-                                    <i class="bi bi-check-circle"></i>
-                                </div>
-                                <div class="notification-content">
-                                    <p class="notification-title">Tarea completada</p>
-                                    <span class="notification-time">Hace 1 hora</span>
-                                </div>
-                            </a>
-                            <a href="#" class="notification-item">
-                                <div class="notification-icon bg-warning">
-                                    <i class="bi bi-exclamation-triangle"></i>
-                                </div>
-                                <div class="notification-content">
-                                    <p class="notification-title">Actualización disponible</p>
-                                    <span class="notification-time">Hace 3 horas</span>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="dropdown-footer">
-                            <a href="#">Ver todas las notificaciones</a>
-                        </div>
-                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 mt-3" style="min-width: 300px; border-radius: 15px;">
+                        <li><h6 class="dropdown-header fw-bold">Notificaciones Recientes</h6></li>
+                        <li><a class="dropdown-item rounded-3 p-3" href="#">
+                            <div class="d-flex align-items-center">
+                                <div class="p-2 bg-primary-soft rounded-circle me-3"><i class="bi bi-person-check text-primary"></i></div>
+                                <div><p class="mb-0 small fw-bold">Nuevo registro SENA</p><small class="text-muted">Hace 2 minutos</small></div>
+                            </div>
+                        </a></li>
+                    </ul>
                 </div>
-                
-                <!-- Usuario -->
-                <div class="dropdown">
-                    <button class="btn btn-user" data-bs-toggle="dropdown">
-                        {% if user.perfil.foto_perfil %}
-                            <img src="{{ user.perfil.foto_perfil.url }}" alt="{{ user.get_full_name }}" class="user-avatar-sm">
-                        {% else %}
-                            <i class="bi bi-person-circle fs-4"></i>
-                        {% endif %}
-                        <span class="d-none d-md-inline ms-2">{{ user.first_name }}</span>
-                        <i class="bi bi-chevron-down ms-1"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <div class="dropdown-header">
-                            <strong>{{ user.get_full_name }}</strong>
-                            <p class="text-muted mb-0">{{ user.email }}</p>
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{% url 'usuarios:perfil' %}">
-                            <i class="bi bi-person"></i> Mi Perfil
-                        </a>
-                        <a class="dropdown-item" href="#">
-                            <i class="bi bi-gear"></i> Configuración
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="{% url 'usuarios:logout' %}">
-                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                        </a>
+                <div class="vr opacity-10" style="height: 30px;"></div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-end d-none d-md-block">
+                        <p class="mb-0 small fw-bold text-dark">{{ user.get_full_name }}</p>
+                        <p class="mb-0 smaller text-muted" style="font-size: 0.7rem;">{{ user.email }}</p>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Mensajes de Django -->
+
         {% if messages %}
-            <div class="messages-container">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}x-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            </div>
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show bg-white">
+                    <i class="bi bi-check-circle-fill text-{{ message.tags }} me-2"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
         {% endif %}
         
-        <!-- Breadcrumb (opcional) -->
-        {% block breadcrumb %}
-        <nav aria-label="breadcrumb" class="breadcrumb-nav">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
-                {% block breadcrumb_items %}
-                {% endblock %}
-            </ol>
-        </nav>
-        {% endblock %}
-        
-        <!-- Contenido Principal -->
         <div class="content-wrapper">
-            {% block content %}
-            <!-- El contenido específico de cada página va aquí -->
-            {% endblock %}
+            <nav aria-label="breadcrumb" class="mb-5">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    {% block breadcrumb_items %}{% endblock %}
+                </ol>
+                <h2 class="fw-800" style="letter-spacing: -1px;">{% block page_title %}Resumen General{% endblock %}</h2>
+            </nav>
+
+            {% block content %}{% endblock %}
         </div>
-        
-        <!-- Footer del Dashboard -->
-        <footer class="dashboard-footer">
-            <div class="footer-content">
-                <p class="mb-0">&copy; {% now "Y" %} Mi Proyecto SENA. Todos los derechos reservados.</p>
-                <div class="footer-links">
-                    <a href="#">Ayuda</a>
-                    <a href="#">Soporte</a>
-                    <a href="#">Términos</a>
-                </div>
-            </div>
-        </footer>
     </div>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Chart.js para gráficos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <!-- JavaScript del dashboard -->
-    <script src="{% static 'js/dashboard.js' %}"></script>
-    
-    <!-- JavaScript adicional de cada página -->
+
+    {% bootstrap_javascript %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const toggleBtn = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const main = document.getElementById('main-content');
+
+            toggleBtn.addEventListener('click', () => {
+                if (window.innerWidth > 992) {
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
+                } else {
+                    sidebar.classList.toggle('mobile-active');
+                }
+            });
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
