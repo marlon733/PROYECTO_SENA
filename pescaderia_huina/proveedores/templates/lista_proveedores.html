@@ -1,19 +1,24 @@
 {% extends 'master.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-primary">Directorio de Proveedores</h2>
-            <p class="text-muted">Gestiona la información de tus aliados comerciales</p>
+<div class="card-header text-white py-3" 
+             style="background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-pencil-square fs-4 me-3"></i>
+                <div>
+                    <h4 class="mb-0 fw-bold">Lista de Proveedores</h4>
+                    <small class="opacity-75">se aprecian los proveedores</small>
+                </div>
+            </div>
         </div>
-        <a href="{% url 'proveedores:agregar_proveedores' %}" class="btn btn-success shadow-sm">
-            <i class="bi bi-plus-lg"></i> + Nuevo Proveedor
+        <br>
+        <a href="{% url 'proveedores:agregar_proveedores' %}" 
+            class="btn btn-primary w-100 rounded-pill"></i> + Nuevo Proveedor
         </a>
     </div>
 
     <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
+         <div class="card-body p-4">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
@@ -43,13 +48,13 @@
                             <td class="text-center">
                                 <div class="btn-group" role="group">
                                     <a href="{% url 'proveedores:detalle_proveedores' p.id %}" class="btn btn-outline-info btn-sm" title="Ver Detalle">
-                                        👁️
+                                        Detalle
                                     </a>
                                     <a href="{% url 'proveedores:modificar_proveedores' p.id %}" class="btn btn-outline-warning btn-sm" title="Editar">
-                                        ✏️
+                                        Editar
                                     </a>
                                     <a href="{% url 'proveedores:eliminar_proveedores' p.id %}" class="btn btn-outline-danger btn-sm" title="Eliminar">
-                                        🗑️
+                                        Eliminar
                                     </a>
                                 </div>
                             </td>
