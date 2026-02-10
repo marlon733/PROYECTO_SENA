@@ -1,218 +1,260 @@
-{% extends 'ventas/base.html' %}
-{% load static %}
-
-{% block title %}Gestión de Ventas{% endblock %}
-{% block page_title %}Gestión de Ventas{% endblock %}
-
-{% block breadcrumb_items %}
-<li class="breadcrumb-item active">Ventas</li>
-{% endblock %}
+<!DOCTYPE html>
+{% extends "master.html" %}
+{% block title %}Ventas{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Ventas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Estadísticas Resumidas -->
+    <style>
+        :root {
+            --primary-dark: #0a3d62;
+            --primary-blue: #1e5a7d;
+            --accent-blue: #2980b9;
+            --light-gray: #f8f9fa;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+        }
+        
+        .stats-card {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.2s;
+            background: white;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .card-header-custom {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
+            border: none;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .filter-card {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            border: none;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
+        }
+        
+        .btn-custom-primary {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--primary-blue) 100%);
+            border: none;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .btn-custom-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(41, 128, 185, 0.3);
+            color: white;
+        }
+        
+        .action-btn {
+            margin: 0 2px;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn-add-sale {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(39, 174, 96, 0.2);
+        }
+        
+        .btn-add-sale:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(39, 174, 96, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+
+    <!-- Estadísticas -->
     <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card stats-card border-start border-primary border-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Total Ventas</h6>
-                            <h2 class="mb-0 fw-bold">{{ total_ventas }}</h2>
-                        </div>
-                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
-                            <i class="bi bi-cart3 fs-1 text-primary"></i>
-                        </div>
-                    </div>
+        <div class="col-md-6 mb-3">
+            <div class="card stats-card shadow-sm">
+                <div class="card-body text-center py-4">
+                    <h6 class="text-muted mb-3">Total Ventas Completadas</h6>
+                    <h2 class="mb-0 fw-bold text-primary">{{ total_ventas }}</h2>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-4">
-            <div class="card stats-card border-start border-success border-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Ingresos Totales</h6>
-                            <h2 class="mb-0 fw-bold text-success">${{ total_ingresos|floatformat:2 }}</h2>
-                        </div>
-                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
-                            <i class="bi bi-currency-dollar fs-1 text-success"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card stats-card bg-primary text-white">
-                <div class="card-body text-center d-flex align-items-center justify-content-center">
-                    <a href="{% url 'ventas:crear_venta' %}" class="btn btn-light btn-lg w-100">
-                        <i class="bi bi-plus-circle"></i> Registrar Nueva Venta
-                    </a>
+        <div class="col-md-6 mb-3">
+            <div class="card stats-card shadow-sm">
+                <div class="card-body text-center py-4">
+                    <h6 class="text-muted mb-3">Ingresos Totales</h6>
+                    <h2 class="mb-0 fw-bold text-success">${{ total_ingresos|floatformat:2 }}</h2>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Formulario de Búsqueda y Filtros -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <i class="bi bi-search"></i> Filtros de Búsqueda
+    <!-- Filtros de búsqueda -->
+    <div class="card shadow mb-3" style="border: none; border-radius: 10px;">
+        <div class="card-header filter-card text-white">
+            <h5 class="mb-0">Filtros de Búsqueda</h5>
         </div>
         <div class="card-body">
             <form method="get" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label">Fecha Inicio</label>
-                    {{ form_busqueda.fecha_inicio }}
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Fecha Fin</label>
-                    {{ form_busqueda.fecha_fin }}
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Estado</label>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Estado</label>
                     {{ form_busqueda.estado }}
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Buscar</label>
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Buscar</label>
                     {{ form_busqueda.buscar }}
                 </div>
-                <div class="col-md-12">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search"></i> Buscar
-                    </button>
-                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-clockwise"></i> Limpiar Filtros
-                    </a>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-custom-primary flex-fill">Buscar</button>
+                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Tabla de Ventas -->
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <i class="bi bi-list-ul"></i> Listado de Ventas
+    <!-- Botón Agregar Nueva Venta -->
+    <div class="text-end mb-4">
+        <a href="{% url 'ventas:crear_venta' %}" class="btn btn-add-sale">
+             Agregar Nueva Venta
+        </a>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <div class="card-body">
-            {% if ventas %}
+        {% endfor %}
+    {% endif %}
+
+    <!-- Tabla de Ventas -->
+    <div class="card shadow" style="border: none; border-radius: 10px;">
+        <div class="card-header card-header-custom text-white">
+            <h4 class="mb-0"> Lista de Ventas</h4>
+        </div>
+
+        <div class="card-body p-0">
+
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-header text-white">
                         <tr>
-                            <th><i class="bi bi-hash"></i> ID</th>
-                            <th><i class="bi bi-calendar3"></i> Fecha</th>
-                            <th><i class="bi bi-currency-dollar"></i> Total</th>
-                            <th><i class="bi bi-box-seam"></i> Productos</th>
-                            <th><i class="bi bi-info-circle"></i> Estado</th>
-                            <th class="text-center"><i class="bi bi-gear"></i> Acciones</th>
+                            <th class="text-center" style="width: 60px;">#</th>
+                            <th style="min-width: 150px;">Cliente</th>
+                            <th style="min-width: 120px;">Documento</th>
+                            <th style="min-width: 150px;">Producto</th>
+                            <th class="text-center" style="width: 100px;">Cantidad</th>
+                            <th class="text-end" style="width: 120px;">Total</th>
+                            <th class="text-center" style="width: 140px;">Fecha</th>
+                            <th class="text-center" style="width: 110px;">Estado</th>
+                            <th class="text-center" style="min-width: 280px;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for venta in ventas %}
-                        <tr>
-                            <td class="fw-bold">#{{ venta.id }}</td>
-                            <td>{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td>
-                            <td class="text-success fw-bold">${{ venta.total|floatformat:2 }}</td>
-                            <td>
-                                <span class="badge bg-secondary">{{ venta.cantidad_productos }} items</span>
-                            </td>
-                            <td>
-                                {% if venta.estado == 'COMPLETADA' %}
-                                    <span class="badge bg-success">
-                                        <i class="bi bi-check-circle"></i> {{ venta.get_estado_display }}
-                                    </span>
-                                {% elif venta.estado == 'CANCELADA' %}
-                                    <span class="badge bg-danger">
-                                        <i class="bi bi-x-circle"></i> {{ venta.get_estado_display }}
-                                    </span>
-                                {% else %}
-                                    <span class="badge bg-warning">
-                                        <i class="bi bi-clock"></i> {{ venta.get_estado_display }}
-                                    </span>
-                                {% endif %}
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group" role="group">
-                                    <a href="{% url 'ventas:detalle_venta' venta.id %}" 
-                                       class="btn btn-sm btn-info btn-action" 
-                                       title="Ver detalle">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
+                     {% if lista_ventas %}
+                            {% for venta in lista_ventas %}
+                            <tr>
+                                <td class="text-center fw-semibold">{{ venta.id }}</td>
+                                <td>{{ venta.nombre_cliente }}</td>
+                                <td>{{ venta.documento_cliente }}</td>
+                                <td>{{ venta.producto.nombre }}</td>
+                                <td class="text-center">{{ venta.cantidad }}</td>
+                                <td class="text-end fw-semibold">${{ venta.total|floatformat:2 }}</td>
+                                <td class="text-center">{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td>
+                                <td class="text-center">
                                     {% if venta.estado == 'COMPLETADA' %}
-                                    <a href="{% url 'ventas:editar_venta' venta.id %}" 
-                                       class="btn btn-sm btn-warning btn-action" 
-                                       title="Editar venta">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a href="{% url 'ventas:cancelar_venta' venta.id %}" 
-                                       class="btn btn-sm btn-danger btn-action" 
-                                       title="Cancelar venta"
-                                       onclick="return confirm('¿Está seguro de cancelar esta venta?')">
-                                        <i class="bi bi-x-circle"></i>
-                                    </a>
+                                        <span class="badge bg-success">Completada</span>
+                                    {% elif venta.estado == 'CANCELADA' %}
+                                        <span class="badge bg-danger">Cancelada</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Pendiente</span>
                                     {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1 flex-wrap">
+                                        <a href="{% url 'ventas:detalle_venta' venta.id %}" 
+                                           class="btn btn-outline-info btn-sm action-btn" 
+                                           title="Ver detalles">
+                                            Ver
+                                        </a>
+                                        {% if venta.estado != 'CANCELADA' %}
+                                            <a href="{% url 'ventas:editar_venta' venta.id %}" 
+                                               class="btn btn-outline-warning btn-sm action-btn" 
+                                               title="Editar">
+                                                Editar
+                                            </a>
+                                            <a href="{% url 'ventas:cancelar_venta' venta.id %}" 
+                                               class="btn btn-outline-danger btn-sm action-btn" 
+                                               title="Cancelar"
+                                               onclick="return confirm('¿Está seguro de cancelar esta venta?')">
+                                                 Cancelar
+                                            </a>
+                                        {% else %}
+                                            <button class="btn btn-outline-secondary btn-sm action-btn" 
+                                                    disabled 
+                                                    title="No disponible">
+                                                     Editar
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm action-btn" 
+                                                    disabled 
+                                                    title="No disponible">
+                                                     Cancelar
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                         {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    <div class="py-3">
+                                        <i class="fs-1">📋</i>
+                                        <p class="mt-3 mb-0 fs-5">No hay ventas registradas</p>
+                                        <p class="text-muted small">Haz clic en "Agregar Nueva Venta" para comenzar</p>
+                                    </div>
+                                </td>
+                            </tr>
+                     {% endif %}
                     </tbody>
                 </table>
             </div>
 
-            <!-- Paginación -->
-            {% if is_paginated %}
-            <nav aria-label="Navegación de páginas" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1">
-                            <i class="bi bi-chevron-double-left"></i>
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
-                            <i class="bi bi-chevron-left"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    <li class="page-item active">
-                        <span class="page-link">
-                            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-                        </span>
-                    </li>
-
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">
-                            <i class="bi bi-chevron-right"></i>
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
-                            <i class="bi bi-chevron-double-right"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
-
-            {% else %}
-            <div class="alert alert-info text-center">
-                <i class="bi bi-info-circle fs-1 d-block mb-3"></i>
-                <h5>No hay ventas registradas</h5>
-                <p class="mb-0">
-                    <a href="{% url 'ventas:crear_venta' %}" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Crear Primera Venta
-                    </a>
-                </p>
-            </div>
-            {% endif %}
         </div>
     </div>
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 {% endblock %}

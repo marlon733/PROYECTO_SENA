@@ -1,54 +1,94 @@
 from django import forms
-from django.forms import inlineformset_factory
-from .models import Venta, DetalleVenta
+from .models import Venta
+from productos.models import Producto
 
 class VentaForm(forms.ModelForm):
+    
     class Meta:
         model = Venta
-        fields = ['observaciones']
+        fields = [
+            'nombre_cliente',
+            'documento_cliente',
+            'producto',
+            'cantidad',
+            'precio_unitario',
+            'observaciones'
+        ]
         widgets = {
+            'nombre_cliente': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese el nombre del cliente'
+            }),
+            'documento_cliente': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese el documento del cliente'
+            }),
+            'producto': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'cantidad': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0.01',
+                'placeholder': 'Cantidad'
+            }),
+            'precio_unitario': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0.01',
+                'placeholder': 'Precio unitario'
+            }),
             'observaciones': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
                 'placeholder': 'Observaciones opcionales sobre la venta...'
             })
         }
-
-
-class DetalleVentaForm(forms.ModelForm):
-    class Meta:
-        model = DetalleVenta
-        fields = ['producto', 'cantidad', 'precio_unitario']
-        widgets = {
-            'producto': forms.Select(attrs={
-                'class': 'form-select producto-select'
-            }),
-            'cantidad': forms.NumberInput(attrs={
-                'class': 'form-control cantidad-input',
-                'step': '0.01',
-                'min': '0.01'
-            }),
-            'precio_unitario': forms.NumberInput(attrs={
-                'class': 'form-control precio-input',
-                'step': '0.01',
-                'min': '0.01'
-            })
+        labels = {
+            'nombre_cliente': 'Nombre del Cliente',
+            'documento_cliente': 'Documento de Identidad',
+            'producto': 'Producto',
+            'cantidad': 'Cantidad',
+            'precio_unitario': 'Precio Unitario',
+            'observaciones': 'Observaciones'
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtrar solo productos activos con stock
+        self.fields['producto'].queryset = Producto.objects.filter(
+            estado=True, 
+            stock__gt=0
+        )
 
-DetalleVentaFormSet = inlineformset_factory(
-    Venta,
-    DetalleVenta,
-    form=DetalleVentaForm,
-    extra=1,
-    can_delete=True,
-    min_num=1,
-    validate_min=True
-)
+    # Validaciones personalizadas
+    def clean_documento_cliente(self):
+        """Validar que el documento contenga solo números"""
+        documento = self.cleaned_data.get('documento_cliente')
+        if not documento.isdigit():
+            raise forms.ValidationError("El documento debe contener solo números.")
+        return documento
+
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        producto = cleaned_data.get('producto')
+        cantidad = cleaned_data.get('cantidad')
+        
+        if producto and cantidad:
+            # Validar stock disponible
+            if cantidad > producto.stock:
+                raise forms.ValidationError(
+                    f'No hay suficiente stock. Disponible: {producto.stock}'
+                )
+        
+        return cleaned_data
 
 
 class CancelarVentaForm(forms.Form):
+    """Formulario para cancelar una venta"""
     motivo = forms.CharField(
+        label='Motivo de Cancelación',
         widget=forms.Textarea(attrs={
             'class': 'form-control',
             'rows': 4,
@@ -63,8 +103,10 @@ class CancelarVentaForm(forms.Form):
 
 
 class BusquedaVentaForm(forms.Form):
+    """Formulario para buscar y filtrar ventas"""
     fecha_inicio = forms.DateField(
         required=False,
+        label='Fecha Inicio',
         widget=forms.DateInput(attrs={
             'class': 'form-control',
             'type': 'date'
@@ -72,6 +114,7 @@ class BusquedaVentaForm(forms.Form):
     )
     fecha_fin = forms.DateField(
         required=False,
+        label='Fecha Fin',
         widget=forms.DateInput(attrs={
             'class': 'form-control',
             'type': 'date'
@@ -79,6 +122,7 @@ class BusquedaVentaForm(forms.Form):
     )
     estado = forms.ChoiceField(
         required=False,
+        label='Estado',
         choices=[('', 'Todos')] + Venta.ESTADOS,
         widget=forms.Select(attrs={
             'class': 'form-select'
@@ -86,8 +130,9 @@ class BusquedaVentaForm(forms.Form):
     )
     buscar = forms.CharField(
         required=False,
+        label='Buscar',
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Buscar por ID...'
+            'placeholder': 'Buscar por nombre de cliente o documento...'
         })
     )

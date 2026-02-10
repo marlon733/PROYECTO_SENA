@@ -1,107 +1,89 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Cancelar Venta #{{ venta.id }}{% endblock %}
+<!DOCTYPE html>
+{% extends "master.html" %}
+{% block title %}Cancelar Venta{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h2><i class="fas fa-exclamation-triangle text-danger"></i> Cancelar Venta #{{ venta.id }}</h2>
-            <hr>
-        </div>
-    </div>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cancelar Venta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Advertencia -->
-    <div class="alert alert-danger" role="alert">
-        <h4 class="alert-heading"><i class="fas fa-exclamation-circle"></i> ¡Atención!</h4>
-        <p>Está a punto de cancelar esta venta. Esta acción:</p>
-        <ul>
-            <li>Revertirá el stock de todos los productos vendidos al inventario</li>
-            <li>Cambiará el estado de la venta a "CANCELADA"</li>
-            <li>No se podrá deshacer esta acción</li>
-        </ul>
-    </div>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
 
-    <!-- Información de la venta -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-info-circle"></i> Información de la Venta
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>ID:</strong> {{ venta.id }}</p>
-                    <p><strong>Fecha:</strong> {{ venta.fecha_venta|date:"d/m/Y H:i" }}</p>
-                    <p><strong>Total:</strong> ${{ venta.total|floatformat:2 }}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Productos:</strong> {{ venta.cantidad_productos }}</p>
-                    <p><strong>Estado:</strong> <span class="badge bg-success">{{ venta.get_estado_display }}</span></p>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="container my-5">
 
-    <!-- Productos que se revertirán -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-undo"></i> Productos que se revertirán al inventario
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad a Revertir</th>
-                            <th>Stock Actual</th>
-                            <th>Stock Después</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for detalle in venta.detalles.all %}
-                        <tr>
-                            <td>{{ detalle.producto.nombre }}</td>
-                            <td class="text-success">+ {{ detalle.cantidad }} {{ detalle.producto.get_unidad_medida_display }}</td>
-                            <td>{{ detalle.producto.cantidad_disponible }} {{ detalle.producto.get_unidad_medida_display }}</td>
-                            <td><strong>{{ detalle.producto.cantidad_disponible|add:detalle.cantidad }} {{ detalle.producto.get_unidad_medida_display }}</strong></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Formulario de cancelación -->
-    <div class="card mb-4">
+    <div class="card shadow">
         <div class="card-header bg-danger text-white">
-            <i class="fas fa-clipboard-list"></i> Motivo de Cancelación
+            <h4 class="mb-0">🗑️ Cancelar Venta #{{ venta.id }}</h4>
         </div>
+
         <div class="card-body">
+
+            <!-- Mensajes de error -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="alert alert-warning">
+                <h5 class="alert-heading">⚠️ Advertencia</h5>
+                <p>¿Está seguro de que desea cancelar esta venta?</p>
+                <p class="mb-0">Esta acción revertirá el stock del producto y marcará la venta como cancelada.</p>
+            </div>
+
+            <!-- Información de la venta -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Información de la Venta</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Cliente:</strong> {{ venta.nombre_cliente }}</p>
+                            <p><strong>Documento:</strong> {{ venta.documento_cliente }}</p>
+                            <p><strong>Producto:</strong> {{ venta.producto.nombre }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Cantidad:</strong> {{ venta.cantidad }}</p>
+                            <p><strong>Total:</strong> ${{ venta.total|floatformat:2 }}</p>
+                            <p><strong>Fecha:</strong> {{ venta.fecha_venta|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de cancelación -->
             <form method="post">
                 {% csrf_token %}
-                
+
                 <div class="mb-3">
-                    {{ form.motivo.label_tag }}
+                    <label class="form-label">{{ form.motivo.label }}</label>
                     {{ form.motivo }}
                     {% if form.motivo.errors %}
-                        <div class="text-danger">{{ form.motivo.errors }}</div>
+                        <div class="text-danger small">{{ form.motivo.errors }}</div>
                     {% endif %}
-                    <small class="text-muted">Explique el motivo de la cancelación (mínimo 10 caracteres)</small>
+                    <small class="text-muted">Debe proporcionar un motivo de al menos 10 caracteres</small>
                 </div>
 
-                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                    <button type="submit" class="btn btn-danger btn-lg">
-                        <i class="fas fa-check-circle"></i> Confirmar Cancelación
-                    </button>
-                    <a href="{% url 'ventas:detalle_venta' venta.id %}" class="btn btn-secondary btn-lg">
-                        <i class="fas fa-times"></i> No Cancelar
-                    </a>
+                <!-- Botones -->
+                <div class="text-end mt-4">
+                    <a href="{% url 'ventas:detalle_venta' venta.id %}" class="btn btn-secondary">Volver</a>
+                    <button type="submit" class="btn btn-danger">Confirmar Cancelación</button>
                 </div>
             </form>
+
         </div>
     </div>
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 {% endblock %}

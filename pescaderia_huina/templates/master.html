@@ -189,8 +189,8 @@
                                href="{% url 'core:index' %}">Inicio</a>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'proveedores:lista_proveedores' %}">Proveedores</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Pedidos</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Ventas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'pedidos:lista_pedidos' %}">Pedidos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ventas:lista_ventas' %}">Ventas</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'productos:productos_list' %}">Productos</a></li>
                       
                         
@@ -305,6 +305,6 @@
             </div>
         </div>
     </footer>
-
+<script src="https://cdn.jsdelivr.net/npm/sienna-accessibility@latest/dist/sienna-accessibility.umd.js" defer></script>
 </body>
 </html>

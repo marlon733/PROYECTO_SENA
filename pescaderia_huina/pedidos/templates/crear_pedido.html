@@ -1,0 +1,76 @@
+{% extends 'master.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="card-title mb-0 text-center">Registrar Nuevo Pedido</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Proveedor (NIT)</label>
+                                {{ form_pedido.proveedor }}
+                            </div>
+
+                            <hr class="my-3">
+                            <h5 class="text-secondary">Detalles del Producto</h5>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Producto</label>
+                                {{ form_detalle.producto }}
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Cantidad</label>
+                                {{ form_detalle.cantidad }}
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Total Compra</label>
+                                <input type="text" id="id_total" class="form-control bg-light fw-bold text-success" readonly placeholder="0.00">
+                            </div>
+
+                            <div class="col-12 mt-3">
+                                <label class="form-label fw-bold">Estado del Pedido</label>
+                                {{ form_pedido.estado }}
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-outline-secondary px-4">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-success px-5 fw-bold">
+                                <i class="bi bi-check-lg"></i> Guardar Pedido
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const inputCant = document.getElementById('id_cantidad');
+    const inputPrec = document.getElementById('id_precio');
+    const inputTot = document.getElementById('id_total');
+
+    function actualizarTotal() {
+        const c = parseFloat(inputCant.value) || 0;
+        const p = parseFloat(inputPrec.value) || 0;
+        inputTot.value = (c * p).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    }
+
+    inputCant.addEventListener('input', actualizarTotal);
+    inputPrec.addEventListener('input', actualizarTotal);
+</script>
+{% endblock %}
