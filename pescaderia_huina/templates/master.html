@@ -187,7 +187,7 @@
                             <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" 
                                href="{% url 'core:index' %}">Inicio</a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'Proveedores:lista_proveedores' %}">Proveedores</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'proveedores:lista_proveedores' %}">Proveedores</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'pedidos:lista_pedidos' %}">Pedidos</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'ventas:lista_ventas' %}">Ventas</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'productos:productos_list' %}">Productos</a></li>
