@@ -29,17 +29,17 @@
                     <tbody>
                         {% for p in pedidos %}
                         <tr>
-                            <td class="ps-4 fw-bold text-dark">#{{ p.id }}</td>
+                            <td class="ps-4 fw-bold text-dark">#{{ pedido.id }}</td>
                             <td>
-                                <span class="fw-bold">{{ p.proveedor.nombre }}</span><br>
-                                <small class="text-muted">NIT: {{ p.proveedor.nit }}</small>
+                                <span class="fw-bold">{{ pedido.proveedor.nombre }}</span><br>
+                                <small class="text-muted">NIT: {{ pedido.proveedor.nit }}</small>
                             </td>
-                            <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
-                            <td class="fw-bold text-success">${{ p.valor_total }}</td>
+                            <td>{{ pedido.fecha|date:"d/m/Y H:i" }}</td>
+                            <td class="fw-bold text-success">${{ pedido.valor_total }}</td>
                             <td>
-                                {% if p.estado == 'REC' %}
+                                {% if pedido.estado == 'REC' %}
                                 <span class="badge rounded-pill bg-success-subtle text-success border border-success">Recibido</span>
-                                {% elif p.estado == 'PEN' %}
+                                {% elif pedido.estado == 'PEN' %}
                                 <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning">Pendiente</span>
                                 {% else %}
                                 <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger">Cancelado</span>
