@@ -143,6 +143,8 @@ LOGIN_URL = 'usuarios:login'  # A dónde ir si no está autenticado
 LOGIN_REDIRECT_URL = 'usuarios:dashboard'  # A dónde ir después de login exitoso
 LOGOUT_REDIRECT_URL = 'core:index'  # A dónde ir después de logout
 
+
+
 # Configuración de sesiones
 SESSION_COOKIE_AGE = 3600  # 1 hora en segundos
 SESSION_SAVE_EVERY_REQUEST = True  # Actualiza la sesión en cada request
