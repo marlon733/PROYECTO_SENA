@@ -142,6 +142,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'usuarios:login'  # A dónde ir si no está autenticado
 LOGIN_REDIRECT_URL = 'usuarios:dashboard'  # A dónde ir después de login exitoso
 LOGOUT_REDIRECT_URL = 'core:index'  # A dónde ir después de logout
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'mf1382529@gmail.com'
+EMAIL_HOST_PASSWORD = 'teiw hwuf zjub ftal'
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 
