@@ -35,22 +35,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for proveedores in proveedores %}
+                        {% for p in proveedores %}
                         <tr>
                             <td class="ps-4">
-                                {% if proveedor.tipo_persona == 'natural' %}
+                                {% if p.tipo_persona == 'natural' %}
                                 <span class="badge bg-info-subtle text-info border border-info">Natural</span>
                                 {% else %}
                                 <span
                                     class="badge bg-secondary-subtle text-secondary border border-secondary">Jurídica</span>
                                 {% endif %}
                             </td>
-                            <td class="fw-bold text-dark">{{ proveedores.nit }}</td>
-                            <td>{{ proveedores.nombre_contacto }}</td>
-                            <td>{{ proveedores.telefono }}</td>
-                            <td>{{ proveedores.ciudad }}</td>
+                            <td class="fw-bold text-dark">{{ p.nit }}</td>
+                            <td>{{ p.nombre_contacto }}</td>
+                            <td>{{ p.telefono }}</td>
+                            <td>{{ p.ciudad }}</td>
                             <td>
-                                {% if proveedores.estado %}
+                                {% if p.estado %}
                                 <span
                                     class="badge rounded-pill bg-success-subtle text-success border border-success">Activo</span>
                                 {% else %}
@@ -61,17 +61,17 @@
                             <td class="text-center">
                                 <div class="btn-group" role="group" aria-label="Acciones">
 
-                                    <a href="{% url 'proveedores:detalle_proveedores' proveedores.id %}"
+                                    <a href="{% url 'proveedores:detalle_proveedores' p.id %}"
                                         class="btn btn-sm btn-outline-info" title="Ver Detalle">
                                         <i class="bi bi-eye-fill"></i>
                                     </a>
 
-                                    <a href="{% url 'proveedores:modificar_proveedores' proveedores.id %}"
+                                    <a href="{% url 'proveedores:modificar_proveedores' p.id %}"
                                         class="btn btn-sm btn-outline-warning" title="Editar">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
 
-                                    <a href="{% url 'proveedores:eliminar_proveedores' proveedores.id %}"
+                                    <a href="{% url 'proveedores:eliminar_proveedores' p.id %}"
                                         class="btn btn-sm btn-outline-danger" title="Eliminar">
                                         <i class="bi bi-trash-fill"></i>
                                     </a>
