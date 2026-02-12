@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Proveedor
 from .forms import ProveedorForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # 1. LISTA DE PROVEEDORES (Tu Hub Principal)
+@login_required
 def lista_proveedores(request):
     proveedores = Proveedor.objects.all()
     return render(request, 'lista_proveedores.html', {'proveedores': proveedores})
 
 # 2. AGREGAR PROVEEDOR
+@login_required
 def agregar_proveedor(request):
     if request.method == 'POST':
         form = ProveedorForm(request.POST)
@@ -19,11 +23,13 @@ def agregar_proveedor(request):
     return render(request, 'agregar_proveedores.html', {'form': form})
 
 # 3. DETALLE DEL PROVEEDOR (Solo lectura)
+@login_required
 def detalle_proveedor(request, id):
     proveedor = get_object_or_404(Proveedor, id=id)
     return render(request, 'detalle_proveedores.html', {'proveedor': proveedor})
 
 # 4. MODIFICAR PROVEEDOR
+@login_required
 def modificar_proveedor(request, id):
     proveedor = get_object_or_404(Proveedor, id=id)
     if request.method == 'POST':
@@ -36,6 +42,7 @@ def modificar_proveedor(request, id):
     return render(request, 'modificar_proveedores.html', {'form': form})
 
 # 5. ELIMINAR PROVEEDOR
+@login_required
 def eliminar_proveedor(request, id):
     proveedor = get_object_or_404(Proveedor, id=id)
     if request.method == 'POST':

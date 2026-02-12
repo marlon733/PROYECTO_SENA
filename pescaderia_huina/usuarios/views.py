@@ -76,7 +76,7 @@ def login_view(request):
 
 
 @csrf_protect
-#@login_required
+@login_required
 def registro_view(request):
     if request.method == 'POST':
         form = RegistroForm(request.POST)

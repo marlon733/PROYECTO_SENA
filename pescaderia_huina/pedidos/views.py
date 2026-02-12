@@ -2,12 +2,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Pedido, Proveedor, Producto, DetallePedido
 from .forms import PedidoForm, DetallePedidoForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+@login_required
 def lista_pedidos(request):
     # Trae todos los pedidos de la base de datos db.sqlite3 
     pedidos = Pedido.objects.all().order_by('-fecha')
     return render(request, 'lista_pedidos.html', {'pedidos': pedidos})
-
+@login_required
 def crear_pedido(request):
     if request.method == 'POST':
         form_pedido = PedidoForm(request.POST)
@@ -39,7 +42,7 @@ def crear_pedido(request):
         'proveedores': Proveedor.objects.all(),
         'productos': Producto.objects.all()
     })
-
+@login_required
 def editar_pedido(request, id):
     pedido = get_object_or_404(Pedido, id=id)
     # Obtenemos el primer detalle asociado al pedido
@@ -71,7 +74,7 @@ def editar_pedido(request, id):
         'form_detalle': form_detalle,
         'pedido': pedido
     })
-
+@login_required
 def eliminar_pedido(request, id):
     pedido = get_object_or_404(Pedido, id=id)
     
