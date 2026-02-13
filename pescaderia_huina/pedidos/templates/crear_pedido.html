@@ -1,55 +1,84 @@
-{% extends 'master.html' %}
+{% extends 'core/panel_admin_base.html' %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<style>
+    .card { border-radius: 1rem; }
+    .input-group-text { background-color: #f8f9fa; border-right: none; }
+    .form-control, .form-select { border-radius: 0.5rem; }
+    /* Estilo para que el total se vea normal pero profesional */
+    .total-field {
+        font-weight: bold;
+        color: #198754 !important; /* Verde estándar de Bootstrap */
+        background-color: #f8f9fa !important; /* Gris muy claro (readonly) */
+    }
+</style>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-primary text-white py-3">
-                    <h4 class="card-title mb-0 text-center">Registrar Nuevo Pedido</h4>
+                    <h4 class="card-title mb-0 text-center fw-bold">
+                        <i class="bi bi-cart-check me-2"></i>Registrar Nuevo Pedido
+                    </h4>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-4 p-md-5">
                     <form method="POST" class="needs-validation">
                         {% csrf_token %}
                         
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label fw-bold">Proveedor (NIT)</label>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Proveedor (NIT)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-building"></i></span>
                                 {{ form_pedido.proveedor }}
                             </div>
+                        </div>
 
-                            <hr class="my-3">
-                            <h5 class="text-secondary">Detalles del Producto</h5>
+                        <hr class="my-4 text-muted">
+                        <h5 class="text-primary mb-3 fw-bold">Detalles del Producto</h5>
 
-                            <div class="col-12">
-                                <label class="form-label fw-bold">Producto</label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-secondary">Producto</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
                                 {{ form_detalle.producto }}
                             </div>
+                        </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Cantidad</label>
-                                {{ form_detalle.cantidad }}
+                        <div class="row g-3">
+                            <div class="col-md-7">
+                                <label class="form-label fw-bold text-secondary">Cantidad y Medida</label>
+                                <div class="input-group">
+                                    {{ form_detalle.cantidad }}
+                                    <select class="form-select bg-light" id="id_unidad" name="unidad" style="max-width: 130px;">
+                                        <option value="unidades">Uds</option>
+                                        <option value="bandejas">Bandejas</option>
+                                        <option value="libras">Libras</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Total Compra</label>
-                                <input type="text" id="id_total" class="form-control bg-light fw-bold text-success" readonly placeholder="0.00">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold text-secondary">Total Pedido (COP)</label>
+                                <input type="text" id="id_total" class="form-control total-field text-end" readonly value="$ 0">
                             </div>
+                        </div>
 
-                            <div class="col-12 mt-3">
-                                <label class="form-label fw-bold">Estado del Pedido</label>
-                                {{ form_pedido.estado }}
-                            </div>
+                        <div class="col-12 mt-4">
+                            <label class="form-label fw-bold text-secondary">Estado del Pedido</label>
+                            {{ form_pedido.estado }}
                         </div>
 
                         <hr class="my-4">
 
                         <div class="d-flex justify-content-between align-items-center">
-                            <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-outline-secondary px-4">
+                            <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-outline-secondary px-4 rounded-pill">
                                 <i class="bi bi-arrow-left"></i> Volver
                             </a>
-                            <button type="submit" class="btn btn-success px-5 fw-bold">
-                                <i class="bi bi-check-lg"></i> Guardar Pedido
+                            <button type="submit" class="btn btn-success px-5 fw-bold rounded-pill shadow-sm">
+                                <i class="bi bi-save me-1"></i> Guardar Pedido
                             </button>
                         </div>
                     </form>
@@ -60,17 +89,33 @@
 </div>
 
 <script>
-    const inputCant = document.getElementById('id_cantidad');
-    const inputPrec = document.getElementById('id_precio');
+    const inputCant = document.querySelector('[name="cantidad"]');
+    const inputPrec = document.getElementById('id_precio') || { value: 0 }; 
+    const inputUnidad = document.getElementById('id_unidad');
     const inputTot = document.getElementById('id_total');
+
+    const formatterCOP = new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    });
 
     function actualizarTotal() {
         const c = parseFloat(inputCant.value) || 0;
-        const p = parseFloat(inputPrec.value) || 0;
-        inputTot.value = (c * p).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+        let p = parseFloat(inputPrec.value) || 0; 
+
+        let factor = 1;
+        if (inputUnidad.value === 'libras') {
+            factor = 0.5; 
+        }
+
+        const resultado = c * p * factor;
+        inputTot.value = formatterCOP.format(resultado);
     }
 
-    inputCant.addEventListener('input', actualizarTotal);
-    inputPrec.addEventListener('input', actualizarTotal);
+    inputCant?.addEventListener('input', actualizarTotal);
+    inputUnidad?.addEventListener('change', actualizarTotal);
+    document.getElementById('id_precio')?.addEventListener('input', actualizarTotal);
 </script>
 {% endblock %}
