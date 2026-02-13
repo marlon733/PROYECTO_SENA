@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # 1. LISTA DE PROVEEDORES (Tu Hub Principal)
+@login_required()
 def lista_proveedores(request):
     # Traemos todos los proveedores ordenados por nombre
     proveedores = Proveedor.objects.all().order_by('nombre_contacto')
