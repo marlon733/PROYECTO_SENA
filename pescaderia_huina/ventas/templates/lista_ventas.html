@@ -172,6 +172,7 @@
                             <th style="min-width: 150px;">Cliente</th>
                             <th style="min-width: 120px;">Documento</th>
                             <th style="min-width: 150px;">Producto</th>
+                            <th style="width: 100px;" class="text-center">Presentación</th>
                             <th class="text-center" style="width: 100px;">Cantidad</th>
                             <th class="text-end" style="width: 120px;">Total</th>
                             <th class="text-center" style="width: 140px;">Fecha</th>
@@ -180,14 +181,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                     {% if lista_ventas %}
+                    {% if lista_ventas %}
                             {% for venta in lista_ventas %}
                             <tr>
                                 <td class="text-center fw-semibold">{{ venta.id }}</td>
                                 <td>{{ venta.nombre_cliente }}</td>
                                 <td>{{ venta.documento_cliente }}</td>
                                 <td>{{ venta.producto.nombre }}</td>
-                                <td class="text-center">{{ venta.cantidad }}</td>
+                                <td class="text-center">
+                                    {% if venta.tipo_presentacion == 'EMPACADO_VACIO' %}
+                                        <span class="badge bg-info text-dark">Empacado al Vacío</span>
+                                    {% elif venta.tipo_presentacion == 'POR_LIBRA' %}
+                                        <span class="badge bg-warning text-dark">Por Libra</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Bandeja</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {{ venta.cantidad }}
+                                    {% if venta.tipo_presentacion == 'POR_LIBRA' %} lb{% else %} und{% endif %}
+                                </td>
                                 <td class="text-end fw-semibold">${{ venta.total|floatformat:2 }}</td>
                                 <td class="text-center">{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td>
                                 <td class="text-center">
@@ -236,7 +249,7 @@
                             {% endfor %}
                          {% else %}
                             <tr>
-                                <td colspan="9" class="text-center py-5 text-muted">
+                                <td colspan="10" class="text-center py-5 text-muted">
                                     <div class="py-3">
                                         <i class="fs-1">📋</i>
                                         <p class="mt-3 mb-0 fs-5">No hay ventas registradas</p>

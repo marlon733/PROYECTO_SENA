@@ -2,6 +2,13 @@ from django import forms
 from .models import Venta
 from productos.models import Producto
 
+
+TIPOS_VENTA_CHOICES = [
+    ('EMPACADO_VACIO', 'Empacado al Vacío'),
+    ('POR_LIBRA', 'Por Libra'),
+    ('BANDEJA', 'Bandeja'),
+]
+
 class VentaForm(forms.ModelForm):
     
     class Meta:
@@ -10,6 +17,7 @@ class VentaForm(forms.ModelForm):
             'nombre_cliente',
             'documento_cliente',
             'producto',
+            'tipo_presentacion',
             'cantidad',
             'precio_unitario',
             'observaciones'
@@ -25,6 +33,9 @@ class VentaForm(forms.ModelForm):
             }),
             'producto': forms.Select(attrs={
                 'class': 'form-select'
+            }),
+             'tipo_presentacion': forms.RadioSelect(attrs={
+                'class': 'tipo-presentacion-radio',
             }),
             'cantidad': forms.NumberInput(attrs={
                 'class': 'form-control',
@@ -48,6 +59,7 @@ class VentaForm(forms.ModelForm):
             'nombre_cliente': 'Nombre del Cliente',
             'documento_cliente': 'Documento de Identidad',
             'producto': 'Producto',
+            'tipo_presentacion': 'Tipo de Presentación',
             'cantidad': 'Cantidad',
             'precio_unitario': 'Precio Unitario',
             'observaciones': 'Observaciones'
@@ -74,12 +86,20 @@ class VentaForm(forms.ModelForm):
         cleaned_data = super().clean()
         producto = cleaned_data.get('producto')
         cantidad = cleaned_data.get('cantidad')
+        tipo_presentacion = cleaned_data.get('tipo_presentacion')
         
         if producto and cantidad:
             # Validar stock disponible
             if cantidad > producto.stock:
                 raise forms.ValidationError(
                     f'No hay suficiente stock. Disponible: {producto.stock}'
+                )
+                
+         # Empacado al Vacío y Bandeja deben ser unidades enteras
+        if cantidad and tipo_presentacion in ('EMPACADO_VACIO', 'BANDEJA'):
+            if cantidad != int(cantidad):
+                raise forms.ValidationError(
+                    'Para Empacado al Vacío y Bandeja, la cantidad debe ser un número entero de unidades.'
                 )
         
         return cleaned_data
@@ -104,26 +124,18 @@ class CancelarVentaForm(forms.Form):
 
 class BusquedaVentaForm(forms.Form):
     """Formulario para buscar y filtrar ventas"""
-    fecha_inicio = forms.DateField(
-        required=False,
-        label='Fecha Inicio',
-        widget=forms.DateInput(attrs={
-            'class': 'form-control',
-            'type': 'date'
-        })
-    )
-    fecha_fin = forms.DateField(
-        required=False,
-        label='Fecha Fin',
-        widget=forms.DateInput(attrs={
-            'class': 'form-control',
-            'type': 'date'
-        })
-    )
     estado = forms.ChoiceField(
         required=False,
         label='Estado',
         choices=[('', 'Todos')] + Venta.ESTADOS,
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
+    )
+    tipo_presentacion = forms.ChoiceField(
+        required=False,
+        label='Tipo de Presentación',
+        choices=[('', 'Todos los tipos')] + Venta.TIPO_PRESENTACION,
         widget=forms.Select(attrs={
             'class': 'form-select'
         })
