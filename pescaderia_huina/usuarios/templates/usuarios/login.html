@@ -303,7 +303,8 @@
 
             <form method="POST" novalidate>
                 {% csrf_token %}
-
+                
+                <input type="hidden" name="next" value="{{ next|default:'/dashboard/' }}">
                 <div class="input-group-modern">
                     <label for="{{ form.username.id_for_label }}">Documento de Identidad</label>
                     {{ form.username }}
@@ -327,17 +328,9 @@
                 <div class="form-options">
                     <label class="remember-me" for="{{ form.remember_me.id_for_label }}">
                         {{ form.remember_me }}
-<<<<<<< HEAD
                         <span>Recordar dispositivo</span>
                     </label>
-                    <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
-=======
-                        <label class="form-check-label" style="font-size: 0.85rem; color: #64748b;" for="{{ form.remember_me.id_for_label }}">
-                            Mantener sesión iniciada
-                        </label>
-                    </div>
-                    <a href="{% url "usuarios:recuperar" %}" style="font-size: 0.85rem; color: var(--secondary-blue); text-decoration: none; font-weight: 600;">¿Olvidaste tu clave?</a>
->>>>>>> 3f45f4f290858d66326e32d50e29b43edbe50089
+                    <a href="{% url 'usuarios:recuperar' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
                 </div>
 
                 <button type="submit" class="btn-primary-modern">
@@ -350,7 +343,6 @@
 </div>
 
 <script>
-    // Script para inyectar clases de estilo a los inputs generados por Django
     document.addEventListener("DOMContentLoaded", function() {
         const inputs = document.querySelectorAll('input[type="text"], input[type="password"], input[type="number"], input[type="email"]');
         inputs.forEach(input => {
