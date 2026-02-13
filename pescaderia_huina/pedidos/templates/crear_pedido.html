@@ -7,18 +7,16 @@
     .card { border-radius: 1rem; }
     .input-group-text { background-color: #f8f9fa; border-right: none; }
     .form-control, .form-select { border-radius: 0.5rem; }
-    /* Estilo para que el total se vea normal pero profesional */
     .total-field {
         font-weight: bold;
-        color: #198754 !important; /* Verde estándar de Bootstrap */
-        background-color: #f8f9fa !important; /* Gris muy claro (readonly) */
+        color: #198754 !important;
+        background-color: #f8f9fa !important;
     }
 </style>
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
-            <div class="card shadow-lg border-0">
+        <div class="col-md-10 col-lg-8"> <div class="card shadow-lg border-0">
                 <div class="card-header bg-primary text-white py-3">
                     <h4 class="card-title mb-0 text-center fw-bold">
                         <i class="bi bi-cart-check me-2"></i>Registrar Nuevo Pedido
@@ -47,26 +45,34 @@
                             </div>
                         </div>
 
-                        <div class="row g-3">
-                            <div class="col-md-7">
-                                <label class="form-label fw-bold text-secondary">Cantidad y Medida</label>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary">Cantidad</label>
                                 <div class="input-group">
                                     {{ form_detalle.cantidad }}
-                                    <select class="form-select bg-light" id="id_unidad" name="unidad" style="max-width: 130px;">
+                                    <select class="form-select bg-light" id="id_unidad" name="unidad" style="max-width: 90px;">
                                         <option value="unidades">Uds</option>
-                                        <option value="bandejas">Bandejas</option>
-                                        <option value="libras">Libras</option>
+                                        <option value="bandejas">Band</option>
+                                        <option value="libras">Lib</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="col-md-5">
-                                <label class="form-label fw-bold text-secondary">Total Pedido (COP)</label>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary">Precio Unitario</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" id="id_precio_unitario" class="form-control" placeholder="0" min="0">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary">Total Pedido</label>
                                 <input type="text" id="id_total" class="form-control total-field text-end" readonly value="$ 0">
                             </div>
                         </div>
 
-                        <div class="col-12 mt-4">
+                        <div class="col-12">
                             <label class="form-label fw-bold text-secondary">Estado del Pedido</label>
                             {{ form_pedido.estado }}
                         </div>
@@ -90,7 +96,7 @@
 
 <script>
     const inputCant = document.querySelector('[name="cantidad"]');
-    const inputPrec = document.getElementById('id_precio') || { value: 0 }; 
+    const inputPrecUnit = document.getElementById('id_precio_unitario');
     const inputUnidad = document.getElementById('id_unidad');
     const inputTot = document.getElementById('id_total');
 
@@ -102,20 +108,22 @@
     });
 
     function actualizarTotal() {
-        const c = parseFloat(inputCant.value) || 0;
-        let p = parseFloat(inputPrec.value) || 0; 
+        const cantidad = parseFloat(inputCant.value) || 0;
+        const precio = parseFloat(inputPrecUnit.value) || 0; 
 
         let factor = 1;
+        // Si el precio unitario se entiende como "Precio por Kilo" y se venden libras:
         if (inputUnidad.value === 'libras') {
             factor = 0.5; 
         }
 
-        const resultado = c * p * factor;
+        const resultado = cantidad * precio * factor;
         inputTot.value = formatterCOP.format(resultado);
     }
 
+    // Escuchar cambios en todos los campos relevantes
     inputCant?.addEventListener('input', actualizarTotal);
+    inputPrecUnit?.addEventListener('input', actualizarTotal);
     inputUnidad?.addEventListener('change', actualizarTotal);
-    document.getElementById('id_precio')?.addEventListener('input', actualizarTotal);
 </script>
 {% endblock %}
