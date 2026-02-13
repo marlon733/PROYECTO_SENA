@@ -1,21 +1,201 @@
-{% extends "master.html" %}
+{% extends "core/panel_admin_base.html" %}
+{% load static %}
 
-{% block title %}
-Mi Perfil
-{% endblock %}
+{% block title %}Mi Perfil - Pescadería Huina{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-header">
-            <h4>Mi Perfil</h4>
-        </div>
-        <div class="card-body">
-            <p><strong>Usuario:</strong> {{ request.user.username }}</p>
-            <p><strong>Nombre:</strong> {{ request.user.first_name }}</p>
-            <p><strong>Apellido:</strong> {{ request.user.last_name }}</p>
-            <p><strong>Email:</strong> {{ request.user.email }}</p>
+<style>
+    /* Estilos Específicos del Perfil Ocean */
+    .card-profile {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 97, 255, 0.1);
+    }
+
+    /* Portada con gradiente */
+    .profile-cover {
+        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+        height: 150px;
+        position: relative;
+    }
+    
+    .profile-cover::before {
+        content: '';
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Contenedor de la foto */
+    .avatar-container {
+        position: relative;
+        margin-top: -75px; /* Sube la foto hacia la portada */
+        display: inline-block;
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 5px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        background-color: #fff;
+    }
+
+    /* Botón para subir foto */
+    .btn-upload-photo {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--ocean-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #fff;
+        cursor: pointer;
+        transition: transform 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .btn-upload-photo:hover {
+        transform: scale(1.1);
+        background-color: var(--ocean-cyan);
+    }
+
+    /* Estilos de los campos de información */
+    .info-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-dark);
+        padding: 10px;
+        background-color: #f8fbff;
+        border-radius: 10px;
+        border: 1px solid #eef2f7;
+        display: flex;
+        align-items: center;
+    }
+    
+    .info-value i {
+        color: var(--ocean-primary);
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="card card-profile bg-white">
+                    <div class="profile-cover"></div>
+
+                    <div class="card-body text-center pt-0 px-4 pb-5">
+                        
+                        <div class="avatar-container mb-4">
+                            {% if request.user.perfil.foto_perfil %}
+                                <img src="{{ request.user.perfil.foto_perfil.url }}" alt="Foto de perfil" class="profile-avatar" id="avatarPreview">
+                            {% else %}
+                                <div class="profile-avatar d-flex align-items-center justify-content-center bg-light text-primary">
+                                    <i class="bi bi-person-fill display-1 opacity-50"></i>
+                                </div>
+                            {% endif %}
+
+                            <label for="id_foto_perfil" class="btn-upload-photo" title="Cambiar foto">
+                                <i class="bi bi-camera-fill"></i>
+                            </label>
+                            <input type="file" name="foto_perfil" id="id_foto_perfil" class="d-none" accept="image/*" onchange="previewImage(this)">
+                        </div>
+
+                        <h3 class="fw-bold mb-1">{{ request.user.get_full_name|default:request.user.username }}</h3>
+                        <p class="text-muted mb-4">
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
+                                {% if request.user.is_staff %}Administrador{% else %}Cliente{% endif %}
+                            </span>
+                        </p>
+
+                        <hr class="my-4 opacity-10">
+
+                        <div class="row g-4 text-start">
+                            <div class="col-md-6">
+                                <label class="info-label">Usuario</label>
+                                <div class="info-value">
+                                    <i class="bi bi-person-badge"></i> {{ request.user.username }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="info-label">Correo Electrónico</label>
+                                <div class="info-value">
+                                    <i class="bi bi-envelope"></i> {{ request.user.email }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="info-label">Nombre</label>
+                                <div class="info-value">
+                                    <i class="bi bi-person"></i> {{ request.user.first_name }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="info-label">Apellido</label>
+                                <div class="info-value">
+                                    <i class="bi bi-person"></i> {{ request.user.last_name }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <button type="submit" class="btn btn-huina-primary px-5 py-2 shadow">
+                                <i class="bi bi-save me-2"></i> Actualizar Perfil
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var preview = document.getElementById('avatarPreview');
+                // Si no existe la imagen (era un div con icono), la creamos
+                if (!preview) {
+                    var container = document.querySelector('.avatar-container');
+                    // Limpiamos el div placeholder
+                    var placeholder = container.querySelector('.profile-avatar');
+                    if(placeholder.tagName === 'DIV') placeholder.remove();
+                    
+                    preview = document.createElement('img');
+                    preview.id = 'avatarPreview';
+                    preview.className = 'profile-avatar';
+                    container.insertBefore(preview, container.firstChild);
+                }
+                preview.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 {% endblock %}

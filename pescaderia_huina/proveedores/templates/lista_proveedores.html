@@ -1,70 +1,149 @@
-{% extends 'master.html' %}
+{% extends 'core/panel_admin_base.html' %}
 
 {% block content %}
-<div class="card-header text-white py-3" 
-             style="background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-pencil-square fs-4 me-3"></i>
-                <div>
-                    <h4 class="mb-0 fw-bold">Lista de Proveedores</h4>
-                    <small class="opacity-75">se aprecian los proveedores</small>
+<style>
+    /* Estilos Específicos para esta vista */
+    .card-header-ocean {
+        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Decoración de ondas sutil en el header */
+    .card-header-ocean::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+        transform: rotate(30deg);
+        pointer-events: none;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f0f7ff; /* Azul muy pálido al pasar el mouse */
+        transform: scale(1.002); /* Efecto micro-zoom sutil */
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        z-index: 10;
+        position: relative;
+    }
+
+    .action-btn {
+        width: 35px; height: 35px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 50%;
+        transition: 0.2s;
+        margin: 0 2px;
+    }
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+</style>
+
+<div class="container py-5">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        
+        <div class="card-header card-header-ocean text-white py-4 px-4">
+            <div class="d-flex justify-content-between align-items-center position-relative z-2">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-people-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-1 fw-bold">Proveedores</h3>
+                        <p class="mb-0 opacity-75 small">Gestión de contactos y aliados estratégicos</p>
+                    </div>
                 </div>
+                <a href="{% url 'proveedores:agregar_proveedores' %}" 
+                   class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm hover-scale">
+                    <i class="bi bi-plus-lg me-2"></i> Nuevo Proveedor
+                </a>
             </div>
         </div>
-        <br>
-        <a href="{% url 'proveedores:agregar_proveedores' %}" 
-            class="btn btn-primary w-100 rounded-pill"></i> + Nuevo Proveedor
-        </a>
-    </div>
 
-    <div class="card border-0 shadow-sm">
-         <div class="card-body p-4">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                <table class="table align-middle mb-0 border-0">
+                    <thead class="bg-light text-secondary text-uppercase small fw-bold" style="letter-spacing: 0.5px;">
                         <tr>
-                            <th class="ps-4">NIT</th>
-                            <th>Nombre de Contacto</th>
-                            <th>Teléfono</th>
-                            <th>Ciudad</th>
-                            <th>Estado</th>
-                            <th class="text-center">Acciones</th>
+                            <th class="py-3 ps-4 border-0">Tipo</th>
+                            <th class="py-3 border-0">Identificación</th>
+                            <th class="py-3 border-0">Nombre / Contacto</th>
+                            <th class="py-3 border-0">Teléfono</th>
+                            <th class="py-3 border-0">Ciudad</th>
+                            <th class="py-3 border-0">Estado</th>
+                            <th class="py-3 pe-4 text-center border-0">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="border-top-0">
                         {% for p in proveedores %}
                         <tr>
-                            <td class="ps-4 fw-bold text-dark">{{ p.nit }}</td>
-                            <td>{{ p.nombre_contacto }}</td>
-                            <td>{{ p.telefono }}</td>
-                            <td>{{ p.ciudad }}</td>
-                            <td>
-                                {% if p.estado %}
-                                <span class="badge rounded-pill bg-success-subtle text-success border border-success">Activo</span>
+                            <td class="ps-4">
+                                {% if p.tipo_persona == 'natural' %}
+                                    <span class="badge rounded-pill bg-info bg-opacity-10 text-info fw-bold px-3 py-2">
+                                        <i class="bi bi-person me-1"></i> Natural
+                                    </span>
                                 {% else %}
-                                <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger">Inactivo</span>
+                                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-bold px-3 py-2">
+                                        <i class="bi bi-building me-1"></i> Jurídica
+                                    </span>
                                 {% endif %}
                             </td>
-                            <td class="text-center">
-                                <div class="btn-group" role="group">
-                                    <a href="{% url 'proveedores:detalle_proveedores' p.id %}" class="btn btn-outline-info btn-sm" title="Ver Detalle">
-                                        Detalle
+                            <td>
+                                <span class="fw-bold text-dark">{{ p.nit }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold text-dark">{{ p.nombre_contacto }}</span>
+                                    {% if p.tipo_persona == 'juridica' %}
+                                        <small class="text-muted" style="font-size: 0.75rem;">Representante Legal</small>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="text-muted">{{ p.telefono }}</td>
+                            <td class="text-muted">{{ p.ciudad }}</td>
+                            <td>
+                                {% if p.estado %}
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">
+                                        ● Activo
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">
+                                        ● Inactivo
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center pe-4">
+                                <div class="d-flex justify-content-center">
+                                    <a href="{% url 'proveedores:detalle_proveedores' p.id %}" 
+                                       class="btn btn-outline-info action-btn border-0 bg-info bg-opacity-10 text-info" 
+                                       data-bs-toggle="tooltip" title="Ver Detalle">
+                                        <i class="bi bi-eye-fill"></i>
                                     </a>
-                                    <a href="{% url 'proveedores:modificar_proveedores' p.id %}" class="btn btn-outline-warning btn-sm" title="Editar">
-                                        Editar
+
+                                    <a href="{% url 'proveedores:modificar_proveedores' p.id %}" 
+                                       class="btn btn-outline-warning action-btn border-0 bg-warning bg-opacity-10 text-warning" 
+                                       data-bs-toggle="tooltip" title="Editar">
+                                        <i class="bi bi-pencil-fill"></i>
                                     </a>
-                                    <a href="{% url 'proveedores:eliminar_proveedores' p.id %}" class="btn btn-outline-danger btn-sm" title="Eliminar">
-                                        Eliminar
+
+                                    <a href="{% url 'proveedores:eliminar_proveedores' p.id %}" 
+                                       class="btn btn-outline-danger action-btn border-0 bg-danger bg-opacity-10 text-danger" 
+                                       data-bs-toggle="tooltip" title="Eliminar">
+                                        <i class="bi bi-trash-fill"></i>
                                     </a>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <div class="text-muted">
-                                    <p class="mb-2">No hay proveedores registrados.</p>
-                                    <a href="{% url 'proveedores:agregar_proveedores' %}" class="btn btn-sm btn-primary">Crea el primero aquí</a>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center opacity-50">
+                                    <i class="bi bi-folder-x display-1 mb-3 text-muted"></i>
+                                    <h5 class="fw-bold text-muted">No se encontraron proveedores</h5>
+                                    <p class="small">Comienza registrando uno nuevo en el botón superior.</p>
                                 </div>
                             </td>
                         </tr>
@@ -73,6 +152,20 @@
                 </table>
             </div>
         </div>
+        
+        <div class="card-footer bg-white border-0 py-3 px-4">
+            <div class="d-flex justify-content-between align-items-center text-muted small">
+                <span>Mostrando <strong>{{ proveedores|length }}</strong> registros</span>
+                </div>
+        </div>
     </div>
 </div>
+
+<script>
+    // Inicializar tooltips de Bootstrap
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
 {% endblock %}

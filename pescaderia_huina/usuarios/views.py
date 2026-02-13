@@ -55,10 +55,8 @@ def login_view(request):
                     next_url = request.GET.get('next')
                     if next_url:
                         return redirect(next_url)
-                    elif user.is_staff:
-                        return redirect('core:dashboard')
                     else:
-                        return redirect('core:index')
+                        return redirect('core:dashboard')
                 else:
                     messages.error(request, 'Esta cuenta ha sido desactivada.')
             else:

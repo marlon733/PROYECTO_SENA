@@ -1,56 +1,234 @@
-{% extends 'master.html' %}
+{% extends 'core/panel_admin_base.html' %}
 
 {% block content %}
-<div class="container mt-5">
+<style>
+    /* Reutilizando estilos Ocean Vibrant para consistencia */
+    .card-ocean {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border: none;
+    }
+    
+    .card-header-ocean {
+        background: linear-gradient(135deg, hsl(217, 100%, 50%) 0%, #60efff 100%);
+        padding: 2rem;
+        position: relative;
+    }
+
+    .card-header-ocean::after {
+        content: '';
+        position: absolute;
+        bottom: -20px; left: 0; width: 100%; height: 40px;
+        background: white;
+        border-radius: 50% 50% 0 0;
+    }
+
+    /* Estilos de Inputs */
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 1px solid #e0e6ed;
+        padding: 0.7rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        background-color: #f8fbff;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #60efff;
+        box-shadow: 0 0 0 4px rgba(96, 239, 255, 0.15);
+        background-color: #fff;
+    }
+
+    .form-label {
+        color: #556c85;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Botón de Actualizar (Naranja/Dorado para distinguir de "Crear") */
+    .btn-update {
+        background: linear-gradient(90deg, #ff9f00 0%, #ff6a00 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-update:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 106, 0, 0.3);
+        color: white;
+    }
+</style>
+
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-warning text-dark py-3">
-                    <h4 class="mb-0 fw-bold">
-                        <i class="bi bi-pencil-square"></i> Editar Proveedor: {{ form.instance.nombre_contacto }}
-                    </h4>
+        <div class="col-lg-8">
+            <div class="card card-ocean">
+                
+                <div class="card-header-ocean text-center text-white">
+                    <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex p-3 mb-3 shadow-sm backdrop-blur">
+                        <i class="bi bi-pencil-square fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Editar Proveedor</h3>
+                    <p class="opacity-90 mb-4 fs-5">{{ form.instance.nombre_contacto }}</p>
                 </div>
-                <div class="card-body p-4">
-                    <p class="text-muted mb-4">Realice los cambios necesarios y presione guardar para actualizar la información.</p>
+
+                <div class="card-body p-4 p-md-5 pt-4">
                     
-                    <form method="POST" class="needs-validation">
-                        {% csrf_token %}
-                        
-                        <div class="row g-3">
+                    {% if form.errors %}
+                    <div class="alert alert-danger rounded-4 shadow-sm border-0 mb-4" role="alert">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+                            <h5 class="alert-heading mb-0 fw-bold">Corrija los siguientes errores:</h5>
+                        </div>
+                        <ul class="mb-0 ps-3 small">
                             {% for field in form %}
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.errors %}
-                                <div class="text-danger small">
-                                    {{ field.errors }}
-                                </div>
-                                {% endif %}
-                            </div>
+                                {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                {% endfor %}
                             {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row g-4">
+                            <div class="col-12 mb-2">
+                                <h6 class="text-uppercase text-warning fw-bold small letter-spacing-1 border-bottom pb-2">
+                                    <i class="bi bi-card-heading me-2"></i>Información Principal
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.tipo_persona.label }}</label>
+                                {{ form.tipo_persona }}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label" id="label_nit_mod">{{ form.nit.label }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 rounded-start-3 text-muted">
+                                        <i class="bi bi-hash"></i>
+                                    </span>
+                                    {{ form.nit }}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">{{ form.nombre_contacto.label }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 rounded-start-3 text-muted">
+                                        <i class="bi bi-person-lines-fill"></i>
+                                    </span>
+                                    {{ form.nombre_contacto }}
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4 mb-2">
+                                <h6 class="text-uppercase text-warning fw-bold small letter-spacing-1 border-bottom pb-2">
+                                    <i class="bi bi-geo-alt me-2"></i>Ubicación y Contacto
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.telefono.label }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 rounded-start-3 text-muted">
+                                        <i class="bi bi-telephone"></i>
+                                    </span>
+                                    {{ form.telefono }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.ciudad.label }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 rounded-start-3 text-muted">
+                                        <i class="bi bi-building"></i>
+                                    </span>
+                                    {{ form.ciudad }}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">{{ form.correo.label }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 rounded-start-3 text-muted">
+                                        <i class="bi bi-envelope"></i>
+                                    </span>
+                                    {{ form.correo }}
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">{{ form.direccion.label }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 rounded-start-3 text-muted">
+                                        <i class="bi bi-map"></i>
+                                    </span>
+                                    {{ form.direccion }}
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <div class="p-3 bg-light rounded-3 d-flex align-items-center border">
+                                    <div class="form-check form-switch custom-switch">
+                                        {{ form.estado }}
+                                        <label class="form-check-label fw-bold ms-2 text-dark" for="{{ form.estado.id_for_label }}">
+                                            Estado Activo
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-auto d-none d-sm-block">
+                                        <i class="bi bi-info-circle me-1"></i> Desactivar para ocultar en listas
+                                    </small>
+                                </div>
+                            </div>
                         </div>
 
-                        <hr class="my-4">
-
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-light border px-4">
-                                Cancelar
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                            <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-link text-decoration-none text-secondary fw-bold px-0">
+                                <i class="bi bi-x-circle me-1"></i> Cancelar
                             </a>
-                            <button type="submit" class="btn btn-warning px-4 fw-bold">
-                                <i class="bi bi-check-circle"></i> Guardar Cambios
+                            <button type="submit" class="btn btn-update shadow-lg">
+                                <i class="bi bi-arrow-repeat me-2"></i> Actualizar Datos
                             </button>
                         </div>
+
                     </form>
-                </div>
-            </div>
-            
-            <div class="alert alert-info mt-4 d-flex align-items-center" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i>
-                <div>
-                    Recuerda que al modificar el nombre o NIT, los productos vinculados por tu compañero se mantendrán asociados automáticamente.
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Lógica para cambiar la etiqueta según tipo de persona
+    const tipoSelectMod = document.getElementById('id_tipo_persona');
+    const nitLabelMod = document.getElementById('label_nit_mod');
+    const nitInputMod = document.getElementById('id_nit'); // Asegúrate que este ID coincida con el generado por Django
+
+    function actualizarLabelMod() {
+        if (tipoSelectMod.value === 'natural') {
+            nitLabelMod.innerText = 'Número de Cédula';
+            if(nitInputMod) nitInputMod.placeholder = 'Cédula de ciudadanía';
+        } else {
+            nitLabelMod.innerText = 'NIT Empresarial';
+            if(nitInputMod) nitInputMod.placeholder = 'Número de identificación tributaria';
+        }
+    }
+
+    if(tipoSelectMod) {
+        tipoSelectMod.addEventListener('change', actualizarLabelMod);
+        // Ejecutar al cargar la página para establecer el estado inicial correcto
+        window.addEventListener('DOMContentLoaded', actualizarLabelMod);
+    }
+</script>
 {% endblock %}
