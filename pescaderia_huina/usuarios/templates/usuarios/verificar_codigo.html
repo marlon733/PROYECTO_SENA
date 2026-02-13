@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificar código | Huina</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-dark: #0f2c59;
+            --secondary-blue: #3e78b2;
+        }
+
+        body, html {
+            margin: 0;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .split {
+            display: flex;
+            height: 100vh;
+        }
+
+        .left {
+            flex: 1.2;
+            background: linear-gradient(135deg, #0f2c59, #06142e);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .left img {
+            width: 320px;
+        }
+
+        .right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 38px;
+            color: var(--primary-dark);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            margin: 15px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-dark);
+            color: white;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: var(--secondary-blue);
+        }
+
+        .alert {
+            background: #fef2f2;
+            border-left: 5px solid #ef4444;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 992px) {
+            .left { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="split">
+
+    <div class="left">
+        <img src="{% static 'img/LGO.png' %}">
+        <h3>Gestión Huina</h3>
+        <p>Verificación segura</p>
+    </div>
+
+    <div class="right">
+        <div class="box">
+            <h1>PESCADERIA HUINA</h1>
+            <h2>Verificar código</h2>
+            <p>Ingresa el código enviado a tu correo.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" name="codigo" placeholder="Código de 6 dígitos" required>
+                <button>Verificar</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -327,9 +327,17 @@
                 <div class="form-options">
                     <label class="remember-me" for="{{ form.remember_me.id_for_label }}">
                         {{ form.remember_me }}
+<<<<<<< HEAD
                         <span>Recordar dispositivo</span>
                     </label>
                     <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+=======
+                        <label class="form-check-label" style="font-size: 0.85rem; color: #64748b;" for="{{ form.remember_me.id_for_label }}">
+                            Mantener sesión iniciada
+                        </label>
+                    </div>
+                    <a href="{% url "usuarios:recuperar" %}" style="font-size: 0.85rem; color: var(--secondary-blue); text-decoration: none; font-weight: 600;">¿Olvidaste tu clave?</a>
+>>>>>>> 3f45f4f290858d66326e32d50e29b43edbe50089
                 </div>
 
                 <button type="submit" class="btn-primary-modern">
