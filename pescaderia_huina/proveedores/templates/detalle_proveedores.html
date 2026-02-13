@@ -1,0 +1,223 @@
+{% extends 'core/panel_admin_base.html' %}
+
+{% block content %}
+<style>
+    /* Estilos Ocean para Detalle */
+    .card-ocean-detail {
+        border: none;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 97, 255, 0.15);
+    }
+
+    .detail-header {
+        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+        padding: 3rem 2rem 4rem; /* Padding extra abajo para el contenido superpuesto */
+        position: relative;
+        text-align: center;
+        color: white;
+    }
+
+    .detail-header::after {
+        content: '';
+        position: absolute; bottom: 0; left: 0; right: 0;
+        height: 60px;
+        background: white;
+        border-radius: 50% 50% 0 0 / 30px 30px 0 0; /* Curva suave inversa */
+    }
+
+    .provider-icon-large {
+        width: 100px; height: 100px;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(5px);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+        border: 2px solid rgba(255,255,255,0.4);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        font-size: 3rem;
+    }
+
+    /* Cajas de datos */
+    .data-group-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #94a3b8;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .info-item {
+        background-color: #f8fbff;
+        border-radius: 16px;
+        padding: 1.2rem;
+        display: flex;
+        align-items: flex-start;
+        transition: transform 0.2s;
+        border: 1px solid #eef2f6;
+        height: 100%;
+    }
+    
+    .info-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 97, 255, 0.05);
+        border-color: #dbeafe;
+    }
+
+    .info-icon {
+        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+        width: 45px; height: 45px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .info-content small {
+        display: block;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+    .info-content strong {
+        color: #1e293b;
+        font-size: 1rem;
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    /* Botón Editar */
+    .btn-edit-float {
+        background: linear-gradient(45deg, #ffca28, #ffc107);
+        color: #001233;
+        font-weight: 800;
+        border-radius: 50px;
+        padding: 12px 30px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+        transition: all 0.3s;
+    }
+    .btn-edit-float:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 193, 7, 0.5);
+        color: #001233;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-ocean-detail">
+                
+                <div class="detail-header">
+                    <div class="provider-icon-large">
+                        {% if proveedor.tipo_persona == 'natural' %}
+                            <i class="bi bi-person-circle"></i>
+                        {% else %}
+                            <i class="bi bi-building"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <h2 class="fw-bold mb-2">{{ proveedor.nombre_contacto }}</h2>
+                    
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <span class="badge bg-white text-primary bg-opacity-25 backdrop-blur border border-white border-opacity-50 px-3 py-2 rounded-pill">
+                            {{ proveedor.get_tipo_persona_display }}
+                        </span>
+                        
+                        {% if proveedor.estado %}
+                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm">
+                                <i class="bi bi-check-circle-fill me-1"></i> Activo
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm">
+                                <i class="bi bi-x-circle-fill me-1"></i> Inactivo
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card-body px-4 px-md-5 pb-5 pt-2">
+                    
+                    <div class="row mb-4 justify-content-center">
+                        <div class="col-md-6 text-center">
+                            <div class="p-3 rounded-4 bg-white shadow-sm border position-relative" style="top: -40px;">
+                                <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.7rem;">
+                                    {% if proveedor.tipo_persona == 'natural' %}NO. CÉDULA{% else %}NIT EMPRESARIAL{% endif %}
+                                </small>
+                                <span class="fs-4 fw-black text-primary letter-spacing-1">{{ proveedor.nit }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="data-group-label text-center border-bottom pb-2 mb-4">Información de Contacto</span>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-envelope"></i></div>
+                                <div class="info-content">
+                                    <small>Correo Electrónico</small>
+                                    <strong>{{ proveedor.correo }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-telephone"></i></div>
+                                <div class="info-content">
+                                    <small>Teléfono / Celular</small>
+                                    <strong>{{ proveedor.telefono }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="data-group-label text-center border-bottom pb-2 mb-4">Ubicación</span>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
+                                <div class="info-content">
+                                    <small>Ciudad</small>
+                                    <strong>{{ proveedor.ciudad }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-map"></i></div>
+                                <div class="info-content">
+                                    <small>Dirección Física</small>
+                                    <strong>{{ proveedor.direccion }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-5 opacity-10">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'proveedores:lista_proveedores' %}" 
+                           class="btn btn-link text-decoration-none text-secondary fw-bold">
+                            <i class="bi bi-arrow-left me-2"></i> Volver a la lista
+                        </a>
+                        
+                        <a href="{% url 'proveedores:modificar_proveedores' proveedor.id %}" 
+                           class="btn btn-edit-float">
+                            <i class="bi bi-pencil-square me-2"></i> Editar Datos
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

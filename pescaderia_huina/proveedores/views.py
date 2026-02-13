@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Proveedor
 from .forms import ProveedorForm
 
-# 1. LISTA DE PROVEEDORES (Tu Hub Principal)
+# 1. LISTA DE PROVEEDORES
 def lista_proveedores(request):
-    proveedores = Proveedor.objects.all()
+    # Traemos todos los proveedores ordenados por nombre
+    proveedores = Proveedor.objects.all().order_by('nombre_contacto')
     return render(request, 'lista_proveedores.html', {'proveedores': proveedores})
 
 # 2. AGREGAR PROVEEDOR
@@ -18,7 +19,7 @@ def agregar_proveedor(request):
         form = ProveedorForm()
     return render(request, 'agregar_proveedores.html', {'form': form})
 
-# 3. DETALLE DEL PROVEEDOR (Solo lectura)
+# 3. DETALLE DEL PROVEEDOR
 def detalle_proveedor(request, id):
     proveedor = get_object_or_404(Proveedor, id=id)
     return render(request, 'detalle_proveedores.html', {'proveedor': proveedor})
@@ -33,7 +34,8 @@ def modificar_proveedor(request, id):
             return redirect('proveedores:lista_proveedores')
     else:
         form = ProveedorForm(instance=proveedor)
-    return render(request, 'modificar_proveedores.html', {'form': form})
+    # Importante: enviamos el objeto proveedor también por si el template lo necesita
+    return render(request, 'modificar_proveedores.html', {'form': form, 'proveedor': proveedor})
 
 # 5. ELIMINAR PROVEEDOR
 def eliminar_proveedor(request, id):

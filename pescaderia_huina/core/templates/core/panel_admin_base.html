@@ -199,6 +199,11 @@
                         <i class="bi bi-people"></i> <span>Usuarios</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{% url 'usuarios:registro' %}" class="nav-link {% if 'usuarios' in request.path %}active{% endif %}">
+                        <i class="bi bi-people"></i> <span>Registrar</span>
+                    </a>
+                </li>
 
                 <li class="nav-header">Gestión</li>
                 <li class="nav-item">
@@ -207,6 +212,14 @@
                 <li class="nav-item">
                     <a href="{% url 'ventas:lista_ventas'%}" class="nav-link"><i class="bi bi-cart3"></i> <span>Ventas</span></a>
                 </li>
+                <li class="nav-item">
+                    <a href="{% url 'proveedores:lista_proveedores'%}" class="nav-link"><i class="bi bi-truck"></i> <span>Proveedores</span></a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{% url 'ventas:lista_ventas'%}" class="nav-link"><i class="bi bi-cart3"></i> <span>Pedidos</span></a>
+                </li>
+
 
                 <li class="nav-header">Cuenta</li>
                 <li class="nav-item">
