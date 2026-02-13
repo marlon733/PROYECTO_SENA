@@ -26,6 +26,72 @@
         .section-border {
             border-bottom: 2px solid var(--primary-blue);
         }
+
+        .tipo-presentacion-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tipo-presentacion-option {
+            display: none; /* Ocultar radio nativo */
+        }
+
+        .tipo-presentacion-label {
+            cursor: pointer;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-width: 130px;
+            text-align: center;
+            background: #fff;
+            color: #6c757d;
+            user-select: none;
+        }
+
+        .tipo-presentacion-label .tipo-icon {
+            font-size: 1.6rem;
+        }
+
+        .tipo-presentacion-option:checked + .tipo-presentacion-label {
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 90, 125, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tipo-presentacion-label:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-dark);
+        }
+
+        .cantidad-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .badge-unidades {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-peso {
+            background-color: #fff3cd;
+            color: #856404;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -78,6 +144,41 @@
                     </div>
                 </div>
 
+                 <!-- Tipo de Presentación -->
+                <h5 class="section-border pb-2 mb-3 mt-4">Tipo de Presentación</h5>
+                <div class="mb-3">
+                    {% if form.tipo_presentacion.errors %}
+                        <div class="text-danger small mb-2">{{ form.tipo_presentacion.errors }}</div>
+                    {% endif %}
+                    <div class="tipo-presentacion-group">
+                        {% for radio in form.tipo_presentacion %}
+                            <div>
+                                <input type="radio"
+                                       name="{{ radio.data.name }}"
+                                       value="{{ radio.data.value }}"
+                                       id="{{ radio.id_for_label }}"
+                                       class="tipo-presentacion-option"
+                                       {% if radio.data.selected %}checked{% endif %}>
+                                <label for="{{ radio.id_for_label }}" class="tipo-presentacion-label">
+                                    {% if radio.data.value == 'EMPACADO_VACIO' %}
+                                        <span class="tipo-icon"></span>
+                                        Empacado al Vacío
+                                        <small class="text-muted fw-normal" style="font-size:0.72rem;">Unidades</small>
+                                    {% elif radio.data.value == 'POR_LIBRA' %}
+                                        <span class="tipo-icon"></span>
+                                        Por Libra
+                                        <small class="text-muted fw-normal" style="font-size:0.72rem;">Peso (lb)</small>
+                                    {% elif radio.data.value == 'BANDEJA' %}
+                                        <span class="tipo-icon"></span>
+                                        Bandeja
+                                        <small class="text-muted fw-normal" style="font-size:0.72rem;">Unidades</small>
+                                    {% endif %}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
                 <!-- Información del Producto -->
                 <h5 class="section-border pb-2 mb-3 mt-4">Información del Producto</h5>
                 <div class="row mb-3">
@@ -92,8 +193,12 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label class="form-label">{{ form.cantidad.label }}</label>
+                        <label class="form-label" id="label_cantidad">
+                            Cantidad (Unidades)
+                            <span class="cantidad-badge badge-unidades" id="cantidad_badge">Unidades</span>
+                        </label>
                         {{ form.cantidad }}
+                        <div class="form-text text-muted" id="cantidad_hint">Ingrese el número de unidades.</div>
                         {% if form.cantidad.errors %}
                             <div class="text-danger small">{{ form.cantidad.errors }}</div>
                         {% endif %}
@@ -130,6 +235,54 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function () {
+        const cantidadInput = document.getElementById('id_cantidad');
+        const labelCantidad = document.getElementById('label_cantidad');
+        const badgeCantidad = document.getElementById('cantidad_badge');
+        const hintCantidad = document.getElementById('cantidad_hint');
+        const radios = document.querySelectorAll('input.tipo-presentacion-option');
+
+        function actualizarCampos(tipoPresentacion) {
+            if (tipoPresentacion === 'POR_LIBRA') {
+                // Modo peso
+                labelCantidad.childNodes[0].textContent = 'Peso ';
+                badgeCantidad.textContent = 'Libras (lb)';
+                badgeCantidad.className = 'cantidad-badge badge-peso';
+                cantidadInput.setAttribute('step', '0.01');
+                cantidadInput.setAttribute('min', '0.01');
+                cantidadInput.setAttribute('placeholder', 'Peso en libras (ej: 1.5)');
+                hintCantidad.textContent = 'Ingrese el peso en libras. Se aceptan decimales.';
+            } else {
+                // Modo unidades (EMPACADO_VACIO o BANDEJA)
+                labelCantidad.childNodes[0].textContent = 'Cantidad ';
+                badgeCantidad.textContent = 'Unidades';
+                badgeCantidad.className = 'cantidad-badge badge-unidades';
+                cantidadInput.setAttribute('step', '1');
+                cantidadInput.setAttribute('min', '1');
+                cantidadInput.setAttribute('placeholder', 'Número de unidades');
+                hintCantidad.textContent = 'Ingrese el número de unidades enteras.';
+            }
+        }
+
+        // Inicializar según la selección actual
+        radios.forEach(function (radio) {
+            if (radio.checked) {
+                actualizarCampos(radio.value);
+            }
+            radio.addEventListener('change', function () {
+                actualizarCampos(this.value);
+            });
+        });
+
+        // Si ninguno está seleccionado, usar el primero como default
+        const checkedRadio = document.querySelector('input.tipo-presentacion-option:checked');
+        if (!checkedRadio && radios.length > 0) {
+            radios[radios.length - 1].checked = true; // BANDEJA es el default del modelo
+            actualizarCampos(radios[radios.length - 1].value);
+        }
+    })();
+</script>
 </body>
 </html>
 {% endblock %}
