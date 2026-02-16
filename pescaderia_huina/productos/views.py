@@ -1,16 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+@login_required
 def productos_list(request):
     productos = Producto.objects.all()
     return render(request, "producto.html", {"productos": productos})
 
-
+@login_required
 def producto_detalle(request, id):
     producto = get_object_or_404(Producto, id=id)
     return render(request, "producto_detalle.html", {"producto": producto})
 
-
+@login_required
 def producto_crear(request):
     if request.method == "POST":
         Producto.objects.create(
@@ -28,7 +31,7 @@ def producto_crear(request):
     return render(request, "producto_crear.html")
 
 
-
+@login_required
 def producto_editar(request, id):
     producto = get_object_or_404(Producto, id=id)
 
@@ -48,7 +51,7 @@ def producto_editar(request, id):
     return render(request, "producto_editar.html", {
         "producto": producto
     })
-
+@login_required
 def producto_eliminar(request, id):
     producto = get_object_or_404(Producto, id=id)
     

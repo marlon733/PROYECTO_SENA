@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate,update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -9,6 +9,14 @@ from django.http import JsonResponse
 from django.db.models import Q
 from .forms import LoginForm, RegistroForm, EditarUsuarioForm, EditarPerfilForm
 from .models import PerfilUsuario
+import random
+from django.utils import timezone
+from django.core.mail import send_mail
+from datetime import timedelta
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
 
 # ==================== VISTAS DE AUTENTICACIÓN ====================
 
@@ -47,10 +55,8 @@ def login_view(request):
                     next_url = request.GET.get('next')
                     if next_url:
                         return redirect(next_url)
-                    elif user.is_staff:
-                        return redirect('core:dashboard')
                     else:
-                        return redirect('core:index')
+                        return redirect('core:dashboard')
                 else:
                     messages.error(request, 'Esta cuenta ha sido desactivada.')
             else:
@@ -68,7 +74,7 @@ def login_view(request):
 
 
 @csrf_protect
-#@login_required
+@login_required
 def registro_view(request):
     if request.method == 'POST':
         form = RegistroForm(request.POST)
@@ -263,4 +269,88 @@ def perfil_view(request):
         'form_perfil': form_perfil,
     }
     return render(request, 'usuarios/perfil.html', context)
+def solicitar_recuperacion(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
 
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return render(request, 'usuarios/recuperar.html', {
+                'error': 'El correo no está registrado'
+            })
+
+        codigo = str(random.randint(100000, 999999))
+
+        perfil = user.perfil
+        perfil.recovery_code = codigo
+        perfil.recovery_code_created = timezone.now()
+        perfil.save()
+
+        html_content = render_to_string('usuarios/correo.html', {
+            'codigo': codigo,
+            'year': timezone.now().year
+        })
+
+        email_msg = EmailMultiAlternatives(
+            subject='🐟 Recuperación de contraseña - Pescadería Huina',
+            body='Tu cliente de correo no soporta HTML',
+            from_email='Pescadería Huina <tucorreo@gmail.com>',
+            to=[email],
+        )
+
+        email_msg.attach_alternative(html_content, "text/html")
+        email_msg.send()
+
+        request.session['recovery_user'] = user.id
+        return redirect('usuarios:verificar_codigo')
+
+    return render(request, 'usuarios/recuperar.html')
+def verificar_codigo(request):
+    user_id = request.session.get('recovery_user')
+
+    if not user_id:
+        return redirect('usuarios:login')
+
+    user = User.objects.get(id=user_id)
+    perfil = user.perfil
+
+    if request.method == 'POST':
+        codigo = request.POST.get('codigo')
+
+        if perfil.recovery_code != codigo:
+            return render(request, 'usuarios/verificar_codigo.html', {
+                'error': 'Código incorrecto'
+            })
+
+        if timezone.now() - perfil.recovery_code_created > timedelta(minutes=10):
+            return render(request, 'usuarios/verificar_codigo.html', {
+                'error': 'El código ha expirado'
+            })
+
+        request.session['codigo_validado'] = True
+        return redirect('usuarios:nueva_password')
+
+    return render(request, 'usuarios/verificar_codigo.html')
+def nueva_password(request):
+    if not request.session.get('codigo_validado'):
+        return redirect('usuarios:login')
+
+    user = User.objects.get(id=request.session['recovery_user'])
+
+    if request.method == 'POST':
+        password = request.POST.get('password')
+
+        user.set_password(password)
+        user.save()
+
+        # Limpiar código
+        perfil = user.perfil
+        perfil.recovery_code = None
+        perfil.recovery_code_created = None
+        perfil.save()
+
+        request.session.flush()
+        return redirect('usuarios:login')
+
+    return render(request, 'usuarios/nueva_password.html')

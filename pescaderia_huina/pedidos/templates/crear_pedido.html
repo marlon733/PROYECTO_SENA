@@ -1,0 +1,129 @@
+{% extends 'core/panel_admin_base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<style>
+    .card { border-radius: 1rem; }
+    .input-group-text { background-color: #f8f9fa; border-right: none; }
+    .form-control, .form-select { border-radius: 0.5rem; }
+    .total-field {
+        font-weight: bold;
+        color: #198754 !important;
+        background-color: #f8f9fa !important;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8"> <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="card-title mb-0 text-center fw-bold">
+                        <i class="bi bi-cart-check me-2"></i>Registrar Nuevo Pedido
+                    </h4>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Proveedor (NIT)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                {{ form_pedido.proveedor }}
+                            </div>
+                        </div>
+
+                        <hr class="my-4 text-muted">
+                        <h5 class="text-primary mb-3 fw-bold">Detalles del Producto</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-secondary">Producto</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
+                                {{ form_detalle.producto }}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary">Cantidad</label>
+                                <div class="input-group">
+                                    {{ form_detalle.cantidad }}
+                                    <select class="form-select bg-light" id="id_unidad" name="unidad" style="max-width: 90px;">
+                                        <option value="unidades">Uds</option>
+                                        <option value="bandejas">Band</option>
+                                        <option value="libras">Lib</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary">Precio Unitario</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" id="id_precio_unitario" class="form-control" placeholder="0" min="0">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary">Total Pedido</label>
+                                <input type="text" id="id_total" class="form-control total-field text-end" readonly value="$ 0">
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-secondary">Estado del Pedido</label>
+                            {{ form_pedido.estado }}
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-outline-secondary px-4 rounded-pill">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-success px-5 fw-bold rounded-pill shadow-sm">
+                                <i class="bi bi-save me-1"></i> Guardar Pedido
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const inputCant = document.querySelector('[name="cantidad"]');
+    const inputPrecUnit = document.getElementById('id_precio_unitario');
+    const inputUnidad = document.getElementById('id_unidad');
+    const inputTot = document.getElementById('id_total');
+
+    const formatterCOP = new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    });
+
+    function actualizarTotal() {
+        const cantidad = parseFloat(inputCant.value) || 0;
+        const precio = parseFloat(inputPrecUnit.value) || 0; 
+
+        let factor = 1;
+        // Si el precio unitario se entiende como "Precio por Kilo" y se venden libras:
+        if (inputUnidad.value === 'libras') {
+            factor = 0.5; 
+        }
+
+        const resultado = cantidad * precio * factor;
+        inputTot.value = formatterCOP.format(resultado);
+    }
+
+    // Escuchar cambios en todos los campos relevantes
+    inputCant?.addEventListener('input', actualizarTotal);
+    inputPrecUnit?.addEventListener('input', actualizarTotal);
+    inputUnidad?.addEventListener('change', actualizarTotal);
+</script>
+{% endblock %}

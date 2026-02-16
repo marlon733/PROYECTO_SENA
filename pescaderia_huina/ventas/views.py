@@ -22,21 +22,19 @@ def ventas(request):
     # Aplicar filtros si existen
     form_busqueda = BusquedaVentaForm(request.GET)
     if form_busqueda.is_valid():
-        fecha_inicio = form_busqueda.cleaned_data.get('fecha_inicio')
-        fecha_fin = form_busqueda.cleaned_data.get('fecha_fin')
         estado = form_busqueda.cleaned_data.get('estado')
+        tipo_presentacion = form_busqueda.cleaned_data.get('tipo_presentacion')
         buscar = form_busqueda.cleaned_data.get('buscar')
         
-        if fecha_inicio:
-            lista_ventas = lista_ventas.filter(fecha_venta__gte=fecha_inicio)
-        if fecha_fin:
-            lista_ventas = lista_ventas.filter(fecha_venta__lte=fecha_fin)
         if estado:
             lista_ventas = lista_ventas.filter(estado=estado)
+        if tipo_presentacion:
+            lista_ventas = lista_ventas.filter(tipo_presentacion=tipo_presentacion)
         if buscar:
             lista_ventas = lista_ventas.filter(
                 Q(nombre_cliente__icontains=buscar) |
-                Q(documento_cliente__icontains=buscar)
+                Q(documento_cliente__icontains=buscar) |
+                Q(producto__nombre__icontains=buscar)
             )
     
     # Calcular estadísticas
