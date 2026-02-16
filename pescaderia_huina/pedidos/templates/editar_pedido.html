@@ -1,0 +1,103 @@
+{% extends 'core/panel_admin_base.html' %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header py-3" style="background-color: #ffc107; color: #000;">
+                    <h4 class="mb-0 fw-bold text-center">
+                        <i class="bi bi-pencil-square"></i> Editar Pedido #{{ form_pedido.instance.id }}
+                    </h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    <p class="text-muted mb-4">Actualice el estado del pedido o ajuste los detalles de la compra a <strong>{{ form_pedido.instance.proveedor.nombre }}</strong>.</p>
+                    
+                    <form method="POST" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Proveedor</label>
+                                {{ form_pedido.proveedor }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Estado del Pedido</label>
+                                {{ form_pedido.estado }}
+                            </div>
+
+                            <hr class="my-3 opacity-25">
+                            <h5 class="text-primary fw-bold">Detalles del Producto</h5>
+
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Producto</label>
+                                {{ form_detalle.producto }}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Cantidad</label>
+                                {{ form_detalle.cantidad }}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Precio Unitario (COP)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    {{ form_detalle.precio_unitario }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-success">Total Pedido</label>
+                                <input type="text" id="id_total_edit" class="form-control bg-light fw-bold text-primary" readonly value="$ {{ form_pedido.instance.valor_total }}">
+                            </div>
+                        </div>
+
+                        {% if form_pedido.errors or form_detalle.errors %}
+                        <div class="alert alert-danger mt-3">
+                            Verifique los datos ingresados e intente nuevamente.
+                        </div>
+                        {% endif %}
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-light border px-4">
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn fw-bold px-4" style="background-color: #ffc107; color: #000; border: none;">
+                                <i class="bi bi-check-circle"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-4 d-flex align-items-center shadow-sm" role="alert" style="border-left: 5px solid #0dcaf0;">
+                <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+                <div>
+                    Al marcar el pedido como <strong>"Recibido"</strong>, asegúrese de que el stock en el inventario de productos haya sido actualizado correctamente.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Lógica para recalcular el total en la edición
+    const editCant = document.getElementById('id_cantidad');
+    const editPrec = document.getElementById('id_precio');
+    const displayTotal = document.getElementById('id_total_edit');
+
+    function recalcular() {
+        const c = parseFloat(editCant.value) || 0;
+        const p = parseFloat(editPrec.value) || 0;
+        const total = c * p;
+        displayTotal.value = "$ " + total.toLocaleString('es-CO');
+    }
+
+    editCant.addEventListener('input', recalcular);
+    editPrec.addEventListener('input', recalcular);
+</script>
+{% endblock %}

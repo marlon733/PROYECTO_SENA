@@ -10,6 +10,13 @@ class Venta(models.Model):
         ('PENDIENTE', 'Pendiente'),
     ]
     
+    TIPO_PRESENTACION= [
+        ('EMPACADO_VACIO', 'Empacado al Vacío'),
+        ('POR_LIBRA', 'Por Libra'),
+        ('BANDEJA', 'Bandeja'),
+    ]
+    
+    
     # Cliente
     nombre_cliente = models.CharField(max_length=100)
     documento_cliente = models.CharField(max_length=20)
@@ -45,6 +52,7 @@ class Venta(models.Model):
     )
     observaciones = models.TextField(blank=True, null=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='COMPLETADA')
+    tipo_presentacion = models.CharField(max_length=20, choices=TIPO_PRESENTACION, default='BANDEJA')
     
     # Campos para cancelación
     motivo_cancelacion = models.TextField(blank=True, null=True)

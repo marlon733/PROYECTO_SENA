@@ -11,6 +11,7 @@
     {% bootstrap_javascript %}
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
     <style>
@@ -187,11 +188,7 @@
                             <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" 
                                href="{% url 'core:index' %}">Inicio</a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'proveedores:lista_proveedores' %}">Proveedores</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Pedidos</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'ventas:lista_ventas' %}">Ventas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'productos:productos_list' %}">Productos</a></li>
-                      
+                        
                         
                         <li class="nav-item d-none d-lg-block mx-2 text-white-50">|</li>
 
@@ -228,11 +225,6 @@
                                      <li>
                                         <a class="dropdown-item" href="{% url 'core:dashboard' %}">
                                             <i class="bi bi-person me-2"></i> Administración
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'usuarios:registro' %}">
-                                            <i class="bi bi-person me-2"></i> Registrar
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
@@ -304,6 +296,6 @@
             </div>
         </div>
     </footer>
-
+<script src="static/js/accesibilidad.js"></script>
 </body>
 </html>

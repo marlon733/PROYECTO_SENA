@@ -16,7 +16,17 @@ class PerfilUsuario(models.Model):
         on_delete=models.CASCADE,
         related_name='perfil'
     )
-    
+    recovery_code = models.CharField(
+        max_length=6,
+        blank=True,
+        null=True
+    )
+    recovery_code_created = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+    def __str__(self):
+        return self.user.username
     documento = models.CharField(
         max_length=20, 
         unique=True,
@@ -79,3 +89,4 @@ def guardar_perfil_usuario(sender, instance, **kwargs):
     """
     if hasattr(instance, 'perfil'):
         instance.perfil.save()
+        
