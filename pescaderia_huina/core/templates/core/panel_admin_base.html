@@ -5,229 +5,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Panel Administrativo{% endblock %} - Mi Proyecto SENA</title>
+    <title>{% block title %}Panel Administrativo{% endblock %} - Pescadería Huina</title>
         
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     {% bootstrap_css %}
-
-    <style>
-        :root {
-            /* Paleta de Colores Elevada */
-            --primary: #6366f1; /* Indigo Moderno */
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            --secondary: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #0ea5e9;
-            
-            --bg-body: #f1f5f9;
-            --sidebar-bg: #1e293b; /* Sidebar Oscuro para contraste Premium */
-            --sidebar-text: #94a3b8;
-            --sidebar-active: #ffffff;
-            
-            --sidebar-width: 270px;
-            --sidebar-collapsed: 85px;
-            --topbar-height: 75px;
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        body.dashboard-body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: #1e293b;
-            margin: 0;
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3, h4, h5, .user-name {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        /* --- SIDEBAR PRO --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100vh;
-            position: fixed;
-            left: 0; top: 0;
-            background: var(--sidebar-bg);
-            z-index: 1050;
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
-        }
-
-        .sidebar.collapsed { width: var(--sidebar-collapsed); }
-
-        .sidebar-header { 
-            padding: 2rem 1.5rem; 
-            background: rgba(255,255,255,0.03);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 1rem;
-        }
-        
-        .user-avatar {
-            width: 65px; height: 65px; margin: 0 auto 1rem;
-            border-radius: 18px; overflow: hidden;
-            background: var(--primary-gradient);
-            padding: 2px;
-            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
-        }
-
-        .sidebar.collapsed .user-avatar { width: 45px; height: 45px; border-radius: 12px; }
-        .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
-        .avatar-placeholder i { font-size: 2rem; color: white; line-height: 60px; }
-
-        .user-name { color: white; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
-        .user-role { font-size: 0.7rem; color: var(--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-
-        .sidebar.collapsed .user-name, .sidebar.collapsed .user-role, 
-        .sidebar.collapsed .nav-link span, .sidebar.collapsed .nav-header { display: none; }
-
-        /* --- NAVEGACIÓN --- */
-        .sidebar-nav { flex: 1; overflow-y: auto; padding: 0 1rem; }
-        
-        .nav-header {
-            font-size: 0.65rem; font-weight: 800; color: #475569;
-            padding: 1.5rem 1rem 0.5rem; letter-spacing: 1.2px; text-transform: uppercase;
-        }
-
-        .nav-link {
-            display: flex; align-items: center; padding: 0.8rem 1.2rem;
-            color: var(--sidebar-text); border-radius: 12px;
-            margin-bottom: 0.3rem; transition: var(--transition);
-            text-decoration: none !important; font-weight: 500;
-        }
-
-        .nav-link i { font-size: 1.2rem; margin-right: 12px; transition: var(--transition); }
-        .sidebar.collapsed .nav-link { justify-content: center; padding: 0.8rem 0; }
-        .sidebar.collapsed .nav-link i { margin-right: 0; }
-
-        .nav-link:hover { 
-            background: rgba(255,255,255,0.05); 
-            color: var(--primary); 
-            transform: translateX(5px);
-        }
-
-        .nav-link.active { 
-            background: var(--primary-gradient); 
-            color: white !important; 
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4); 
-        }
-
-        /* Colores dinámicos para iconos */
-        .nav-link:not(.active) i.bi-calendar3 { color: var(--info); }
-        .nav-link:not(.active) i.bi-chat-dots { color: var(--warning); }
-        .nav-link:not(.active) i.bi-people { color: var(--success); }
-        .nav-link:not(.active) i.bi-graph-up { color: var(--danger); }
-
-        /* --- TOPBAR GLASS --- */
-        .topbar {
-            height: var(--topbar-height);
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(15px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 2rem; position: sticky; top: 0; z-index: 1000;
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-        }
-
-        .main-content { margin-left: var(--sidebar-width); transition: var(--transition); }
-        .main-content.expanded { margin-left: var(--sidebar-collapsed); }
-
-        .btn-toggle { background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 12px; color: var(--sidebar-bg); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-
-        .search-box input { 
-            border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; 
-            padding: 10px 15px 10px 40px; font-size: 0.9rem; width: 300px; transition: var(--transition);
-        }
-        .search-box input:focus { width: 350px; background: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); outline: none; }
-
-        /* --- CARDS & CONTENT --- */
-        .content-wrapper { padding: 2.5rem; }
-        
-        .breadcrumb-item a { color: var(--primary); font-weight: 600; text-decoration: none; }
-        
-        .alert { border: none; border-radius: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-
-        @media (max-width: 992px) {
-            .sidebar { left: -100%; }
-            .sidebar.mobile-active { left: 0; width: var(--sidebar-width); }
-            .main-content { margin-left: 0 !important; }
-        }
-    </style>
+    
+    <link rel="stylesheet" href="{% static 'css/panel_admin.css' %}">
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body class="dashboard-body">
     
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="user-avatar text-center">
+            <div class="user-avatar-container">
                 {% if user.perfil.foto_perfil %}
-                    <img src="{{ user.perfil.foto_perfil.url }}" alt="Perfil" class="avatar-img">
+                    <img src="{{ user.perfil.foto_perfil.url }}" alt="Perfil" class="user-avatar">
                 {% else %}
-                    <div class="avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+                    <div class="user-avatar d-flex align-items-center justify-content-center bg-white text-primary">
+                        <i class="bi bi-person-fill fs-2"></i>
+                    </div>
                 {% endif %}
             </div>
-            <div class="text-center">
+            <div class="text-center user-info">
                 <h6 class="user-name">{{ user.get_full_name|default:user.username }}</h6>
-                <p class="user-role">ADMIN PRO</p>
+                <p class="user-role mb-0">ADMINISTRADOR</p>
             </div>
         </div>
         
         <nav class="sidebar-nav">
-            <ul class="nav flex-column">
-                <li class="nav-header">Principal</li>
+            <ul class="nav flex-column pb-4">
+                <li class="nav-header">Panel Principal</li>
                 <li class="nav-item">
                     <a href="{% url 'core:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                         <i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'core:index' %}" class="nav-link"> <i class="bi bi-house-fill"></i>
-                        <span>Inicio</span></a>
+                    <a href="{% url 'core:index' %}" class="nav-link"> 
+                        <i class="bi bi-shop-window"></i> <span>Ver Pagina Informativa</span>
+                    </a>
                 </li>
+                
+                <li class="nav-header">Operaciones</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-chat-dots"></i> <span>Mensajes</span>
-                        <span class="badge bg-danger rounded-pill ms-auto">7</span>
+                    <a href="{% url 'productos:productos_list'%}" class="nav-link">
+                        <i class="bi bi-box-seam-fill"></i> <span>Productos</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'usuarios:lista_usuarios' %}" class="nav-link {% if 'usuarios' in request.path %}active{% endif %}">
-                        <i class="bi bi-people"></i> <span>Usuarios</span>
+                    <a href="{% url 'ventas:lista_ventas'%}" class="nav-link">
+                        <i class="bi bi-receipt-cutoff"></i> <span>Ventas</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'usuarios:registro' %}" class="nav-link {% if 'usuarios' in request.path %}active{% endif %}">
-                        <i class="bi bi-people"></i> <span>Registrar</span>
+                    <a href="{% url 'pedidos:lista_pedidos'%}" class="nav-link">
+                        <i class="bi bi-cart-check-fill"></i> <span>Pedidos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'proveedores:lista_proveedores'%}" class="nav-link">
+                        <i class="bi bi-truck-front-fill"></i> <span>Proveedores</span>
                     </a>
                 </li>
 
-                <li class="nav-header">Gestión</li>
+                <li class="nav-header">Usuarios y Equipo</li>
                 <li class="nav-item">
-                    <a href="{% url 'productos:productos_list'%}" class="nav-link"><i class="bi bi-box-seam"></i> <span>Productos</span></a>
+                    <a href="{% url 'usuarios:lista_usuarios' %}" class="nav-link {% if 'usuarios' in request.path and 'lista' in request.path %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i> <span>Lista de Usuarios</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'ventas:lista_ventas'%}" class="nav-link"><i class="bi bi-cart3"></i> <span>Ventas</span></a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'proveedores:lista_proveedores'%}" class="nav-link"><i class="bi bi-truck"></i> <span>Proveedores</span></a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="{% url 'pedidos:lista_pedidos'%}" class="nav-link"><i class="bi bi-cart3"></i> <span>Pedidos</span></a>
+                    <a href="{% url 'usuarios:registro' %}" class="nav-link {% if 'registro' in request.path %}active{% endif %}">
+                        <i class="bi bi-person-plus-fill"></i> <span>Registrar Nuevo</span>
+                    </a>
                 </li>
 
-
-                <li class="nav-header">Cuenta</li>
+                <li class="nav-header">Configuración</li>
                 <li class="nav-item">
-                    <a href="{% url 'usuarios:perfil' %}" class="nav-link"><i class="bi bi-person-badge"></i> <span>Mi Perfil</span></a>
+                    <a href="{% url 'usuarios:perfil' %}" class="nav-link">
+                        <i class="bi bi-gear-fill"></i> <span>Mi Perfil</span>
+                    </a>
                 </li>
-                <li class="nav-item">
-                   <a href="{% url 'usuarios:logout' %}" class="nav-link text-danger" onclick="return confirm('¿Seguro que deseas cerrar sesión?')">
-                        <i class="bi bi-box-arrow-right"></i>
+                <li class="nav-item mt-2">
+                   <a href="{% url 'usuarios:logout' %}" class="nav-link" style="color: #ff4757;" onclick="return confirm('¿Seguro que deseas cerrar sesión?')">
+                        <i class="bi bi-box-arrow-left" style="color: #ff4757;"></i> 
                         <span>Cerrar Sesión</span>
                     </a>
                 </li>
@@ -238,44 +102,58 @@
     <div class="main-content" id="main-content">
         <div class="topbar">
             <div class="d-flex align-items-center">
-                <button class="btn-toggle me-4" id="sidebar-toggle"><i class="bi bi-list fs-4"></i></button>
+                <button class="btn-toggle me-4 shadow-sm" id="sidebar-toggle">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
                 <div class="search-box d-none d-lg-block">
-                    <i class="bi bi-search position-absolute ms-3 mt-2 text-muted"></i>
-                    <input type="text" class="form-control" placeholder="Buscar reporte, venta o usuario...">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Buscar pedidos, clientes...">
                 </div>
             </div>
             
             <div class="d-flex align-items-center gap-4">
                 <div class="dropdown">
-                    <button class="btn border-0 position-relative" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-bell-fill fs-5 text-secondary"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                    <button class="btn border-0 position-relative p-0" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell fs-4 text-secondary"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-white rounded-circle">
+                            <span class="visually-hidden">Alertas</span>
+                        </span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 mt-3" style="min-width: 300px; border-radius: 15px;">
-                        <li><h6 class="dropdown-header fw-bold">Notificaciones Recientes</h6></li>
-                        <li><a class="dropdown-item rounded-3 p-3" href="#">
-                            <div class="d-flex align-items-center">
-                                <div class="p-2 bg-primary-soft rounded-circle me-3"><i class="bi bi-person-check text-primary"></i></div>
-                                <div><p class="mb-0 small fw-bold">Nuevo registro SENA</p><small class="text-muted">Hace 2 minutos</small></div>
-                            </div>
-                        </a></li>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-notify shadow" style="min-width: 320px;">
+                        <li><h6 class="dropdown-header-notify">Notificaciones</h6></li>
+                        <li>
+                            <a class="dropdown-item p-3 border-bottom" href="#">
+                                <div class="d-flex align-items-start">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3">
+                                        <i class="bi bi-cart-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0 small fw-bold text-dark">Nuevo pedido recibido</p>
+                                        <small class="text-muted" style="font-size: 0.7rem;">Hace 5 minutos</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li><a class="dropdown-item text-center small py-2 text-primary fw-bold" href="#">Ver todas</a></li>
                     </ul>
                 </div>
-                <div class="vr opacity-10" style="height: 30px;"></div>
-                <div class="d-flex align-items-center gap-3">
+                
+                <div class="d-flex align-items-center gap-3 ps-3 border-start">
                     <div class="text-end d-none d-md-block">
-                        <p class="mb-0 small fw-bold text-dark">{{ user.get_full_name }}</p>
-                        <p class="mb-0 smaller text-muted" style="font-size: 0.7rem;">{{ user.email }}</p>
+                        <p class="mb-0 small fw-bold text-dark" style="line-height: 1.2;">{{ user.get_full_name }}</p>
+                        <p class="mb-0 text-muted" style="font-size: 0.75rem;">{{ user.email }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
         {% if messages %}
-        <div class="messages-container">
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100; margin-top: 80px;">
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show bg-white">
-                    <i class="bi bi-check-circle-fill text-{{ message.tags }} me-2"></i> {{ message }}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-lg border-0 d-flex align-items-center mb-2" role="alert">
+                    {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill fs-4 me-3"></i>{% endif %}
+                    {% if message.tags == 'error' %}<i class="bi bi-exclamation-circle-fill fs-4 me-3"></i>{% endif %}
+                    <div>{{ message }}</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
@@ -283,35 +161,31 @@
         {% endif %}
         
         <div class="content-wrapper">
-            <nav aria-label="breadcrumb" class="mb-5">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}" class="text-decoration-none text-muted"><i class="bi bi-house me-1"></i>Home</a></li>
                     {% block breadcrumb_items %}{% endblock %}
                 </ol>
-                <h2 class="fw-800" style="letter-spacing: -1px;">{% block page_title %}Resumen General{% endblock %}</h2>
+                <div class="d-flex justify-content-between align-items-end mt-2">
+                    <h2 class="fw-800 mb-0 text-dark" style="letter-spacing: -0.5px;">{% block page_title %}Resumen General{% endblock %}</h2>
+                    {% block header_actions %}{% endblock %}
+                </div>
             </nav>
 
-            {% block content %}{% endblock %}
+            <div class="animate__animated animate__fadeIn">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        
+        <div class="text-center py-3 small text-muted border-top">
+            &copy; {% now "Y" %} Pescadería Huina - Panel de Administración v2.0
         </div>
     </div>
 
     {% bootstrap_javascript %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const toggleBtn = document.getElementById('sidebar-toggle');
-            const sidebar = document.getElementById('sidebar');
-            const main = document.getElementById('main-content');
-
-            toggleBtn.addEventListener('click', () => {
-                if (window.innerWidth > 992) {
-                    sidebar.classList.toggle('collapsed');
-                    main.classList.toggle('expanded');
-                } else {
-                    sidebar.classList.toggle('mobile-active');
-                }
-            });
-        });
-    </script>
+    
+    <script src="{% static 'js/panel_admin.js' %}"></script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>
