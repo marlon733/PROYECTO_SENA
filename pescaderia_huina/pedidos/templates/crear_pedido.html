@@ -12,17 +12,30 @@
         color: #198754 !important;
         background-color: #f8f9fa !important;
     }
+    .errorlist { color: #dc3545; list-style: none; padding: 0; font-size: 0.875rem; }
 </style>
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8"> <div class="card shadow-lg border-0">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0">
                 <div class="card-header bg-primary text-white py-3">
                     <h4 class="card-title mb-0 text-center fw-bold">
                         <i class="bi bi-cart-check me-2"></i>Registrar Nuevo Pedido
                     </h4>
                 </div>
                 <div class="card-body p-4 p-md-5">
+                    
+                    {% if form_pedido.errors or form_detalle.errors %}
+                    <div class="alert alert-danger shadow-sm border-start border-4 border-danger">
+                        <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Por favor corrige los siguientes errores:</h6>
+                        <ul class="mb-0 small">
+                            {% for field in form_pedido %}{% for error in field.errors %}<li><strong>{{ field.label }}:</strong> {{ error }}</li>{% endfor %}{% endfor %}
+                            {% for field in form_detalle %}{% for error in field.errors %}<li><strong>{{ field.label }}:</strong> {{ error }}</li>{% endfor %}{% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
                     <form method="POST" class="needs-validation">
                         {% csrf_token %}
                         
@@ -62,7 +75,7 @@
                                 <label class="form-label fw-bold text-secondary">Precio Unitario</label>
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
-                                    <input type="number" id="id_precio_unitario" class="form-control" placeholder="0" min="0">
+                                    <input type="number" id="id_precio_unitario" name="precio_unitario" class="form-control" placeholder="0" min="1" step="any" required>
                                 </div>
                             </div>
 
@@ -72,7 +85,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-12 mb-4">
                             <label class="form-label fw-bold text-secondary">Estado del Pedido</label>
                             {{ form_pedido.estado }}
                         </div>
@@ -95,7 +108,8 @@
 </div>
 
 <script>
-    const inputCant = document.querySelector('[name="cantidad"]');
+    // Seleccionamos el input de cantidad generado por Django (generalmente tiene un ID id_cantidad)
+    const inputCant = document.querySelector('input[name="cantidad"]');
     const inputPrecUnit = document.getElementById('id_precio_unitario');
     const inputUnidad = document.getElementById('id_unidad');
     const inputTot = document.getElementById('id_total');
@@ -112,7 +126,7 @@
         const precio = parseFloat(inputPrecUnit.value) || 0; 
 
         let factor = 1;
-        // Si el precio unitario se entiende como "Precio por Kilo" y se venden libras:
+        // Lógica de libras (opcional según tu negocio)
         if (inputUnidad.value === 'libras') {
             factor = 0.5; 
         }
@@ -121,7 +135,7 @@
         inputTot.value = formatterCOP.format(resultado);
     }
 
-    // Escuchar cambios en todos los campos relevantes
+    // Escuchar cambios
     inputCant?.addEventListener('input', actualizarTotal);
     inputPrecUnit?.addEventListener('input', actualizarTotal);
     inputUnidad?.addEventListener('change', actualizarTotal);
