@@ -1,4 +1,4 @@
-{% extends 'master.html' %}
+{% extends 'core/panel_admin_base.html' %}
 
 {% block content %}
 <div class="container mt-5">
@@ -12,8 +12,8 @@
                 </div>
                 <div class="card-body p-4 text-center">
                     <p class="fs-5">Estás a punto de eliminar el registro del pedido:</p>
-                    <h3 class="text-dark fw-bold mb-2">Pedido #{{ pedido.id }}</h3>
-                    <p class="text-muted mb-4">Proveedor: {{ pedido.proveedor.nombre }}</p>
+                    <h3 class="text-dark fw-bold mb-2">Pedido #{{ pedido_id }}</h3>
+                    <p class="text-muted mb-4">Proveedor: {{ pedido_proveedor.nombre }}</p>
                     
                     <div class="alert alert-warning border-warning shadow-sm" role="alert">
                         <i class="bi bi-info-circle-fill"></i>

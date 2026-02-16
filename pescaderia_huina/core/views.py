@@ -3,18 +3,15 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-@login_required
+
 def index(request):
     return render(request, 'core/index.html')
 
-def login(request):
-  template = loader.get_template('core/login.html')
-  return HttpResponse(template.render())
 
 def restablecer(request):
   template = loader.get_template('core/restablecer.html')
   return HttpResponse(template.render())
-
+@login_required
 def PanelAdmin_base(request):
     return render(request, 'core/panel_admin_base.html')
 
@@ -42,3 +39,12 @@ def dashboard_view(request):
         'ultimos_usuarios': ultimos_usuarios,
     }
     return render(request, 'core/dashboard.html', context)
+
+def pagina_pescados(request):
+    return render(request, 'core/pescados.html')
+
+def pagina_mariscos(request):
+    return render(request, 'core/mariscos.html')
+
+def pagina_pollos(request):
+    return render(request, 'core/pollos.html')

@@ -1,89 +1,289 @@
 <!DOCTYPE html>
 {% extends "master.html" %}
+{% load static %}
 
-{% block title %}Panel de Control - Pescadería Ocean{% endblock %}
+{% block title %}Pescadería Huina - Calidad Premium de Mar y Río{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="p-5 mb-4 rounded-4 shadow-sm text-white" 
-             style="background: linear-gradient(135deg, #0f3460 0%, #16213e 100%); border-left: 8px solid #4cc9f0;">
-            <div class="container-fluid py-2">
-                <h1 class="display-5 fw-bold"><i class="bi bi-water me-2"></i>Gestión Huina</h1>
-                <p class="col-md-8 fs-5 opacity-75">"Gestione sus pedidos con total claridad a través de nuestro inventario en tiempo real. Aquí encontrará nuestra disponibilidad exacta en pescados, mariscos y pollo, asegurando que cada producto seleccionado llegue con la frescura que nos distingue. Un sistema rápido y confiable diseñado para facilitar su compra y garantizar el abastecimiento de su cocina sin complicaciones."</p>
-                
-                <hr class="my-4 opacity-25">
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+
+<header class="hero-huina">
+    <div class="container position-relative z-2 h-100">
+        <div class="row align-items-center h-100">
+            <div class="col-lg-6 text-center text-lg-start animate__animated animate__fadeInLeft">
+                <div
+                    class="d-inline-flex align-items-center bg-white bg-opacity-10 backdrop-blur px-4 py-2 rounded-pill mb-4 border border-white border-opacity-20 shadow-sm">
+                    <span
+                        class="bg-warning p-1 rounded-circle me-2 animate__animated animate__pulse animate__infinite"></span>
+                    <small class="text-white fw-bold letter-spacing-2">CALIDAD HUINA</small>
+                </div>
+                <h1 class="display-3 fw-black mb-3 lh-sm text-shadow-soft" style="font-weight: 800;">
+                    Fresco y Natural <br>
+                    <span style="color: var(--ocean-cyan);">De alta Calidad.</span>
+                </h1>
+                <p class="lead mb-5 opacity-90 pe-lg-5 fs-4 mt-4 text-light">
+                    Pescados frescos, mariscos selectos y pollo de granja. <br> Del origen a tu hogar
+                </p>
+            </div>
+            <div class="col-lg-6 text-center animate__animated animate__fadeInRight">
             </div>
         </div>
     </div>
-</div>
+    <div class="wave-separator">
+        <img src="{% static 'img/pescador1.png' %}"
+            style="width: 600px; height: auto; position: relative; left: 800px; top: -70px;">
 
-<div class="row g-4 mt-2">
-    <div class="col-md-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm rounded-4">
-            <div class="card-body text-center p-4">
-                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                    <i class="bi bi-fish text-primary fs-3"></i>
-                </div>
-                <h5 class="card-title fw-bold">Productos</h5>
-                <p class="text-muted small">Catálogo de especies y mariscos disponibles.</p>
-                <div class="display-6 fw-bold mb-3 text-primary">{{ total_aprendices }}</div>
-                <a href="{% url 'productos:productos_list' %}" class="btn btn-primary w-100 rounded-pill">Ver Catálogo</a>
+        <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M0,192L60,186.7C120,181,240,171,360,176C480,181,600,203,720,213.3C840,224,960,224,1080,202.7C1200,181,1320,139,1380,117.3L1440,96L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
+            </path>
+        </svg>
+    </div>
+</header>
+
+<section class="floating-cards-section container">
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp">
+            <div class="category-card p-5 text-center">
+                <div class="category-icon"><i class="bi bi-tsunami"></i></div>
+                <h3 class="fw-bold text-dark mb-3">Pescados</h3>
+                <p class="text-muted mb-4">Salmón, Tilapia, Bagre, Trucha y más.</p>
+                <a href="{% url 'core:pescados' %}"
+                    class="btn btn-link fw-bold stretched-link fs-5 text-decoration-none"
+                    style="color: var(--ocean-primary);">Ver Catálogo →</a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-1s">
+            <div class="category-card p-5 text-center">
+                <div class="category-icon"><i class="bi bi-stars"></i></div>
+                <h3 class="fw-bold text-dark mb-3">Mariscos</h3>
+                <p class="text-muted mb-4">Camarones, langostinos y mixturas.</p>
+                <a href="{% url 'core:mariscos' %}"
+                    class="btn btn-link fw-bold stretched-link fs-5 text-decoration-none"
+                    style="color: var(--ocean-primary);">Ver Catálogo →</a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-1s">
+            <div class="category-card p-5 text-center">
+                <div class="category-icon"><i class="bi bi-egg-fill"></i></div>
+                <h3 class="fw-bold text-dark mb-3">Pollos</h3>
+                <p class="text-muted mb-4">Pechugas, muslos, alas.</p>
+                <a href="{% url 'core:pollos' %}"
+                    class="btn btn-link fw-bold stretched-link fs-5 text-decoration-none"
+                    style="color: var(--ocean-primary);">Ver Catálogo →</a>
             </div>
         </div>
     </div>
+</section>
 
-    <div class="col-md-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm rounded-4">
-            <div class="card-body text-center p-4">
-                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                    <i class="bi bi-person-badge text-primary fs-3"></i>
-                </div>
-                <h5 class="card-title fw-bold">Proveedores</h5>
-                <p class="text-muted small">Colaboradores e instructores de planta.</p>
-                <div class="display-6 fw-bold mb-3 text-primary">{{ total_instructores }}</div>
-                <a href= "#" class="btn btn-primary w-100 rounded-pill">Ver Nómina</a>
+<section class="py-5 bg-white border-bottom border-light">
+    <div class="container">
+        <div class="row text-center divide-y-md align-items-center">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h2 class="fw-black display-4 mb-0" style="color: var(--ocean-primary);">10+</h2>
+                <p class="text-muted text-uppercase small letter-spacing-2 fw-bold">Años de experiencia</p>
+            </div>
+            <div class="col-md-4 mb-4 mb-md-0 border-start border-end border-light">
+                <h2 class="fw-black display-4 mb-0" style="color: var(--ocean-primary);">100%</h2>
+                <p class="text-muted text-uppercase small letter-spacing-2 fw-bold">Frescura Garantizada</p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="fw-black display-4 mb-0" style="color: var(--ocean-primary);">500+</h2>
+                <p class="text-muted text-uppercase small letter-spacing-2 fw-bold">Clientes Felices</p>
             </div>
         </div>
     </div>
+</section>
 
-    <div class="col-md-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm rounded-4">
-            <div class="card-body text-center p-4">
-                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                    <i class="bi bi-tags text-primary fs-3"></i>
+<section class="py-5" style="background-color: var(--ocean-light);">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h6 class="text-uppercase text-primary fw-bold letter-spacing-2">Fácil y Rápido</h6>
+            <h2 class="fw-bold display-6" style="color: var(--ocean-dark);">Lleva el mar a tu casa en 3 pasos</h2>
+        </div>
+
+        <div class="row text-center px-lg-5">
+            <div class="col-md-4 step-item position-relative mb-5">
+                <div class="step-line">
+                    <div class="step-circle mx-auto"><i class="bi bi-cursor-fill"></i></div>
                 </div>
-                <h5 class="card-title fw-bold">Pedidos</h5>
-                <p class="text-muted small">Aqui se realizan los pedidos a los proveedores.</p>
-                <div class="display-6 fw-bold mb-3 text-primary">{{ total_programas }}</div>
-                <a href="#" class="btn btn-primary w-100 rounded-pill">Configurar</a>
+                <h4 class="fw-bold mt-4" style="color: var(--ocean-dark);">1. Elige</h4>
+                <p class="text-muted px-4">Explora nuestro catálogo digital.</p>
+            </div>
+            <div class="col-md-4 step-item position-relative mb-5">
+                <div class="step-line">
+                    <div class="step-circle mx-auto"><i class="bi bi-whatsapp"></i></div>
+                </div>
+                <h4 class="fw-bold mt-4" style="color: var(--ocean-dark);">2. Pide</h4>
+                <p class="text-muted px-4">Comunicate via WhatsApp y confirma tu pedido.</p>
+            </div>
+            <div class="col-md-4 step-item position-relative mb-5">
+                <div class="step-circle mx-auto"><i class="bi bi-box-seam-fill"></i></div>
+                <h4 class="fw-bold mt-4" style="color: var(--ocean-dark);">3. Recibe</h4>
+                <p class="text-muted px-4">Recibe en la puerta de tu casa con la cadena de frío intacta.</p>
             </div>
         </div>
     </div>
+</section>
 
-
-<div class="col-md-6 col-lg-3">
-    <div class="card h-100 border-0 shadow-sm rounded-4 border-bottom border-info border-4">
-        <div class="card-body text-center p-4">
-            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                 style="width: 60px; height: 60px;">
-                <i class="bi bi-truck text-info fs-3"></i>
-            </div>
-            <h5 class="card-title fw-bold text-info">Ventas</h5>
-            <p class="text-muted small">Aquí se realizan las ventas al cliente.</p>
-            <div class="d-flex justify-content-around align-items-center mb-3">
-                <div>
-                    <small class="text-muted d-block">Total</small>
-                    <span class="fw-bold">{{ total_cursos }}</span>
-                </div>
-                <div class="vr"></div>
-                <div>
-                    <small class="text-muted d-block">Activos</small>
-                    <span class="fw-bold text-success">{{ cursos_activos }}</span>
+<section class="py-5 animate__animated animate__fadeIn bg-white">
+    <div class="container py-5">
+        <div class="row align-items-center gx-5">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <div class="position-relative pe-lg-5">
+                    <div class="position-absolute top-0 start-0 translate-middle opacity-10 rounded-circle z-0"
+                        style="width: 200px; height: 200px; background: var(--ocean-primary);"></div>
+                    <img src="{% static 'img/Alojote.jpg' %}"
+                        class="img-fluid rounded-5 shadow-lg w-100 position-relative z-1" alt="Interior Pescadería">
                 </div>
             </div>
-            <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-info text-white w-100 rounded-pill">Monitorear</a>
+            <div class="col-lg-6 ps-lg-5">
+                <h6 class="text-uppercase fw-bold mb-3" style="color: var(--ocean-primary);">Garantía Huina</h6>
+                <h2 class="display-5 fw-bold mb-4" style="color: var(--ocean-dark);">Calidad que se siente.</h2>
+                <p class="text-muted fs-5 mb-4 lh-lg">
+                    No somos solo proveedores; somos tus aliados. Mantenemos la cadena de frío intacta para que
+                    disfrutes del verdadero sabor del mar en Boyacá.
+                </p>
+                <ul class="list-unstyled">
+                    <li class="mb-3 d-flex align-items-center"><i
+                            class="bi bi-check-circle-fill text-primary me-3 fs-5"></i> Limpieza incluida a petición.
+                    </li>
+                    <li class="mb-3 d-flex align-items-center"><i
+                            class="bi bi-check-circle-fill text-primary me-3 fs-5"></i> Pesaje exacto y honesto.</li>
+                    <li class="mb-3 d-flex align-items-center"><i
+                            class="bi bi-check-circle-fill text-primary me-3 fs-5"></i> Empaque sellado al vacío.</li>
+                </ul>
+            </div>
         </div>
     </div>
-</div>  
+</section>
+
+<section class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="rounded-5 overflow-hidden shadow-sm h-100 position-relative bg-light"
+                style="min-height: 400px;">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.076837882294!2d-72.9329766!3d5.7135833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a45c363297a73%3A0x6283b547820121!2sSogamoso%2C%20Boyac%C3%A1!5e0!3m2!1ses!2sco!4v1700000000000!5m2!1ses!2sco"
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="info-box">
+                <h3 class="fw-bold mb-4" style="color: var(--ocean-dark);">Visítanos</h3>
+                <div class="d-flex align-items-start mb-4">
+                    <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-geo-alt-fill"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Sede Principal</h6>
+                        <p class="text-muted mb-0">Carrera 27 #2G - 33<br>Barrio Magdalena, Sogamoso</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start mb-4">
+                    <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-clock-fill"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Horario</h6>
+                        <p class="text-muted mb-0">Lun - Sáb: 7:00 AM - 6:00 PM</p>
+                        <p class="text-muted mb-0">Dom: 8:00 AM - 1:00 PM</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start">
+                    <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-telephone-fill"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Domicilios</h6>
+                        <p class="text-muted mb-0">+57 322 828 0256</p>
+                        <a href="https://wa.me/573228280256" target="_blank"
+                            class="text-decoration-none fw-bold small text-primary">
+                            Ir a WhatsApp <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <h2 class="text-center fw-bold mb-5" style="color: var(--ocean-dark);">Preguntas Frecuentes</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion" id="accordionFAQ">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne">
+                                <i class="bi bi-truck me-2 text-primary"></i> ¿Tienen servicio a domicilio?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionFAQ">
+                            <div class="accordion-body text-muted">Sí, cubrimos toda la zona urbana de Sogamoso.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTwo">
+                                <i class="bi bi-cash-coin me-2 text-primary"></i> ¿Métodos de pago?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                            <div class="accordion-body text-muted">Efectivo, Nequi y Daviplata.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 position-relative" style="background-color: var(--ocean-light);">
+    <div class="container py-4">
+        <h2 class="text-center fw-bold mb-5" style="color: var(--ocean-dark);">Clientes Felices</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-card h-100">
+                    <div class="mb-3 text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-muted fst-italic">"El salmón más fresco que he comprado. Llegó perfecto."</p>
+                    <h6 class="fw-bold mt-3 mb-0">- Luis Alberto Posada</h6>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card h-100">
+                    <div class="mb-3 text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-muted fst-italic">"Excelente atención y precios justos."</p>
+                    <h6 class="fw-bold mt-3 mb-0">- Restaurante El Puerto</h6>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card h-100">
+                    <div class="mb-3 text-warning">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-muted fst-italic">"El pollo de campo tiene muy buen sabor."</p>
+                    <h6 class="fw-bold mt-3 mb-0">- Carlos Rodríguez</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container mb-5 mt-5">
+    <div class="final-cta p-5 text-center shadow-lg">
+        <h2 class="fw-bold mb-3">¿Se te antojó algo de mar?</h2>
+        <p class="lead mb-4 opacity-75">No esperes más. Haz tu pedido hoy.</p>
+        <a href="https://wa.me/573228280256" target="_blank"
+            class="btn btn-light rounded-pill px-5 py-3 fw-bold text-primary shadow-sm hover-scale">
+            <i class="bi bi-whatsapp me-2"></i>Hacer Pedido Ahora
+        </a>
+    </div>
+</section>
+
 {% endblock %}
