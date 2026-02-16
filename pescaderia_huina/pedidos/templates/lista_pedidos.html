@@ -46,7 +46,7 @@
                             <th class="ps-4">ID</th>
                             <th>Proveedor (NIT)</th>
                             <th>Fecha</th>
-                            <th>Precio Compra</th>
+                            <th>Cantidad</th> <th>Precio Compra</th>
                             <th>Estado</th>
                             <th class="text-center">Acciones</th>
                         </tr>
@@ -62,6 +62,9 @@
                             <td>
                                 <span class="small"><i class="bi bi-calendar3 me-1"></i> {{ p.fecha|date:"d/m/Y" }}</span><br>
                                 <span class="small text-muted"><i class="bi bi-clock me-1"></i> {{ p.fecha|date:"H:i" }}</span>
+                            </td>
+                            <td class="fw-bold">
+                                {{ p.cantidad_total|default:"0" }} <span class="text-muted small">uds.</span>
                             </td>
                             <td class="fw-bold text-success">
                                 {{ p.valor_total }}
@@ -85,8 +88,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <i class="bi bi-clipboard-x display-4 text-muted"></i>
+                            <td colspan="7" class="text-center py-5"> <i class="bi bi-clipboard-x display-4 text-muted"></i>
                                 <p class="mt-3 fw-bold text-secondary">No existen pedidos registrados</p>
                             </td>
                         </tr>
