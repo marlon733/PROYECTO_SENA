@@ -51,16 +51,16 @@
         }
 
         .tipo-presentacion-option:checked + .tipo-presentacion-label {
-            border-color: #e0a800;
-            background: linear-gradient(135deg, #c87f00 0%, #e0a800 100%);
+            border-color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(200, 127, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.3);
             transform: translateY(-2px);
         }
 
         .tipo-presentacion-label:hover {
-            border-color: #e0a800;
-            color: #856404;
+            border-color: var(--primary-dark);
+            color: var(--primary-dark);
         }
 
         .cantidad-badge {
@@ -79,18 +79,23 @@
         }
 
         .badge-peso {
-            background-color: #fff3cd;
-            color: #856404;
+             background-color: #cfe2ff; 
+             color: #084298;           
         }
-    </style>
+        .btn-custom-blue {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: white;
+        }
+</style>
 </head>
 <body class="bg-light">
 
 <div class="container my-5">
 
     <div class="card shadow">
-        <div class="card-header bg-warning text-dark">
-            <h4 class="mb-0">Editar Venta #{{ object.id }}</h4>
+        <div class="card-header text-white" style="background-color: #0a3d62;">
+            <h4 class="mb-0">Editar Venta</h4>
         </div>
 
         <div class="card-body">
@@ -217,7 +222,7 @@
                 <!-- Botones -->
                 <div class="text-end mt-4">
                     <a href="{% url 'ventas:detalle_venta' object.id %}" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-warning">Actualizar Venta</button>
+                    <button type="submit" class="btn btn-custom-blue">Actualizar Venta</button>
                 </div>
             </form>
 
