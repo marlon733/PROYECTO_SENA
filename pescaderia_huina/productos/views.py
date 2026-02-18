@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import ProductoForm
 
 @login_required
 def productos_list(request):
@@ -16,41 +17,28 @@ def producto_detalle(request, id):
 @login_required
 def producto_crear(request):
     if request.method == "POST":
-        Producto.objects.create(
-            tipo_producto=request.POST.get("tipo_producto"),
-            nombre=request.POST.get("nombre"),
-            descripcion=request.POST.get("descripcion"),
-            tipo_presentacion=request.POST.get("tipo_presentacion"),
-            peso=request.POST.get("peso"),
-            precio=request.POST.get("precio"),
-            stock=request.POST.get("stock"),
-            estado=True if request.POST.get("estado") else False
-        )
-        return redirect("productos:productos_list")
+        form = ProductoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("productos:productos_list")
+    else:
+        form = ProductoForm()
 
-    return render(request, "producto_crear.html")
+    return render(request, "producto_crear.html", {"form": form})
 
 
-@login_required
 def producto_editar(request, id):
     producto = get_object_or_404(Producto, id=id)
 
     if request.method == "POST":
-        producto.nombre = request.POST.get("nombre")
-        producto.tipo_producto = request.POST.get("tipo_producto")
-        producto.descripcion = request.POST.get("descripcion")
-        producto.precio = request.POST.get("precio")
-        producto.tipo_presentacion = request.POST.get("tipo_presentacion")
-        producto.peso = request.POST.get("peso")
-        producto.stock = request.POST.get("stock")
-        producto.estado = True if request.POST.get("estado") == "on" else False
+        form = ProductoForm(request.POST, instance=producto)
+        if form.is_valid():
+            form.save()
+            return redirect("productos:productos_list")
+    else:
+        form = ProductoForm(instance=producto)
 
-        producto.save()
-        return redirect("productos:productos_list")
-
-    return render(request, "producto_editar.html", {
-        "producto": producto
-    })
+    return render(request, "producto_editar.html", {"form": form})
 @login_required
 def producto_eliminar(request, id):
     producto = get_object_or_404(Producto, id=id)

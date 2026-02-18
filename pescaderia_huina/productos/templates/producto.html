@@ -29,9 +29,12 @@
                         <tr>
                             <th class="border-0">Producto</th>
                             <th class="border-0">Tipo</th>
-                            <th class="border-0">Precio</th>
-                            <th class="border-0">Stock</th>
+                            <th class="border-0">Presentacion </th>
+                            <th class="border-0">Precio venta</th>
+                            <th class="border-0">precio de llegada</th>
+                            <th class="border-0">stock</th>
                             <th class="border-0">Estado</th>
+                            
                             <th class="border-0 text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -42,8 +45,14 @@
                             <tr>
                                 <td>{{ producto.nombre }}</td>
                                 <td>{{ producto.get_tipo_producto_display }}</td>
+                                <td>{{ producto.get_tipo_presentacion_display }}</td>
                                 <td>${{ producto.precio }}</td>
-                                <td>{{ producto.stock }}</td>
+                                <td>${{ producto.precio_unitario }}</td>
+                                <td>${{ producto. }}</td>
+                                
+                                
+
+                                
                                 <td>
                                     {% if producto.estado %}
                                         <span class="badge bg-success">Activo</span>

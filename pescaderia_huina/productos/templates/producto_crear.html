@@ -2,95 +2,158 @@
 {% block title %}Agregar Producto{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
+        <div class="col-lg-8 col-xl-7">  <!-- MÁS GRANDE -->
 
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">Agregar Producto</h4>
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <!-- Header -->
+                <div class="card-header bg-transparent border-0 pt-5 pb-2 px-5">
+                    <h3 class="fw-semibold mb-1 text-dark">Nuevo Producto</h3>
+                    <p class="text-muted small mb-0">
+                        Completa la información del producto
+                    </p>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body px-5 pb-5 pt-4">
+
                     <form method="post">
                         {% csrf_token %}
+                        {{ form.non_field_errors }}
 
-                        <!-- Tipo producto -->
-                        <div class="mb-3">
-                            <label class="form-label">Tipo de producto</label>
-                            <select name="tipo_producto" class="form-select" required>
-                                <option value="">Seleccione</option>
-                                <option value="MA">Mariscos</option>
-                                <option value="PE">Pescado</option>
-                                <option value="PO">Pollo</option>
-                            </select>
-                        </div>
+                        <div class="row">
 
-                        <!-- Nombre -->
-                        <div class="mb-3">
-                            <label class="form-label">Nombre</label>
-                            <input type="text" name="nombre" class="form-control" required>
-                        </div>
+                            <!-- Tipo Producto -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label small text-muted">
+                                    Tipo de Producto
+                                </label>
+                                {{ form.tipo_producto }}
+                            </div>
 
-                        <!-- Descripción -->
-                        <div class="mb-3">
-                            <label class="form-label">Descripción</label>
-                            <input type="text" name="descripcion" class="form-control" required>
-                        </div>
+                            <!-- Presentación -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label small text-muted">
+                                    Tipo de Presentación
+                                </label>
+                                {{ form.tipo_presentacion }}
+                            </div>
 
-                        <!-- Tipo presentación -->
-                        <div class="mb-3">
-                            <label class="form-label">Tipo de presentación</label>
-                            <input type="text" name="tipo_presentacion" class="form-control" required>
-                        </div>
+                            <!-- Nombre -->
+                            <div class="col-12 mb-4">
+                                <label class="form-label small text-muted">
+                                    Nombre
+                                </label>
+                                {{ form.nombre }}
+                            </div>
 
-                        <!-- Peso -->
-                        <div class="mb-3">
-                            <label class="form-label">Peso (kg)</label>
-                            <input type="number" step="0.01" name="peso" class="form-control" required>
-                        </div>
+                            <!-- Descripción -->
+                            <div class="col-12 mb-4">
+                                <label class="form-label small text-muted">
+                                    Descripción
+                                </label>
+                                {{ form.descripcion }}
+                            </div>
 
-                        <!-- Precio -->
-                        <div class="mb-3">
-                            <label class="form-label">Precio</label>
-                            <input type="number" step="0.01" name="precio" class="form-control" required>
-                        </div>
+                            <!-- Cantidad -->
+                            <div class="col-md-6 mb-4">
+                                <label id="label_cantidad" class="form-label small text-muted">
+                                    Cantidad
+                                </label>
+                                {{ form.peso }}
+                            </div>
 
-                        <!-- Stock -->
-                        <div class="mb-3">
-                            <label class="form-label">Stock</label>
-                            <input type="number" name="stock" class="form-control" required>
+                            <!-- Precio -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label small text-muted">
+                                    Precio
+                                </label>
+                                {{ form.precio }}
+                            </div>
+
                         </div>
 
                         <!-- Estado -->
-                        <div class="form-check mb-3">
-                            <input class="form-check-input"
-                                   type="checkbox"
-                                   name="estado"
-                                   checked>
-                            <label class="form-check-label">
+                        <div class="form-check form-switch mb-4 mt-2">
+                            {{ form.estado }}
+                            <label class="form-check-label small text-muted ms-2">
                                 Producto activo
                             </label>
                         </div>
-                       
 
-
-                        <div class="d-flex justify-content-between">
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
                             <a href="{% url 'productos:productos_list' %}"
-                               class="btn btn-secondary">
+                               class="btn btn-light px-4 rounded-3">
                                 Cancelar
                             </a>
-                             
-                            <button class="btn btn-success">
-                                Guardar Producto
+
+                            <button class="btn btn-dark-blue px-4 rounded-3 text-white">
+                                Guardar
                             </button>
                         </div>
 
                     </form>
+
                 </div>
             </div>
 
         </div>
     </div>
 </div>
+
+<style>
+
+.btn-dark-blue {
+    background-color: #0f172a;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-dark-blue:hover {
+    background-color: #0b1220;
+}
+
+.form-control,
+.form-select {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 12px 16px;
+    font-size: 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 0.15rem rgba(15, 23, 42, 0.15);
+}
+
+.card {
+    background-color: #ffffff;
+}
+
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let select = document.getElementById("tipo_presentacion");
+    let labelCantidad = document.getElementById("label_cantidad");
+    let pesoInput = document.getElementById("peso");
+
+    function actualizarEtiqueta() {
+        if (select.value === "LIB") {
+            labelCantidad.innerText = "Cantidad (Libras)";
+            pesoInput.step = "0.01";
+        } else {
+            labelCantidad.innerText = "Cantidad (Unidades)";
+            pesoInput.step = "1";
+        }
+    }
+
+    select.addEventListener("change", actualizarEtiqueta);
+    actualizarEtiqueta();
+});
+</script>
+
 {% endblock %}
