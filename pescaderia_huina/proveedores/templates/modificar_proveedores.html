@@ -1,70 +1,8 @@
 {% extends 'core/panel_admin_base.html' %}
+{% load static %}
 
 {% block content %}
-<style>
-    /* Reutilizando estilos Ocean Vibrant para consistencia */
-    .card-ocean {
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        border: none;
-    }
-    
-    .card-header-ocean {
-        background: linear-gradient(135deg, hsl(217, 100%, 50%) 0%, #60efff 100%);
-        padding: 2rem;
-        position: relative;
-    }
-
-    .card-header-ocean::after {
-        content: '';
-        position: absolute;
-        bottom: -20px; left: 0; width: 100%; height: 40px;
-        background: white;
-        border-radius: 50% 50% 0 0;
-    }
-
-    /* Estilos de Inputs */
-    .form-control, .form-select {
-        border-radius: 10px;
-        border: 1px solid #e0e6ed;
-        padding: 0.7rem 1rem;
-        font-weight: 500;
-        transition: all 0.3s;
-        background-color: #f8fbff;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: #60efff;
-        box-shadow: 0 0 0 4px rgba(96, 239, 255, 0.15);
-        background-color: #fff;
-    }
-
-    .form-label {
-        color: #556c85;
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-    }
-
-    /* Botón de Actualizar (Naranja/Dorado para distinguir de "Crear") */
-    .btn-update {
-        background: linear-gradient(90deg, #ff9f00 0%, #ff6a00 100%);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 12px 30px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .btn-update:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(255, 106, 0, 0.3);
-        color: white;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/modificar.css' %}">
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -213,7 +151,7 @@
     // Lógica para cambiar la etiqueta según tipo de persona
     const tipoSelectMod = document.getElementById('id_tipo_persona');
     const nitLabelMod = document.getElementById('label_nit_mod');
-    const nitInputMod = document.getElementById('id_nit'); // Asegúrate que este ID coincida con el generado por Django
+    const nitInputMod = document.getElementById('id_nit');
 
     function actualizarLabelMod() {
         if (tipoSelectMod.value === 'natural') {

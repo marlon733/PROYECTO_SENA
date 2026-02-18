@@ -1,0 +1,41 @@
+/* static/css/estilos_lista.css */
+
+/* Estilos Específicos para la vista de lista */
+.card-header-ocean {
+    background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decoración de ondas sutil en el header */
+.card-header-ocean::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    transform: rotate(30deg);
+    pointer-events: none;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f0f7ff; /* Azul muy pálido al pasar el mouse */
+    transform: scale(1.002); /* Efecto micro-zoom sutil */
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    z-index: 10;
+    position: relative;
+}
+
+.action-btn {
+    width: 35px; height: 35px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    transition: 0.2s;
+    margin: 0 2px;
+}
+
+.action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
