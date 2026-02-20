@@ -10,22 +10,30 @@
     {% bootstrap_css %}
     {% bootstrap_javascript %}
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
     <style>
+        /* --- ESTILO OCEAN VIBRANT (Solo CSS) --- */
         :root {
-            --main-navy: #0f2c59;
-            --secondary-blue: #1d4e89;
-            --accent-gray: #f8f9fa;
-            --text-light-gray: #cfd8dc;
-            --text-dark: #333333;
+            /* Paleta Ocean coincidente con Index */
+            --ocean-primary: #0061ff;
+            --ocean-cyan: #60efff;
+            --ocean-dark: #001233;
+            --ocean-light: #f0f7ff;
+            --text-dark: #2c3e50;
+            --text-light: #e0f7fa;
+            
+            /* Mapeo a tus variables originales para compatibilidad */
+            --main-navy: var(--ocean-dark);
+            --secondary-blue: var(--ocean-primary);
+            --accent-gray: var(--ocean-light);
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: var(--accent-gray);
+            background-color: var(--ocean-light);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -35,137 +43,181 @@
             flex: 1;
         }
 
-        /* --- Navbar Ajustado (Más alto) --- */
+        /* --- Navbar Moderno --- */
         .navbar-custom {
-            background-color: var(--main-navy);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            /* Aumentamos el padding vertical para dar altura */
-            padding-top: 1.2rem; 
-            padding-bottom: 1.2rem;
-            transition: padding 0.3s ease;
+            /* El mismo gradiente vibrante del index */
+            background: linear-gradient(90deg, #001233 0%, #0061ff 50%, #60efff 100%);
+            box-shadow: 0 4px 20px rgba(0, 97, 255, 0.25);
+            padding-top: 0.8rem; 
+            padding-bottom: 0.8rem;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Control del Logo */
+        /* Logo y Marca */
         .navbar-brand img {
-            height: 55px; /* Altura aumentada para escritorio */
+            height: 50px;
             width: auto;
-            transition: height 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            transition: transform 0.3s;
+        }
+        .navbar-brand:hover img {
+            transform: scale(1.05);
         }
 
-        /* Texto de la marca más grande para compensar el logo */
         .brand-text {
-            font-size: 1.5rem; /* Letra más grande */
-            font-weight: 700;  /* Más gruesa */
+            font-size: 1.4rem;
+            font-weight: 800; /* Más grueso para impacto */
             letter-spacing: 1px;
             color: #fff;
-            line-height: 1;
+            margin-left: 8px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
+        /* Enlaces del Menú */
         .nav-link {
-            color: var(--text-light-gray) !important;
-            font-weight: 500; /* Un poco más de peso para legibilidad */
-            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 0 4px;
+            padding: 8px 16px !important;
+            border-radius: 50px; /* Botones redondeados */
             transition: all 0.3s ease;
             position: relative;
-            margin-left: 0.5rem;
-            margin-right: 0.5rem;
         }
 
         .nav-link:hover, .nav-link.active {
             color: #fff !important;
+            background-color: rgba(255, 255, 255, 0.15); /* Efecto cristal */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .nav-link::after {
-            content: '';
-            display: block;
-            width: 0;
-            height: 3px; /* Línea un poco más gruesa */
-            background: #fff;
-            transition: width .3s;
-            position: absolute;
-            bottom: -5px;
-        }
+        /* Eliminamos la línea inferior antigua, usamos el fondo redondeado arriba */
+        .nav-link::after { display: none; }
 
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        /* Dropdown */
+        /* --- Dropdown Premium --- */
         .dropdown-menu {
             border: none;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin-top: 15px; /* Separación del navbar más alto */
+            box-shadow: 0 15px 40px rgba(0, 97, 255, 0.15);
+            border-radius: 15px;
+            margin-top: 15px;
+            padding: 8px;
+            border-top: 4px solid var(--ocean-cyan); /* Acento cian arriba */
+            animation: slideIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .dropdown-item {
             padding: 10px 20px;
             color: var(--text-dark);
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dropdown-item i {
+            margin-right: 10px;
+            font-size: 1.1em;
+            color: var(--ocean-primary);
         }
 
         .dropdown-item:hover {
-            background-color: var(--accent-gray);
-            color: var(--main-navy);
+            background-color: #f0f7ff;
+            color: var(--ocean-primary);
+            padding-left: 25px; /* Pequeño desplazamiento al hover */
         }
 
-        /* --- Ajustes Responsivos (Móvil) --- */
-        @media (max-width: 991px) {
-            .navbar-custom {
-                padding-top: 0.8rem; /* Menos altura en móvil para no estorbar */
-                padding-bottom: 0.8rem;
-            }
-            .navbar-brand img {
-                height: 40px; /* Logo un poco más pequeño en móvil */
-            }
-            .brand-text {
-                font-size: 1.2rem;
-            }
-            .nav-link::after {
-                display: none; /* Quitamos la animación de línea en móvil */
-            }
+        /* Botón cerrar sesión rojo sutil */
+        button.dropdown-item.text-danger:hover {
+            background-color: #fff5f5;
+            color: #dc3545;
         }
 
-        /* --- Footer --- */
+        /* --- Footer Ocean --- */
         .footer-custom {
-            background-color: var(--main-navy);
+            background-color: var(--ocean-dark);
             color: #fff;
-            border-top: 5px solid var(--secondary-blue);
+            /* Borde superior decorativo en lugar de la ola HTML */
+            border-top: 5px solid var(--ocean-primary); 
+            position: relative;
+            padding-top: 4rem;
+        }
+
+        /* Efecto de luz superior en el footer */
+        .footer-custom::before {
+            content: '';
+            position: absolute; top: 0; left: 0; width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--ocean-cyan), transparent);
+            opacity: 0.5;
         }
 
         .footer-heading {
-            font-weight: 600;
-            margin-bottom: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
             color: #fff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .footer-link {
-            color: var(--text-light-gray);
+            color: rgba(255,255,255,0.6);
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
         }
 
         .footer-link:hover {
-            color: #fff;
-            padding-left: 5px;
+            color: var(--ocean-cyan);
+            padding-left: 8px;
+            text-shadow: 0 0 8px rgba(96, 239, 255, 0.4);
         }
 
         .social-icon {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             margin-right: 15px;
-            color: var(--text-light-gray);
-            transition: color 0.3s ease;
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+            display: inline-block;
         }
 
         .social-icon:hover {
-            color: #fff;
+            color: var(--ocean-cyan);
+            transform: translateY(-3px) scale(1.1);
         }
         
-        .contact-info i {
-            width: 25px;
-            color: var(--secondary-blue);
+        .contact-info li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            color: rgba(255,255,255,0.8);
         }
+        .contact-info i {
+            color: var(--ocean-cyan);
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        /* Botón Admin destacado */
+        .nav-link[href*="panel_admin"] {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .nav-link[href*="panel_admin"]:hover {
+            background: var(--ocean-cyan);
+            color: var(--ocean-dark) !important;
+            border-color: var(--ocean-cyan);
+        }
+
     </style>
 </head>
 <body>
@@ -187,8 +239,8 @@
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" 
                                href="{% url 'core:index' %}">Inicio</a>
-                        </li>
                         
+                      
                         
                         <li class="nav-item d-none d-lg-block mx-2 text-white-50">|</li>
 
@@ -210,21 +262,16 @@
                                              class="rounded-circle border border-2 border-light me-2" 
                                              width="35" height="35" style="object-fit: cover;">
                                     {% else %}
-                                        <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center me-2" style="width: 35px; height: 35px;">
-                                            <i class="bi bi-person text-white"></i>
+                                        <div class="rounded-circle bg-light d-flex justify-content-center align-items-center me-2 text-primary fw-bold" style="width: 35px; height: 35px;">
+                                            <i class="bi bi-person"></i>
                                         </div>
                                     {% endif %}
                                     <span class="fw-normal">{{ user.get_full_name|default:user.username }}</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end animate slideIn" aria-labelledby="userDropdown">
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'usuarios:perfil' %}">
-                                            <i class="bi bi-person me-2"></i> Mi Perfil
-                                        </a>
-                                    </li>
                                      <li>
                                         <a class="dropdown-item" href="{% url 'core:dashboard' %}">
-                                            <i class="bi bi-person me-2"></i> Administración
+                                            <i class="bi bi-grid-fill me-2"></i> Administración
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
@@ -288,7 +335,7 @@
                     </ul>
                 </div>
             </div>
-            <hr class="my-4 border-secondary">
+            <hr class="my-4 border-secondary opacity-25">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start">
                     <p class="mb-0 small text-white-50">&copy; {% now "Y" %} Pescadería Huina. Todos los derechos reservados.</p>
@@ -296,6 +343,6 @@
             </div>
         </div>
     </footer>
-<script src="static/js/accesibilidad.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sienna-accessibility@latest/dist/sienna-accessibility.umd.js" defer></script>
 </body>
 </html>
