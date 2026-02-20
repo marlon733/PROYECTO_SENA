@@ -3,6 +3,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
 from django.db.models import Sum, Q, F
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
 
 from .models import Pedido, DetallePedido
 from .forms import PedidoForm, DetallePedidoForm
@@ -131,3 +134,42 @@ def eliminar_pedido(request, id):
         messages.warning(request, f"El pedido #{id} ha sido eliminado.")
         return redirect('pedidos:lista_pedidos')
     return render(request, 'eliminar_pedido.html', {'pedido': pedido})
+
+# NUEVA VISTA: VER DETALLES DEL PEDIDO
+@login_required
+def detalle_pedido(request, id):
+    pedido = get_object_or_404(Pedido, id=id)
+    
+    # 1. VERIFICAMOS SI EL USUARIO QUIERE EL PDF
+    if request.GET.get('export') == 'pdf':
+        
+        # Calculamos el subtotal de cada producto en Python (porque el PDF no tiene JavaScript)
+        detalles_con_subtotal = []
+        for d in pedido.detalles.all():
+            cant = float(d.cantidad or 0)
+            prec = float(d.precio_unitario or 0)
+            d.subtotal_calculado = cant * prec # Guardamos el cálculo
+            detalles_con_subtotal.append(d)
+            
+        # Llamamos al HTML "limpio" que creamos para el PDF
+        template = get_template('pdf_pedido.html')
+        
+        # Le enviamos los datos SIN el 'request' para que no pida el usuario y no de error
+        html = template.render({
+            'pedido': pedido, 
+            'detalles': detalles_con_subtotal 
+        })
+        
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="Pedido_{pedido.id}.pdf"'
+        
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        if pisa_status.err:
+            return HttpResponse('Hubo un error al generar el PDF', status=500)
+            
+        return response
+
+    # 2. SI NO PIDIÓ PDF, MUESTRA LA VISTA WEB NORMAL (detalle_pedido.html)
+    return render(request, 'detalle_pedido.html', {
+        'pedido': pedido
+    })
