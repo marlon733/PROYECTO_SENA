@@ -97,7 +97,7 @@
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-light text-primary border border-primary-subtle rounded-pill px-3 py-2 fs-6 text-capitalize">
-                                    {{ detalle.cantidad|floatformat:-1 }} {{ detalle.presentacion|title }}
+                                    {{ detalle.cantidad|floatformat:-1 }} {{ detalle.presentacion|default:"Uds." }}
                                 </span>
                             </td>
                             <td class="text-end text-muted money-format">
