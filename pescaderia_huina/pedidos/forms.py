@@ -1,5 +1,5 @@
 from django import forms
-from .models import Pedido, DetallePedido, Proveedor    
+from .models import Pedido, DetallePedido
 from productos.models import Producto
 from proveedores.models import Proveedor
 

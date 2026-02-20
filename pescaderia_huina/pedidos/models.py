@@ -1,6 +1,6 @@
 from django.db import models
 from proveedores.models import Proveedor  
-from productos.models import Producto     
+from productos.models import Producto
 
 
 class Pedido(models.Model):

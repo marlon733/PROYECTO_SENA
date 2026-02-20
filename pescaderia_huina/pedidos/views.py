@@ -6,9 +6,11 @@ from django.db.models import Sum, Q, F
 from django.template.loader import get_template
 from django.http import HttpResponse
 from xhtml2pdf import pisa
-
 from .models import Pedido, DetallePedido
 from .forms import PedidoForm, DetallePedidoForm
+from productos.models import Producto
+from proveedores.models import Proveedor
+
 
 # Creamos la fábrica de formularios. Permite crear múltiples Detalles vinculados a 1 Pedido
 DetallePedidoFormSet = inlineformset_factory(
