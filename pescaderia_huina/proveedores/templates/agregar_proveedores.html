@@ -1,6 +1,9 @@
 {% extends 'core/panel_admin_base.html' %}
+{% load static %}
 
-{% block content %}
+{% block title %}Nuevo Proveedor{% endblock %}
+
+{% block extra_css %}
 <style>
     /* Estilos del Formulario Ocean */
     .card-ocean {
@@ -9,13 +12,14 @@
         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         border: none;
     }
-    
+
     .card-header-ocean {
         background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
         padding: 2rem;
         position: relative;
     }
 
+    /* Efecto curva inferior en el header */
     .card-header-ocean::after {
         content: '';
         position: absolute;
@@ -38,6 +42,7 @@
         border-color: #60efff;
         box-shadow: 0 0 0 4px rgba(96, 239, 255, 0.15);
         background-color: #fff;
+        outline: none;
     }
 
     .form-label {
@@ -45,6 +50,12 @@
         font-weight: 600;
         font-size: 0.9rem;
         margin-bottom: 0.5rem;
+    }
+
+    /* Input Group Text */
+    .input-group-text {
+        border-color: #e0e6ed;
+        background-color: #fff;
     }
 
     /* Botón de Guardar con Gradiente */
@@ -65,7 +76,9 @@
         color: white;
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -209,27 +222,31 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-    // Lógica para cambiar etiqueta NIT/Cédula y validaciones visuales
-    const tipoPersonaSelect = document.getElementById('id_tipo_persona');
-    const nitLabel = document.getElementById('label_nit');
-    const nitInput = document.getElementById('id_nit'); // Asumiendo que el ID del campo NIT es 'id_nit'
+    document.addEventListener("DOMContentLoaded", function() {
+        // Lógica para cambiar etiqueta NIT/Cédula y validaciones visuales
+        const tipoPersonaSelect = document.getElementById('id_tipo_persona');
+        const nitLabel = document.getElementById('label_nit');
+        const nitInput = document.getElementById('id_nit');
 
-    function actualizarFormulario() {
-        if (tipoPersonaSelect.value === 'natural') {
-            nitLabel.innerText = 'Número de Cédula';
-            nitInput.placeholder = 'Ej: 1057589...';
-        } else {
-            nitLabel.innerText = 'NIT Empresarial';
-            nitInput.placeholder = 'Ej: 900.123.456-1';
+        function actualizarFormulario() {
+            if (tipoPersonaSelect && tipoPersonaSelect.value === 'natural') {
+                if(nitLabel) nitLabel.innerText = 'Número de Cédula';
+                if(nitInput) nitInput.placeholder = 'Ej: 1057589...';
+            } else {
+                if(nitLabel) nitLabel.innerText = 'NIT Empresarial';
+                if(nitInput) nitInput.placeholder = 'Ej: 900.123.456-1';
+            }
         }
-    }
 
-    if(tipoPersonaSelect) {
-        tipoPersonaSelect.addEventListener('change', actualizarFormulario);
-        // Ejecutar al inicio por si hay datos pre-cargados
-        actualizarFormulario();
-    }
+        if(tipoPersonaSelect) {
+            tipoPersonaSelect.addEventListener('change', actualizarFormulario);
+            // Ejecutar al inicio por si hay datos pre-cargados
+            actualizarFormulario();
+        }
+    });
 </script>
 {% endblock %}

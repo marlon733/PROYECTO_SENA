@@ -15,7 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from core.views import page_not_found_404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,3 +29,10 @@ urlpatterns = [
     path('proveedores/', include('proveedores.urls')), 
     path('pedidos/', include('pedidos.urls')),
 ]
+
+# Manejador de errores 404 personalizado
+handler404 = page_not_found_404
+
+# Servir archivos estáticos
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) if hasattr(settings, 'MEDIA_URL') else []

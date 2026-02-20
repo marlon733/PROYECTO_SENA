@@ -1,28 +1,212 @@
-{% extends "master.html" %}
+{% extends "core/panel_admin_base.html" %}
+{% load static %}
 
-{% block title %}
-Registro
-{% endblock %}
+{% block title %}Crear Cuenta - Pescadería Huina{% endblock %}
 
 {% block content %}
-<h1>Registro</h1>
-    <form method="post" action="">
-        {% csrf_token %}
+<style>
+    /* --- ESTILO AUTH OCEAN HORIZONTAL --- */
+    .auth-container-horizontal {
+        min-height: 85vh; /* Ocupa buena parte de la pantalla */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 0;
+    }
 
-        {% for field in form %}
-            <div class="mb-3">
-                <label class="form-label">{{ field.label }}</label>
-                {{ field }}
-                {% if field.errors %}
-                    <div class="text-danger">
-                        {{ field.errors }}
+    .card-auth-horizontal {
+        border: none;
+        border-radius: 30px; /* Bordes más redondeados */
+        overflow: hidden;
+        box-shadow: 0 25px 60px rgba(0, 18, 51, 0.2); /* Sombra profunda premium */
+        background: white;
+        width: 100%;
+        max-width: 1100px; /* Ancho máximo mayor para el diseño horizontal */
+    }
+
+    /* --- LADO IZQUIERDO (Visual) --- */
+    .auth-visual-side {
+        background: linear-gradient(135deg, #001233 0%, #0061ff 80%, #60efff 100%);
+        padding: 4rem 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        color: white;
+        position: relative;
+        min-height: 100%; /* Asegura que cubra toda la altura */
+    }
+
+    /* Textura de fondo sutil */
+    .auth-visual-side::before {
+        content: '';
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+
+    .auth-icon-large {
+        width: 80px; height: 80px;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255,255,255,0.3);
+        font-size: 2.5rem;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    /* --- LADO DERECHO (Formulario) --- */
+    .auth-form-side {
+        padding: 4rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Estilizando los inputs (Igual que antes, para consistencia) */
+    .form-group-custom label {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #4a5568;
+        margin-bottom: 0.6rem;
+    }
+
+    .form-group-custom input, 
+    .form-group-custom select,
+    .form-group-custom textarea {
+        display: block; width: 100%; padding: 1rem 1.2rem;
+        font-size: 1rem; font-weight: 500; color: #2d3748;
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0; /* Borde un poco más grueso */
+        border-radius: 16px; /* Bordes más redondeados */
+        transition: all 0.3s ease;
+    }
+
+    .form-group-custom input:focus {
+        border-color: #60efff;
+        box-shadow: 0 0 0 5px rgba(0, 97, 255, 0.15);
+        background-color: #fff;
+    }
+
+    /* Botón de Registro */
+    .btn-register-wide {
+        background: linear-gradient(90deg, #0061ff 0%, #00c6ff 100%);
+        border: none; color: white; font-weight: 800;
+        padding: 16px; border-radius: 50px;
+        font-size: 1.1rem; letter-spacing: 0.5px;
+        box-shadow: 0 10px 30px rgba(0, 97, 255, 0.3);
+        transition: all 0.3s; width: 100%;
+    }
+
+    .btn-register-wide:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(0, 97, 255, 0.4);
+    }
+
+    /* Ajustes Responsivos */
+    @media (max-width: 992px) {
+        /* En tablets y móviles, vuelve a apilarse verticalmente */
+        .card-auth-horizontal { max-width: 600px; }
+        .auth-visual-side { padding: 3rem 2rem; align-items: center; text-align: center; }
+        .auth-form-side { padding: 3rem 2rem; }
+    }
+</style>
+
+<div class="container auth-container-horizontal">
+    <div class="card card-auth-horizontal">
+        <div class="row g-0 h-100">
+            
+            <div class="col-lg-5 auth-visual-side animate__animated animate__fadeInLeft">
+                <div class="auth-icon-large position-relative z-1">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <h2 class="fw-black display-6 mb-3 position-relative z-1" style="font-weight: 800;">Bienvenido a bordo.</h2>
+                <p class="lead opacity-90 mb-5 position-relative z-1">
+                    Crea tu cuenta en Pescadería Huina y accede a manejar el inventario
+                </p>
+                
+                <div class="mt-auto position-relative z-1 d-none d-lg-block">
+                    <div class="d-flex align-items-center mb-3 opacity-75">
+                        <i class="bi bi-check-circle-fill me-3 text-info fs-5"></i>
+                        <span>Pedidos rápidos y seguimiento</span>
                     </div>
-                {% endif %}
+                    <div class="d-flex align-items-center mb-3 opacity-75">
+                        <i class="bi bi-check-circle-fill me-3 text-info fs-5"></i>
+                        <span>Ofertas exclusivas para miembros</span>
+                    </div>
+                    <div class="d-flex align-items-center opacity-75">
+                        <i class="bi bi-check-circle-fill me-3 text-info fs-5"></i>
+                        <span>Gestiona tu perfil fácilmente</span>
+                    </div>
+                </div>
             </div>
-        {% endfor %}
 
-        <button type="submit" class="btn btn-primary w-100">
-            Registrarse
-        </button>
-    </form>
+            <div class="col-lg-7 auth-form-side animate__animated animate__fadeInRight">
+                <h3 class="fw-bold text-dark mb-5">Completa tus datos</h3>
+                
+                <form method="post" action="" novalidate>
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="mb-4 form-group-custom">
+                            <label class="form-label">
+                                {{ field.label }} 
+                                {% if field.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                            </label>
+                            
+                            {{ field }}
+                            
+                            {% if field.help_text %}
+                                <div class="form-text text-muted mt-2 small">
+                                    {{ field.help_text|safe }}
+                                </div>
+                            {% endif %}
+
+                            {% if field.errors %}
+                                <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
+                                    <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                                    <div>
+                                        {% for error in field.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="mt-5">
+                        <button type="submit" class="btn btn-register-wide">
+                            <i class="bi bi-person-plus-fill me-2"></i> Crear mi Cuenta
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted fw-medium">
+                            ¿Ya eres parte de Huina? 
+                            <a href="{% url 'usuarios:login' %}" class="text-primary fw-bold text-decoration-none ms-1">
+                                Inicia Sesión aquí
+                            </a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script auxiliar para asegurar estilos en widgets de Django
+    document.addEventListener("DOMContentLoaded", function() {
+        var formFields = document.querySelectorAll('.form-group-custom input, .form-group-custom select, .form-group-custom textarea');
+        formFields.forEach(function(field) {
+            if (!field.getAttribute('placeholder')) {
+                // Opcional: Añadir placeholder genérico si no tienen
+                // field.setAttribute('placeholder', 'Escribe aquí...');
+            }
+        });
+    });
+</script>
 {% endblock %}

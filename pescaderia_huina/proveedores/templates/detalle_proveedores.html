@@ -1,6 +1,9 @@
 {% extends 'core/panel_admin_base.html' %}
+{% load static %}
 
-{% block content %}
+{% block title %}Detalle del Proveedor{% endblock %}
+
+{% block extra_css %}
 <style>
     /* Estilos Ocean para Detalle */
     .card-ocean-detail {
@@ -18,12 +21,13 @@
         color: white;
     }
 
+    /* Curva suave inversa en la parte inferior del header */
     .detail-header::after {
         content: '';
         position: absolute; bottom: 0; left: 0; right: 0;
         height: 60px;
         background: white;
-        border-radius: 50% 50% 0 0 / 30px 30px 0 0; /* Curva suave inversa */
+        border-radius: 50% 50% 0 0 / 30px 30px 0 0; 
     }
 
     .provider-icon-large {
@@ -36,9 +40,10 @@
         border: 2px solid rgba(255,255,255,0.4);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         font-size: 3rem;
+        color: white;
     }
 
-    /* Cajas de datos */
+    /* Etiqueta de grupos de datos */
     .data-group-label {
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -49,6 +54,7 @@
         display: block;
     }
 
+    /* Tarjetas de información individual */
     .info-item {
         background-color: #f8fbff;
         border-radius: 16px;
@@ -59,7 +65,7 @@
         border: 1px solid #eef2f6;
         height: 100%;
     }
-    
+
     .info-item:hover {
         transform: translateY(-3px);
         box-shadow: 0 5px 15px rgba(0, 97, 255, 0.05);
@@ -84,6 +90,7 @@
         font-weight: 500;
         margin-bottom: 2px;
     }
+    
     .info-content strong {
         color: #1e293b;
         font-size: 1rem;
@@ -91,7 +98,7 @@
         word-break: break-word;
     }
 
-    /* Botón Editar */
+    /* Botón Editar Flotante */
     .btn-edit-float {
         background: linear-gradient(45deg, #ffca28, #ffc107);
         color: #001233;
@@ -101,14 +108,18 @@
         border: none;
         box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
         transition: all 0.3s;
+        text-decoration: none;
     }
+    
     .btn-edit-float:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(255, 193, 7, 0.5);
         color: #001233;
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -146,7 +157,7 @@
                     
                     <div class="row mb-4 justify-content-center">
                         <div class="col-md-6 text-center">
-                            <div class="p-3 rounded-4 bg-white shadow-sm border position-relative" style="top: -40px;">
+                            <div class="p-3 rounded-4 bg-white shadow-sm border position-relative" style="top: -40px; z-index: 2;">
                                 <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.7rem;">
                                     {% if proveedor.tipo_persona == 'natural' %}NO. CÉDULA{% else %}NIT EMPRESARIAL{% endif %}
                                 </small>

@@ -1,6 +1,9 @@
 {% extends 'core/panel_admin_base.html' %}
+{% load static %}
 
-{% block content %}
+{% block title %}Eliminar Proveedor{% endblock %}
+
+{% block extra_css %}
 <style>
     /* Estilos Ocean para Eliminación */
     .card-danger-ocean {
@@ -72,7 +75,9 @@
         color: #495057;
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
@@ -123,7 +128,7 @@
                             <button type="submit" class="btn btn-delete-confirm shadow-sm">
                                 <i class="bi bi-trash-fill me-2"></i> Sí, Eliminar Definitivamente
                             </button>
-                            <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-cancel py-2">
+                            <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-cancel py-2 text-decoration-none">
                                 No, Cancelar y Volver
                             </a>
                         </div>

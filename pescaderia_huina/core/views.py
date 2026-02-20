@@ -11,6 +11,13 @@ def index(request):
 def restablecer(request):
   template = loader.get_template('core/restablecer.html')
   return HttpResponse(template.render())
+
+def page_not_found_404(request, exception=None):
+    """
+    Vista para manejar errores 404 personalizados
+    """
+    return render(request, '404.html', status=404)
+
 @login_required
 def PanelAdmin_base(request):
     return render(request, 'core/panel_admin_base.html')
@@ -39,3 +46,12 @@ def dashboard_view(request):
         'ultimos_usuarios': ultimos_usuarios,
     }
     return render(request, 'core/dashboard.html', context)
+
+def pagina_pescados(request):
+    return render(request, 'core/pescados.html')
+
+def pagina_mariscos(request):
+    return render(request, 'core/mariscos.html')
+
+def pagina_pollos(request):
+    return render(request, 'core/pollos.html')

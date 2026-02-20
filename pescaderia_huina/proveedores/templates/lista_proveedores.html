@@ -1,15 +1,18 @@
 {% extends 'core/panel_admin_base.html' %}
+{% load static %}
 
-{% block content %}
+{% block title %}Lista de Proveedores{% endblock %}
+
+{% block extra_css %}
 <style>
-    /* Estilos Específicos para esta vista */
+    /* Estilos Específicos para la vista de lista */
     .card-header-ocean {
         background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
         border: none;
         position: relative;
         overflow: hidden;
     }
-    
+
     /* Decoración de ondas sutil en el header */
     .card-header-ocean::before {
         content: '';
@@ -20,15 +23,20 @@
         pointer-events: none;
     }
 
-    .table-hover tbody tr:hover {
+    /* Efecto Hover en Filas */
+    .table tbody tr {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .table tbody tr:hover {
         background-color: #f0f7ff; /* Azul muy pálido al pasar el mouse */
         transform: scale(1.002); /* Efecto micro-zoom sutil */
-        transition: all 0.2s ease-in-out;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         z-index: 10;
         position: relative;
     }
 
+    /* Botones de Acción Circulares */
     .action-btn {
         width: 35px; height: 35px;
         display: inline-flex; align-items: center; justify-content: center;
@@ -36,12 +44,15 @@
         transition: 0.2s;
         margin: 0 2px;
     }
+
     .action-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="container py-5">
     <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
         
@@ -131,7 +142,8 @@
 
                                     <a href="{% url 'proveedores:eliminar_proveedores' p.id %}" 
                                        class="btn btn-outline-danger action-btn border-0 bg-danger bg-opacity-10 text-danger" 
-                                       data-bs-toggle="tooltip" title="Eliminar">
+                                       data-bs-toggle="tooltip" title="Eliminar"
+                                       onclick="return confirm('¿Estás seguro de eliminar a este proveedor?');">
                                         <i class="bi bi-trash-fill"></i>
                                     </a>
                                 </div>
@@ -161,11 +173,16 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
-    // Inicializar tooltips de Bootstrap
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
+    document.addEventListener("DOMContentLoaded", function() {
+        // Inicializar tooltips de Bootstrap si existen elementos con data-bs-toggle="tooltip"
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
 </script>
 {% endblock %}
