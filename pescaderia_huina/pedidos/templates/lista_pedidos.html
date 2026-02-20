@@ -3,131 +3,9 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
-<style>
-    :root {
-        --primary-blue: #0f3976; 
-        --dark-blue: #0f3976;    
-        --light-blue-bg: #f0f7ff; 
-        --header-blue-bg: #e7f1ff; 
-        --text-dark: #2c3e50;     
-        --text-muted: #6c757d;    
-        --white: #ffffff;
-    }
+{% load static %}
 
-    body {
-        background-color: var(--light-blue-bg);
-        color: var(--text-dark);
-        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    }
-
-    .page-header { padding: 2rem 0; }
-    .page-title { font-size: 2rem; font-weight: 800; color: var(--dark-blue); letter-spacing: -0.5px; }
-
-    .card-modern {
-        border: none;
-        border-radius: 1rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        background-color: var(--white);
-    }
-
-    /*--- Search & Filter Section Estilizada ---*/
-    .filter-label {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        margin-bottom: 0.3rem;
-        letter-spacing: 0.5px;
-    }
-    
-    .search-input-group .input-group-text {
-        background-color: var(--white);
-        border: 1px solid #dee2e6;
-        border-right: none;
-        color: var(--primary-blue);
-    }
-    .search-input-group .form-control { border-left: none; }
-    .form-control:focus { box-shadow: 0 0 0 0.25rem rgba(15, 57, 118, 0.1); border-color: var(--primary-blue); }
-
-    .btn-clear-search {
-        background-color: var(--white);
-        border: 1px solid #dee2e6;
-        border-left: none;
-        border-right: none;
-        color: #dc3545;
-        display: flex;
-        align-items: center;
-        padding: 0 0.5rem;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-    .btn-clear-search:hover { color: #b02a37; }
-
-    .btn-export {
-        border-radius: 0.5rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.4rem 0.8rem;
-        font-size: 0.9rem;
-    }
-    .btn-export.pdf { color: #dc3545; border-color: #dc3545; }
-    .btn-export.pdf:hover { background-color: #dc3545; color: white; }
-    .btn-export.excel { color: #198754; border-color: #198754; }
-    .btn-export.excel:hover { background-color: #198754; color: white; }
-
-    /*--- Professional Table ---*/
-    .table-professional { margin-bottom: 0; }
-    .table-professional thead th {
-        background-color: var(--header-blue-bg);
-        color: var(--dark-blue);
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        border-bottom: none;
-        padding-top: 1rem; padding-bottom: 1rem;
-    }
-    .table-professional tbody tr { transition: all 0.2s ease; border-bottom: 1px solid #f0f0f0; }
-    .table-professional tbody tr:hover { background-color: var(--light-blue-bg); transform: scale(1.005); }
-    .table-professional td { padding: 1.2rem 1rem; vertical-align: middle; }
-
-    /*--- Data Styling ---*/
-    .id-cell { font-family: 'Courier New', monospace; color: var(--primary-blue); }
-    .proveedor-name { font-weight: 700; color: var(--text-dark); font-size: 1.05rem; }
-    .nit-badge { background-color: var(--header-blue-bg); color: var(--dark-blue); font-weight: 600; font-size: 0.75rem; padding: 0.25em 0.6em; }
-    
-    .product-badge-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .product-badge {
-        background-color: var(--light-blue-bg);
-        color: var(--dark-blue);
-        border: 1px solid #dce9f9;
-        border-radius: 2rem;
-        padding: 0.35rem 0.75rem;
-        font-size: 0.85rem; font-weight: 500;
-        display: inline-flex; align-items: center;
-    }
-    .product-qty {
-        background-color: var(--white);
-        color: var(--primary-blue);
-        font-weight: 700; border-radius: 50%;
-        width: 24px; height: 24px;
-        display: flex; align-items: center; justify-content: center;
-        margin-left: 0.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .total-value { font-size: 1.1rem; color: var(--primary-blue); }
-
-    /* Action Icon Buttons */
-    .btn-icon-action {
-        width: 36px; height: 36px; border-radius: 50%;
-        display: inline-flex; align-items: center; justify-content: center;
-        background-color: var(--light-blue-bg); color: var(--primary-blue);
-        transition: all 0.2s; border: none; margin: 0 2px;
-    }
-    .btn-icon-action:hover { background-color: var(--primary-blue); color: var(--white); transform: translateY(-2px); }
-    .btn-icon-action.delete:hover { background-color: #dc3545; }
-</style>
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
 
 <div class="container">
     <div class="page-header d-flex justify-content-between align-items-center">
@@ -214,7 +92,7 @@
                             <th class="ps-5">ID Pedido</th>
                             <th>Proveedor</th>
                             <th>Fecha</th>
-                            <th>Productos</th>
+                            <th class="text-center">Resumen</th>
                             <th class="text-center">Uds.</th> 
                             <th class="text-end">Total</th>
                             <th class="text-center">Estado</th>
@@ -237,21 +115,14 @@
                                 </div>
                             </td>
                             
-                            <td style="max-width: 350px;">
-                                <div class="product-badge-group">
-                                    {% for detalle in p.detalles.all %}
-                                        <div class="product-badge shadow-sm">
-                                            {{ detalle.producto.nombre|truncatechars:20 }}
-                                            <span class="product-qty" title="{{ detalle.cantidad }} unidades">{{ detalle.cantidad|floatformat:0 }}</span>
-                                        </div>
-                                    {% empty %}
-                                        <span class="text-muted small fst-italic opacity-75">Sin productos registrados</span>
-                                    {% endfor %}
-                                </div>
+                            <td class="text-center">
+                                <a href="{% url 'pedidos:detalle_pedido' p.id %}" class="btn btn-sm btn-outline-primary rounded-pill fw-bold" style="font-size: 0.8rem; padding: 0.3rem 1rem;">
+                                    <i class="bi bi-eye me-1"></i> Ver detalles
+                                </a>
                             </td>
 
                             <td class="fw-bold text-center fs-5">
-                                {{ p.cantidad_total_calculada|default:"0" }}
+                                {{ p.cantidad_total_calculada|default:"0"|floatformat:"-1" }}
                             </td>
                             <td class="fw-bolder text-end total-value money-format pe-3">
                                 {{ p.valor_total }}
