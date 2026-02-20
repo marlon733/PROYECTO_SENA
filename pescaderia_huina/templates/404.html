@@ -2,17 +2,80 @@
 {% load static %}
 
 {% block content %}
+
+<style>
+
+.error-404{
+    position: relative;
+    height: 70vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* VIDEO FONDO */
+.video-bg{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:1;
+}
+
+.video-bg video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* OSCURECER */
+.overlay{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.45);
+    z-index:2;
+}
+
+/* CONTENIDO */
+.error-container{
+    position:relative;
+    z-index:3;
+    text-align:center;
+    color:white;
+}
+
+.error-code{
+    font-size:90px;
+    font-weight:bold;
+}
+
+.error-text{
+    font-size:22px;
+}
+
+</style>
+
 <main class="error-404">
-  <div class="error-container">
 
-    <center><img src="{% static 'img/404.png' %}" class="error-image"></center>
+    <!-- VIDEO FONDO -->
+    <div class="video-bg">
+        <video autoplay muted loop playsinline>
+            <source src="{% static 'videos/fondo.mp4' %}" type="video/mp4">
+        </video>
+    </div>
 
-    <center><h1 class="error-code">404</h1></center>
+    <div class="overlay"></div>
 
-    <center><p class="error-text">
-      Lo sentimos, no pudimos encontrar la página.
-    </p> </center>
+    <div class="error-container">
+        <h1 class="error-code">404</h1>
+        <p class="error-text">
+            Lo sentimos, no pudimos encontrar la página.
+        </p>
+    </div>
 
-  </div>
 </main>
+
 {% endblock %}
