@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'pescaderia_huina.middleware.ServeStaticFilesMiddleware',
 ]
 
 ROOT_URLCONF = 'pescaderia_huina.urls'
