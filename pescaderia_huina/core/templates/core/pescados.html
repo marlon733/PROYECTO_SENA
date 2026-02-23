@@ -5,27 +5,37 @@
 
 {% block content %}
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:wght@700&display=swap"
+    rel="stylesheet">
 
 <style>
     /* --- Ámbito Local de Estilos --- */
     .catalog-wrapper-elegant {
         /* Paleta de Colores Premium */
-        --premium-navy: #1a2c42;    /* Azul marino profundo y serio */
-        --premium-gold: #c5a47e;    /* Tono dorado/bronce para acentos */
-        --text-dark: #333333;       /* Gris oscuro para texto principal */
-        --text-light: #777777;      /* Gris suave para descripciones */
-        --bg-light: #f9fbfd;        /* Fondo apenas grisáceo */
+        --premium-navy: #1a2c42;
+        /* Azul marino profundo y serio */
+        --premium-gold: #c5a47e;
+        /* Tono dorado/bronce para acentos */
+        --text-dark: #333333;
+        /* Gris oscuro para texto principal */
+        --text-light: #777777;
+        /* Gris suave para descripciones */
+        --bg-light: #f9fbfd;
+        /* Fondo apenas grisáceo */
         --white: #ffffff;
 
-        font-family: 'Montserrat', sans-serif; /* Fuente base */
+        font-family: 'Montserrat', sans-serif;
+        /* Fuente base */
         background-color: var(--bg-light);
         padding: 4rem 1rem;
     }
 
     /* Tipografía para Títulos */
-    h2.elegant-title, h3.card-title {
-        font-family: 'Playfair Display', serif; /* Fuente de lujo */
+    h2.elegant-title,
+    h3.card-title {
+        font-family: 'Playfair Display', serif;
+        /* Fuente de lujo */
         color: var(--premium-navy);
     }
 
@@ -71,24 +81,27 @@
     /* --- Diseño de Tarjeta Profesional --- */
     .product-card-elegant {
         background: var(--white);
-        border-radius: 8px; /* Bordes menos redondeados para ser más formal */
+        border-radius: 8px;
+        /* Bordes menos redondeados para ser más formal */
         overflow: hidden;
         /* Sombra muy sutil y difuminada */
-        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
         transition: all 0.4s ease;
-        border: 1px solid rgba(0,0,0,0.03);
+        border: 1px solid rgba(0, 0, 0, 0.03);
         display: flex;
         flex-direction: column;
     }
 
     .product-card-elegant:hover {
         transform: translateY(-7px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        border-color: var(--premium-gold); /* Borde dorado al pasar el mouse */
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border-color: var(--premium-gold);
+        /* Borde dorado al pasar el mouse */
     }
 
     .card-img-container {
-        height: 240px; /* Un poco más altas */
+        height: 240px;
+        /* Un poco más altas */
         width: 100%;
         overflow: hidden;
         position: relative;
@@ -98,7 +111,8 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Zoom muy suave */
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        /* Zoom muy suave */
     }
 
     .product-card-elegant:hover .card-img-container img {
@@ -109,7 +123,8 @@
     .badge-gold {
         position: absolute;
         top: 20px;
-        left: 20px; /* A la izquierda se ve más elegante */
+        left: 20px;
+        /* A la izquierda se ve más elegante */
         background: linear-gradient(45deg, var(--premium-navy), #2a405b);
         color: var(--premium-gold);
         padding: 6px 14px;
@@ -117,16 +132,19 @@
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 1px;
-        border-radius: 2px; /* Rectangular */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        border-radius: 2px;
+        /* Rectangular */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     .card-body-elegant {
-        padding: 2rem; /* Más espacio interno */
+        padding: 2rem;
+        /* Más espacio interno */
         flex-grow: 1;
         display: flex;
         flex-direction: column;
-        text-align: center; /* Texto centrado para mayor elegancia */
+        text-align: center;
+        /* Texto centrado para mayor elegancia */
     }
 
     .card-title {
@@ -146,7 +164,7 @@
     .card-footer-elegant {
         margin-top: auto;
         padding-top: 1.5rem;
-        border-top: 1px solid rgba(0,0,0,0.05);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -160,7 +178,7 @@
         font-weight: 700;
         line-height: 1;
     }
-    
+
     .price-unit-elegant {
         font-size: 0.85rem;
         color: var(--text-light);
@@ -180,7 +198,7 @@
 </style>
 
 <div class="catalog-wrapper-elegant">
-    
+
     <div class="section-header-elegant">
         <h2 class="elegant-title">Nuestra Selección de Pescados</h2>
         <p class="section-subtitle">Frescura inigualable, del agua a su mesa con la garantía Huina.</p>
@@ -190,13 +208,14 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <span class="badge-gold">Recomendado</span>
-                <img src="{% static 'img/Atun.jpg' %}" alt="Atun pez Thunnus">
+                <span class="badge-gold">Premium</span>
+                <img src="{% static 'img/Atun.jpg' %}" alt="Atún fresco medallón">
             </div>
             <div class="card-body-elegant">
                 <span class="origin-tag-subtle">Origen: Mar</span>
-                <h3 class="card-title">Atun pez Thunnus</h3>
-                <p class="card-desc">Mojarra de cultivo seleccionada por su tamaño y frescura. Carne blanca, textura suave y sabor delicado. Perfecta para preparaciones gourmet.</p>
+                <h3 class="card-title">Atún (Medallones)</h3>
+                <p class="card-desc">Cortes seleccionados de carne firme y color intenso. Empacado al vacío para
+                    preservar su textura y propiedades nutricionales. Ideal para sellar en casa.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$12.000</div>
                     <span class="price-unit-elegant">Precio por libra</span>
@@ -206,28 +225,29 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <span class="badge-gold">Importado</span>
-                <img src="{% static 'img/Pargo.jpg' %}" alt="Salmón Chileno">
+                <img src="{% static 'img/Pargo.jpg' %}" alt="Pargo Rojo fresco">
             </div>
             <div class="card-body-elegant">
                 <span class="origin-tag-subtle">Origen: Mar</span>
-                <h3 class="card-title">Pargo</h3>
-                <p class="card-desc">Corte grueso de salmón chileno, reconocido por su alto contenido de Omega 3 y su color intenso. Ideal para sellar a la plancha o al horno.</p>
+                <h3 class="card-title">Pargo Rojo</h3>
+                <p class="card-desc">Pescado de mar reconocido por su sabor exquisito y carne blanca. Disponible entero
+                    o en postas, siempre fresco y listo para su preparación al horno o frito.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$45.000</div>
-                    <span class="price-unit-elegant">Precio por Kilogramo</span>
+                    <span class="price-unit-elegant">Precio por libra</span>
                 </div>
             </div>
         </article>
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/Veranera.jpg' %}" alt="Bagre Rayado">
+                <img src="{% static 'img/Veranera.jpg' %}" alt="Pescado Veranera">
             </div>
             <div class="card-body-elegant">
                 <span class="origin-tag-subtle">Origen: Mar</span>
                 <h3 class="card-title">Veranera</h3>
-                <p class="card-desc">Tradicional bagre del Magdalena, presentado en rodajas limpias y sin piel. Carne jugosa y sustanciosa, esencial para un buen sancocho.</p>
+                <p class="card-desc">Una excelente opción de mar con carne suave y versátil. Se entrega cuidadosamente
+                    limpio, ideal para quienes buscan frescura y calidad en su mesa diaria.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$16.000</div>
                     <span class="price-unit-elegant">Precio por libra</span>
@@ -237,13 +257,14 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <span class="badge-gold">Especialidad</span>
-                <img src="{% static 'img/Bagre.png' %}" alt="Trucha Arcoíris">
+                <span class="badge-gold">Tradicional</span>
+                <img src="{% static 'img/Bagre.png' %}" alt="Bagre en rodajas">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Rio</span>
+                <span class="origin-tag-subtle">Origen: Río</span>
                 <h3 class="card-title">Bagre</h3>
-                <p class="card-desc">Trucha Arcoíris deshuesada artesanalmente en corte mariposa. Su textura fina y sabor suave la hacen una opción exquisita y fácil de preparar.</p>
+                <p class="card-desc">El clásico del río presentado en rodajas limpias. Carne sustanciosa y fresca,
+                    empacada cuidadosamente para garantizar la higiene en sus caldos y guisos caseros.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$18.500</div>
                     <span class="price-unit-elegant">Precio por libra</span>
@@ -253,12 +274,13 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/Bocachico.jpeg' %}" alt="Sierra">
+                <img src="{% static 'img/Bocachico.jpeg' %}" alt="Bocachico fresco de río">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Mar Caribe</span>
+                <span class="origin-tag-subtle">Origen: Río</span>
                 <h3 class="card-title">Bocachico</h3>
-                <p class="card-desc">Sierra fresca del Caribe en postas. Un pescado de carne firme y sabor marino característico, excelente para freír y acompañar con patacón.</p>
+                <p class="card-desc">Sabor auténtico de nuestras cuencas. Seleccionado por su tamaño y frescura,
+                    disponible por unidades o por libras, garantizando un producto 100% natural.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$14.000</div>
                     <span class="price-unit-elegant">Precio por libra</span>
@@ -268,12 +290,13 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="https://images.unsplash.com/photo-1574781330855-d0db8cc6a79c?auto=format&fit=crop&w=600&q=80" alt="Tilapia">
+                <img src="{% static 'img/Cachama.jpg' %}" alt="Cachama de río">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Cultivo</span>
+                <span class="origin-tag-subtle">Origen: Río</span>
                 <h3 class="card-title">Cachama</h3>
-                <p class="card-desc">Lomos de tilapia cuidadosamente seleccionados, sin espinas ni piel. La opción más versátil y saludable para la cocina diaria.</p>
+                <p class="card-desc">Pescado de río de carne firme y excelente sabor. Perfecta para asar en casa, se
+                    entrega escamada y limpia, manteniendo la cadena de frío en todo momento.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$13.500</div>
                     <span class="price-unit-elegant">Precio por libra</span>
@@ -283,12 +306,13 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="https://images.unsplash.com/photo-1574781330855-d0db8cc6a79c?auto=format&fit=crop&w=600&q=80" alt="Tilapia">
+                <img src="{% static 'img/Capaz.jpg' %}" alt="Pescado Capaz">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Cultivo</span>
-                <h3 class="card-title">capaz</h3>
-                <p class="card-desc">Lomos de tilapia cuidadosamente seleccionados, sin espinas ni piel. La opción más versátil y saludable para la cocina diaria.</p>
+                <span class="origin-tag-subtle">Origen: Río</span>
+                <h3 class="card-title">Capaz</h3>
+                <p class="card-desc">Tradición y frescura en un solo producto. Carne delicada y limpia, ideal para
+                    preparaciones al vapor o en viuda, conservando el sabor genuino del río.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$13.500</div>
                     <span class="price-unit-elegant">Precio por libra</span>
@@ -298,12 +322,13 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="https://images.unsplash.com/photo-1574781330855-d0db8cc6a79c?auto=format&fit=crop&w=600&q=80" alt="Tilapia">
+                <img src="{% static 'img/Mojarra.jpg' %}" alt="Mojarra Roja fresca">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Cultivo</span>
-                <h3 class="card-title">mojarra</h3>
-                <p class="card-desc">Lomos de tilapia cuidadosamente seleccionados, sin espinas ni piel. La opción más versátil y saludable para la cocina diaria.</p>
+                <span class="origin-tag-subtle">Origen: Río / Cultivo</span>
+                <h3 class="card-title">Mojarra Roja</h3>
+                <p class="card-desc">Seleccionada bajo estrictos estándares de calidad. Carne blanca y jugosa, perfecta
+                    para una fritura crocante. Disponible por peso exacto según su necesidad.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$13.500</div>
                     <span class="price-unit-elegant">Precio por libra</span>
@@ -313,12 +338,13 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="https://images.unsplash.com/photo-1574781330855-d0db8cc6a79c?auto=format&fit=crop&w=600&q=80" alt="Tilapia">
+                <img src="{% static 'img/Trucha.jpg' %}" alt="Trucha fresca">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Cultivo</span>
-                <h3 class="card-title">trucha</h3>
-                <p class="card-desc">Lomos de tilapia cuidadosamente seleccionados, sin espinas ni piel. La opción más versátil y saludable para la cocina diaria.</p>
+                <span class="origin-tag-subtle">Origen: Río / Agua Dulce</span>
+                <h3 class="card-title">Trucha</h3>
+                <p class="card-desc">Trucha fresca de alta calidad. Se destaca por su textura fina y sabor suave. Ideal
+                    para una alimentación saludable y ligera en el hogar.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$13.500</div>
                     <span class="price-unit-elegant">Precio por libra</span>
@@ -328,12 +354,13 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="https://images.unsplash.com/photo-1574781330855-d0db8cc6a79c?auto=format&fit=crop&w=600&q=80" alt="Tilapia">
+                <img src="{% static 'img/Tilapia.jpg' %}" alt="Tilapia fresca">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Cultivo</span>
-                <h3 class="card-title">Tilapia</h3>
-                <p class="card-desc">Lomos de tilapia cuidadosamente seleccionados, sin espinas ni piel. La opción más versátil y saludable para la cocina diaria.</p>
+                <span class="origin-tag-subtle">Origen: Río / Cultivo</span>
+                <h3 class="card-title">Tilapia Entera</h3>
+                <p class="card-desc">Producto fresco y versátil, ideal para el consumo diario por su excelente balance
+                    nutricional y facilidad de preparación en cualquier receta casera.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$13.500</div>
                     <span class="price-unit-elegant">Precio por libra</span>
@@ -343,19 +370,20 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="https://images.unsplash.com/photo-1574781330855-d0db8cc6a79c?auto=format&fit=crop&w=600&q=80" alt="Tilapia">
+                <span class="badge-gold">Al Vacío</span>
+                <img src="{% static 'img/Lomos_Mojarra.jpg' %}" alt="Lomos de Mojarra sin espinas">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Cultivo</span>
-                <h3 class="card-title">Lomo de Mojarra</h3>
-                <p class="card-desc">Lomos de tilapia cuidadosamente seleccionados, sin espinas ni piel. La opción más versátil y saludable para la cocina diaria.</p>
+                <span class="origin-tag-subtle">Origen: Río / Cultivo</span>
+                <h3 class="card-title">Lomos de Mojarra</h3>
+                <p class="card-desc">Cortes premium completamente limpios, sin espinas ni piel. Empacados al vacío de
+                    forma individual para garantizar máxima higiene y facilidad al cocinar.</p>
                 <div class="card-footer-elegant">
                     <div class="price-elegant">$13.500</div>
                     <span class="price-unit-elegant">Precio por libra</span>
                 </div>
             </div>
         </article>
-
 
     </div>
 </div>
