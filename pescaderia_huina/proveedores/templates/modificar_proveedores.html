@@ -1,6 +1,9 @@
 {% extends 'core/panel_admin_base.html' %}
+{% load static %}
 
-{% block content %}
+{% block title %}Editar Proveedor{% endblock %}
+
+{% block extra_css %}
 <style>
     /* Reutilizando estilos Ocean Vibrant para consistencia */
     .card-ocean {
@@ -9,13 +12,16 @@
         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         border: none;
     }
-    
+
     .card-header-ocean {
-        background: linear-gradient(135deg, hsl(217, 100%, 50%) 0%, #60efff 100%);
+        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
         padding: 2rem;
         position: relative;
+        text-align: center;
+        color: white;
     }
 
+    /* Efecto curva inferior en el header */
     .card-header-ocean::after {
         content: '';
         position: absolute;
@@ -38,6 +44,7 @@
         border-color: #60efff;
         box-shadow: 0 0 0 4px rgba(96, 239, 255, 0.15);
         background-color: #fff;
+        outline: none;
     }
 
     .form-label {
@@ -45,6 +52,12 @@
         font-weight: 600;
         font-size: 0.9rem;
         margin-bottom: 0.5rem;
+    }
+
+    /* Input Group Text */
+    .input-group-text {
+        border-color: #e0e6ed;
+        background-color: #fff;
     }
 
     /* Botón de Actualizar (Naranja/Dorado para distinguir de "Crear") */
@@ -65,13 +78,15 @@
         color: white;
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card card-ocean">
                 
-                <div class="card-header-ocean text-center text-white">
+                <div class="card-header-ocean">
                     <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex p-3 mb-3 shadow-sm backdrop-blur">
                         <i class="bi bi-pencil-square fs-2"></i>
                     </div>
@@ -208,27 +223,31 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-    // Lógica para cambiar la etiqueta según tipo de persona
-    const tipoSelectMod = document.getElementById('id_tipo_persona');
-    const nitLabelMod = document.getElementById('label_nit_mod');
-    const nitInputMod = document.getElementById('id_nit'); // Asegúrate que este ID coincida con el generado por Django
+    document.addEventListener("DOMContentLoaded", function() {
+        // Lógica para cambiar la etiqueta según tipo de persona
+        const tipoSelectMod = document.getElementById('id_tipo_persona');
+        const nitLabelMod = document.getElementById('label_nit_mod');
+        const nitInputMod = document.getElementById('id_nit');
 
-    function actualizarLabelMod() {
-        if (tipoSelectMod.value === 'natural') {
-            nitLabelMod.innerText = 'Número de Cédula';
-            if(nitInputMod) nitInputMod.placeholder = 'Cédula de ciudadanía';
-        } else {
-            nitLabelMod.innerText = 'NIT Empresarial';
-            if(nitInputMod) nitInputMod.placeholder = 'Número de identificación tributaria';
+        function actualizarLabelMod() {
+            if (tipoSelectMod && tipoSelectMod.value === 'natural') {
+                if(nitLabelMod) nitLabelMod.innerText = 'Número de Cédula';
+                if(nitInputMod) nitInputMod.placeholder = 'Cédula de ciudadanía';
+            } else {
+                if(nitLabelMod) nitLabelMod.innerText = 'NIT Empresarial';
+                if(nitInputMod) nitInputMod.placeholder = 'Número de identificación tributaria';
+            }
         }
-    }
 
-    if(tipoSelectMod) {
-        tipoSelectMod.addEventListener('change', actualizarLabelMod);
-        // Ejecutar al cargar la página para establecer el estado inicial correcto
-        window.addEventListener('DOMContentLoaded', actualizarLabelMod);
-    }
+        if(tipoSelectMod) {
+            tipoSelectMod.addEventListener('change', actualizarLabelMod);
+            // Ejecutar al cargar la página para establecer el estado inicial correcto
+            actualizarLabelMod();
+        }
+    });
 </script>
 {% endblock %}

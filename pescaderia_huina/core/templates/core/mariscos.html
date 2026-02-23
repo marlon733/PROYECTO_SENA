@@ -1,0 +1,286 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block title %}Selección de Mariscos | Pescadería Huina{% endblock %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<style>
+    /* Reutilizamos las variables para consistencia, pero podrías cambiar 
+       el --premium-navy por un tono más "coral" si quisieras diferenciar secciones.
+       Por ahora, mantenemos la elegancia del azul marino. */
+    .catalog-wrapper-elegant {
+        --premium-navy: #1a2c42;
+        --premium-gold: #c5a47e; 
+        --text-dark: #333333;
+        --text-light: #777777;
+        --bg-light: #f9fbfd;
+        --white: #ffffff;
+
+        font-family: 'Montserrat', sans-serif;
+        background-color: var(--bg-light);
+        padding: 4rem 1rem;
+    }
+
+    /* Títulos */
+    h2.elegant-title, h3.card-title {
+        font-family: 'Playfair Display', serif;
+        color: var(--premium-navy);
+    }
+
+    /* Header de Sección */
+    .section-header-elegant {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 4rem auto;
+        position: relative;
+    }
+
+    .section-header-elegant h2 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        letter-spacing: -0.5px;
+    }
+
+    .section-header-elegant::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 3px;
+        background-color: var(--premium-gold);
+        margin: 1.5rem auto 0;
+    }
+
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        font-weight: 300;
+    }
+
+    /* Grid */
+    .products-grid-elegant {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Tarjetas */
+    .product-card-elegant {
+        background: var(--white);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(0,0,0,0.03);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card-elegant:hover {
+        transform: translateY(-7px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border-color: var(--premium-gold);
+    }
+
+    .card-img-container {
+        height: 240px;
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .card-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .product-card-elegant:hover .card-img-container img {
+        transform: scale(1.06);
+    }
+
+    /* Badges */
+    .badge-gold {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: linear-gradient(45deg, var(--premium-navy), #2a405b);
+        color: var(--premium-gold);
+        padding: 6px 14px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 2px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Cuerpo de tarjeta */
+    .card-body-elegant {
+        padding: 2rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-desc {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        font-weight: 300;
+        flex-grow: 1;
+    }
+
+    .card-footer-elegant {
+        margin-top: auto;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .price-elegant {
+        color: var(--premium-gold);
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+    
+    .price-unit-elegant {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 400;
+    }
+
+    .origin-tag-subtle {
+        font-size: 0.75rem;
+        color: var(--premium-navy);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 500;
+        opacity: 0.7;
+        margin-bottom: 5px;
+    }
+</style>
+
+<div class="catalog-wrapper-elegant">
+    
+    <div class="section-header-elegant">
+        <h2 class="elegant-title">Exquisitos Mariscos</h2>
+        <p class="section-subtitle">Sabores intensos del océano, seleccionados para sus mejores preparaciones.</p>
+    </div>
+
+    <div class="products-grid-elegant">
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <span class="badge-gold">Premium</span>
+                <img src="" alt="Langostinos">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Origen: Mar Pacífico</span>
+                <h3 class="card-title">Langostinos Jumbo U15</h3>
+                <p class="card-desc">Langostinos de gran calibre, ideales para la parrilla o al ajillo. Textura firme, carne dulce y presentación espectacular.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$58.000</div>
+                    <span class="price-unit-elegant">Precio por libra</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <span class="badge-gold">Más Vendido</span>
+                <img src="" alt="Cazuela de Mariscos">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Selección Especial</span>
+                <h3 class="card-title">Mix para Cazuela</h3>
+                <p class="card-desc">La mezcla perfecta de camarón, calamar, pulpo y mejillones. Todo lo necesario para una auténtica cazuela de mariscos o paella.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$22.000</div>
+                    <span class="price-unit-elegant">Precio por libra</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <img src="" alt="Camarones">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Origen: Cultivo</span>
+                <h3 class="card-title">Camarón Tigre</h3>
+                <p class="card-desc">Camarón crudo con cáscara de excelente tamaño. Al cocinarse adquiere un color naranja vibrante y un sabor inigualable.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$28.000</div>
+                    <span class="price-unit-elegant">Precio por libra</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <span class="badge-gold">Gourmet</span>
+                <img src="" alt="Pulpo">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Importado</span>
+                <h3 class="card-title">Pulpo Entero</h3>
+                <p class="card-desc">Pulpo entero pre-limpio. Carne tierna ideal para preparar a la gallega o a la parrilla. Calidad garantizada para chef.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$35.000</div>
+                    <span class="price-unit-elegant">Precio por libra</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <img src="" alt="Anillos de Calamar">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Pesca Blanca</span>
+                <h3 class="card-title">Anillos de Calamar</h3>
+                <p class="card-desc">Anillos de calamar blanco, limpios y listos para apanar. Textura suave, perfecta para entradas y picadas.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$19.500</div>
+                    <span class="price-unit-elegant">Precio por libra</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <img src="" alt="Mejillones">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Importado</span>
+                <h3 class="card-title">Mejillones en Concha</h3>
+                <p class="card-desc">Mejillones negros pasteurizados en su jugo. Listos para calentar y servir, o para enriquecer arroces y pastas.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$16.000</div>
+                    <span class="price-unit-elegant">Precio por caja (500g)</span>
+                </div>
+            </div>
+        </article>
+
+    </div>
+</div>
+{% endblock %}

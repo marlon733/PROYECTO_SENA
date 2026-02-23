@@ -1,18 +1,18 @@
-
 {% extends 'core/panel_admin_base.html' %}
 {% load static %}
 
 {% block title %}Panel Administrativo{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
+    /* Importamos la fuente para que esté disponible */
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
     :root {
         --primary: #4f46e5;
         --bg-main: #f8fafc;
     }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); }
-    
+
     /* Stats Cards Modernos */
     .stats-card {
         border-radius: 16px;
@@ -29,6 +29,7 @@
         justify-content: center;
     }
     .stats-card:hover { transform: translateY(-5px); }
+    
     .stats-card .icon {
         font-size: 4rem;
         position: absolute;
@@ -37,6 +38,8 @@
         opacity: 0.2;
         transform: rotate(-15deg);
     }
+
+    /* Colores específicos para cada tarjeta */
     .card-usuarios { background: linear-gradient(135deg, #4f46e5, #3730a3); }
     .card-activos { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
     .card-staff { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
@@ -152,17 +155,27 @@
 </div>
 
 <script>
+    // Script para la animación de contadores
     document.addEventListener("DOMContentLoaded", () => {
         const counters = document.querySelectorAll('.counter');
         counters.forEach(counter => {
             const target = +counter.getAttribute('data-target');
-            const inc = target / 50;
+            // Si el target es 0, no animar
+            if (target === 0) {
+                counter.innerText = 0;
+                return;
+            }
+            
+            const inc = Math.ceil(target / 50); // Incremento más rápido
+            
             const update = () => {
                 const count = +counter.innerText;
                 if(count < target) {
-                    counter.innerText = Math.ceil(count + inc);
-                    setTimeout(update, 20);
-                } else { counter.innerText = target; }
+                    counter.innerText = count + inc;
+                    setTimeout(update, 30);
+                } else { 
+                    counter.innerText = target; 
+                }
             };
             update();
         });

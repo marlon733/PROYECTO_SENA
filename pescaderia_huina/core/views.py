@@ -39,3 +39,12 @@ def dashboard_view(request):
         'ultimos_usuarios': ultimos_usuarios,
     }
     return render(request, 'core/dashboard.html', context)
+
+def pagina_pescados(request):
+    return render(request, 'core/pescados.html')
+
+def pagina_mariscos(request):
+    return render(request, 'core/mariscos.html')
+
+def pagina_pollos(request):
+    return render(request, 'core/pollos.html')
