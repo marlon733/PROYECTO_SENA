@@ -8,5 +8,6 @@ soupsieve==2.8
 sqlparse==0.5.4
 typing_extensions==4.15.0
 tzdata==2025.2
+xhtml2pdf
 #para instalar los paquetes en venv
 #pip install -r requirements.txt
