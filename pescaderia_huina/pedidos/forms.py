@@ -1,5 +1,8 @@
 from django import forms
-from .models import Pedido, DetallePedido, Proveedor
+from .models import Pedido, DetallePedido
+from productos.models import Producto
+from proveedores.models import Proveedor
+
 
 class PedidoForm(forms.ModelForm):
     class Meta:
@@ -12,15 +15,39 @@ class PedidoForm(forms.ModelForm):
         }
 
 class DetallePedidoForm(forms.ModelForm):
+    OPCIONES_PRESENTACION = [
+        ('unidades', 'Uds'),
+        ('bandejas', 'Band'),
+        ('libras', 'Lib'),
+    ]
+
+    presentacion = forms.ChoiceField(
+        choices=OPCIONES_PRESENTACION,
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select bg-light unidad-select',
+            'style': 'max-width: 95px; border-left: 1px solid #dce9f9;'
+        })
+    )
+
+    # 1. FORZAMOS A DJANGO A ENTENDER LA COMA COMO DECIMAL
+    cantidad = forms.DecimalField(
+        localize=True, 
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control', 
+            'min': '0', 
+            'step': 'any' # 'any' permite que el navegador acepte cualquier número decimal
+        })
+    )
+
     class Meta:
         model = DetallePedido
-        fields = ['producto', 'cantidad', 'precio_unitario']
+        fields = ['producto', 'cantidad', 'presentacion', 'precio_unitario'] 
+        
         widgets = {
             'producto': forms.Select(attrs={'class': 'form-select'}),
-            'cantidad': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
-            'precio_unitario': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'precio_unitario': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': 'any'}),
         }
-
     def clean_cantidad(self):
         cantidad = self.cleaned_data.get('cantidad')
         if cantidad <= 0:

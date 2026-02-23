@@ -1,356 +1,402 @@
-{% load static %}
-{% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+{% load static %} {% block extra_css %}
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@600;700&display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+/>
 
 <style>
-    :root {
-        /* Paleta Coherente con Pescadería Huina - Index Premium */
-        --color-primary: #0F172A; /* Navy oscuro elegante para textos */
-        --color-accent: #06B6D4; /* Cyan/Turquesa Vibrante (Frescura) */
-        --color-accent-hover: #0891B2;
-        --color-bg-light: #F8FAFC; /* Blanco humo muy suave */
-        --color-white: #FFFFFF;
-        --color-border: #E2E8F0;
-        --color-text-muted: #64748B;
-    }
+  :root {
+    /* Paleta Coherente con Pescadería Huina - Index Premium */
+    --color-primary: #0f172a; /* Navy oscuro elegante para textos */
+    --color-accent: #06b6d4; /* Cyan/Turquesa Vibrante (Frescura) */
+    --color-accent-hover: #0891b2;
+    --color-bg-light: #f8fafc; /* Blanco humo muy suave */
+    --color-white: #ffffff;
+    --color-border: #e2e8f0;
+    --color-text-muted: #64748b;
+  }
 
-    body, html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        font-family: 'Inter', sans-serif;
-        background-color: var(--color-white);
-        color: var(--color-primary);
-    }
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Inter", sans-serif;
+    background-color: var(--color-white);
+    color: var(--color-primary);
+  }
 
-    /* Layout de Pantalla Partida */
-    .auth-container {
-        display: flex;
-        min-height: 100vh;
-        width: 100%;
-    }
+  /* Layout de Pantalla Partida */
+  .auth-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+  }
 
-    /* --- IZQUIERDA: IMAGEN DEL "SEÑOR" --- */
-    .auth-visual {
-        flex: 1.1;
-        position: relative;
-        background-color: var(--color-primary);
-        overflow: hidden;
-        display: flex;
-        align-items: flex-end;
-        padding: 60px;
-    }
+  /* --- IZQUIERDA: IMAGEN DEL "SEÑOR" --- */
+  .auth-visual {
+    flex: 1.1;
+    position: relative;
+    background-color: var(--color-primary);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    padding: 60px;
+  }
 
-    /* Imagen de fondo (El Señor Pescador) */
-    .auth-bg-image {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        /* Gradiente oscuro sobre la imagen para que el texto se lea bien */
-        background: linear-gradient(to bottom, rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.9)), 
-                    url('https://images.unsplash.com/photo-1536633797670-1c314f0f67c0?q=80&w=1974&auto=format&fit=crop'); 
-        background-size: cover;
-        /* Ajustamos la posición para enfocar la cara del señor */
-        background-position: center 20%; 
-        z-index: 1;
-        transition: transform 10s ease;
-    }
-    
-    /* Efecto sutil de zoom lento al pasar el mouse */
-    .auth-visual:hover .auth-bg-image {
-        transform: scale(1.03);
-    }
+  /* Imagen de fondo (El Señor Pescador) */
+  .auth-bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Gradiente oscuro sobre la imagen para que el texto se lea bien */
+    background:
+      linear-gradient(to bottom, rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.9)),
+      url("https://images.unsplash.com/photo-1536633797670-1c314f0f67c0?q=80&w=1974&auto=format&fit=crop");
+    background-size: cover;
+    /* Ajustamos la posición para enfocar la cara del señor */
+    background-position: center 20%;
+    z-index: 1;
+    transition: transform 10s ease;
+  }
 
-    .visual-content {
-        position: relative;
-        z-index: 2;
-        color: white;
-        max-width: 500px;
-    }
+  /* Efecto sutil de zoom lento al pasar el mouse */
+  .auth-visual:hover .auth-bg-image {
+    transform: scale(1.03);
+  }
 
+  .visual-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    max-width: 500px;
+  }
+
+  .visual-content h2 {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+  }
+
+  .visual-content p {
+    font-size: 1.15rem;
+    opacity: 0.9;
+    font-weight: 300;
+    border-left: 4px solid var(--color-accent);
+    padding-left: 25px;
+    line-height: 1.6;
+  }
+
+  /* --- DERECHA: FORMULARIO LIMPIO --- */
+  .auth-form-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background-color: var(--color-white);
+    position: relative;
+  }
+
+  .form-wrapper {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  /* Header del Formulario (Sin logo encima) */
+  .form-header {
+    margin-bottom: 3rem;
+    text-align: left;
+  }
+
+  .form-header h1 {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 3rem;
+    color: var(--color-primary);
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .form-header p {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 300;
+  }
+
+  /* Inputs Estilo Moderno */
+  .input-group-modern {
+    margin-bottom: 1.5rem;
+  }
+
+  .input-group-modern label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+  }
+
+  .form-control-modern {
+    width: 100%;
+    padding: 16px 18px;
+    font-size: 1rem;
+    color: var(--color-primary);
+    background-color: var(--color-bg-light);
+    border: 1px solid transparent;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-family: "Inter", sans-serif;
+  }
+
+  .form-control-modern:focus {
+    outline: none;
+    background-color: var(--color-white);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
+  }
+
+  .form-control-modern::placeholder {
+    color: #94a3b8;
+  }
+
+  /* Botón Principal */
+  .btn-primary-modern {
+    width: 100%;
+    padding: 18px;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .btn-primary-modern:hover {
+    background-color: var(--color-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -10px rgba(6, 182, 212, 0.4);
+  }
+
+  /* Links y Extras */
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+  }
+
+  .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  .remember-me input {
+    accent-color: var(--color-primary);
+    width: 18px;
+    height: 18px;
+  }
+
+  .forgot-password {
+    color: var(--color-accent-hover);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .forgot-password:hover {
+    text-decoration: underline;
+  }
+
+  /* Alertas */
+  .alert-modern {
+    padding: 14px 18px;
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+    color: #991b1b;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Botón Volver */
+  .back-link {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    padding: 10px 20px;
+    border-radius: 50px;
+    background-color: var(--color-bg-light);
+  }
+
+  .back-link:hover {
+    color: var(--color-primary);
+    background-color: #e2e8f0;
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
     .visual-content h2 {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 3.5rem;
-        line-height: 1.1;
-        margin-bottom: 1.5rem;
-        font-weight: 700;
+      font-size: 2.5rem;
     }
+  }
 
-    .visual-content p {
-        font-size: 1.15rem;
-        opacity: 0.9;
-        font-weight: 300;
-        border-left: 4px solid var(--color-accent);
-        padding-left: 25px;
-        line-height: 1.6;
+  @media (max-width: 900px) {
+    .auth-visual {
+      display: none;
     }
-
-    /* --- DERECHA: FORMULARIO LIMPIO --- */
     .auth-form-side {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 40px;
-        background-color: var(--color-white);
-        position: relative;
+      width: 100%;
+      padding: 30px;
     }
-
     .form-wrapper {
-        width: 100%;
-        max-width: 400px;
+      max-width: 100%;
     }
-
-    /* Header del Formulario (Sin logo encima) */
-    .form-header {
-        margin-bottom: 3rem;
-        text-align: left;
-    }
-
-    .form-header h1 {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 3rem;
-        color: var(--color-primary);
-        margin: 0 0 10px 0;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-    }
-
-    .form-header p {
-        color: var(--color-text-muted);
-        font-size: 1.1rem;
-        margin: 0;
-        font-weight: 300;
-    }
-
-    /* Inputs Estilo Moderno */
-    .input-group-modern {
-        margin-bottom: 1.5rem;
-    }
-
-    .input-group-modern label {
-        display: block;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--color-primary);
-        margin-bottom: 10px;
-    }
-
-    .form-control-modern {
-        width: 100%;
-        padding: 16px 18px;
-        font-size: 1rem;
-        color: var(--color-primary);
-        background-color: var(--color-bg-light);
-        border: 1px solid transparent;
-        border-radius: 12px;
-        transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
-    }
-
-    .form-control-modern:focus {
-        outline: none;
-        background-color: var(--color-white);
-        border-color: var(--color-accent);
-        box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
-    }
-    
-    .form-control-modern::placeholder {
-        color: #94a3b8;
-    }
-
-    /* Botón Principal */
-    .btn-primary-modern {
-        width: 100%;
-        padding: 18px;
-        background-color: var(--color-primary);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 1.05rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .btn-primary-modern:hover {
-        background-color: var(--color-accent-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 15px 30px -10px rgba(6, 182, 212, 0.4);
-    }
-
-    /* Links y Extras */
-    .form-options {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2.5rem;
-        font-size: 0.95rem;
-        margin-top: 0.5rem;
-    }
-
-    .remember-me {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--color-text-muted);
-        cursor: pointer;
-    }
-    
-    .remember-me input {
-        accent-color: var(--color-primary);
-        width: 18px; height: 18px;
-    }
-
-    .forgot-password {
-        color: var(--color-accent-hover);
-        text-decoration: none;
-        font-weight: 600;
-    }
-    
-    .forgot-password:hover {
-        text-decoration: underline;
-    }
-
-    /* Alertas */
-    .alert-modern {
-        padding: 14px 18px;
-        background-color: #FEF2F2;
-        border-left: 4px solid #EF4444;
-        color: #991B1B;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    /* Botón Volver */
     .back-link {
-        position: absolute;
-        top: 40px;
-        right: 40px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-        color: var(--color-text-muted);
-        font-weight: 500;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-        padding: 10px 20px;
-        border-radius: 50px;
-        background-color: var(--color-bg-light);
+      top: 20px;
+      right: 20px;
+      padding: 8px 16px;
     }
-
-    .back-link:hover {
-        color: var(--color-primary);
-        background-color: #e2e8f0;
+    .form-header h1 {
+      font-size: 2.5rem;
     }
-
-    /* Responsive */
-    @media (max-width: 1100px) {
-        .visual-content h2 { font-size: 2.5rem; }
-    }
-
-    @media (max-width: 900px) {
-        .auth-visual { display: none; }
-        .auth-form-side { width: 100%; padding: 30px; }
-        .form-wrapper { max-width: 100%; }
-        .back-link { top: 20px; right: 20px; padding: 8px 16px; }
-        .form-header h1 { font-size: 2.5rem; }
-    }
+  }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <div class="auth-container">
-    
-    <div class="auth-visual">
-        <div class="auth-bg-image"></div>
-        <div class="visual-content">
-            <h2>Tradición y Calidad</h2>
-            <p>Huina representa décadas de experiencia en el mar. Accede al sistema para gestionar el inventario con la precisión que tu negocio merece.</p>
-        </div>
+  <div class="auth-visual">
+    <div class="auth-bg-image"></div>
+    <div class="visual-content">
+      <h2>Tradición y Calidad</h2>
+      <p>
+        Huina representa décadas de experiencia en el mar. Accede al sistema
+        para gestionar el inventario con la precisión que tu negocio merece.
+      </p>
     </div>
+  </div>
 
-    <div class="auth-form-side">
-        <a href="{% url 'core:index' %}" class="back-link">
-            <i class="bi bi-arrow-left"></i> Volver al inicio
-        </a>
+  <div class="auth-form-side">
+    <a href="{% url 'core:index' %}" class="back-link">
+      <i class="bi bi-arrow-left"></i> Volver al inicio
+    </a>
 
-        <div class="form-wrapper">
-            <div class="form-header">
-                <h1>Bienvenido</h1>
-                <p>Ingresa tus credenciales para acceder al panel.</p>
-            </div>
+    <div class="form-wrapper">
+      <div class="form-header">
+        <h1>Bienvenido</h1>
+        <p>Ingresa tus credenciales para acceder al panel.</p>
+      </div>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert-modern">
-                        <i class="bi bi-exclamation-circle-fill" style="font-size: 1.2rem;"></i>
-                        <span>{{ message }}</span>
-                    </div>
-                {% endfor %}
-            {% endif %}
+      {% if messages %} {% for message in messages %}
+      <div class="alert-modern">
+        <i class="bi bi-exclamation-circle-fill" style="font-size: 1.2rem"></i>
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %} {% endif %}
 
-            <form method="POST" novalidate>
-                {% csrf_token %}
-                
-                <input type="hidden" name="next" value="{{ next|default:'/dashboard/' }}">
-                <div class="input-group-modern">
-                    <label for="{{ form.username.id_for_label }}">Documento de Identidad</label>
-                    {{ form.username }}
-                    {% if form.username.errors %}
-                        <small style="color: #EF4444; display: block; margin-top: 8px; font-weight: 500;">
-                            <i class="bi bi-x-circle me-1"></i> {{ form.username.errors.0 }}
-                        </small>
-                    {% endif %}
-                </div>
+      <form method="POST" novalidate>
+        {% csrf_token %}
 
-                <div class="input-group-modern">
-                    <label for="{{ form.password.id_for_label }}">Contraseña</label>
-                    {{ form.password }}
-                    {% if form.password.errors %}
-                        <small style="color: #EF4444; display: block; margin-top: 8px; font-weight: 500;">
-                             <i class="bi bi-x-circle me-1"></i> {{ form.password.errors.0 }}
-                        </small>
-                    {% endif %}
-                </div>
-
-                <div class="form-options">
-                    <label class="remember-me" for="{{ form.remember_me.id_for_label }}">
-                        {{ form.remember_me }}
-                        <span>Recordar dispositivo</span>
-                    </label>
-                    <a href="{% url 'usuarios:recuperar' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
-                </div>
-
-                <button type="submit" class="btn-primary-modern">
-                    Ingresar al Sistema
-                    <i class="bi bi-arrow-right-short" style="font-size: 1.3rem;"></i>
-                </button>
-            </form>
+        <input
+          type="hidden"
+          name="next"
+          value="{{ next|default:'/dashboard/' }}"
+        />
+        <div class="input-group-modern">
+          <label for="{{ form.username.id_for_label }}"
+            >Documento de Identidad</label
+          >
+          {{ form.username }} {% if form.username.errors %}
+          <small
+            style="
+              color: #ef4444;
+              display: block;
+              margin-top: 8px;
+              font-weight: 500;
+            "
+          >
+            <i class="bi bi-x-circle me-1"></i> {{ form.username.errors.0 }}
+          </small>
+          {% endif %}
         </div>
+
+        <div class="input-group-modern">
+          <label for="{{ form.password.id_for_label }}">Contraseña</label>
+          {{ form.password }} {% if form.password.errors %}
+          <small
+            style="
+              color: #ef4444;
+              display: block;
+              margin-top: 8px;
+              font-weight: 500;
+            "
+          >
+            <i class="bi bi-x-circle me-1"></i> {{ form.password.errors.0 }}
+          </small>
+          {% endif %}
+        </div>
+
+        <div class="form-options">
+          <label class="remember-me" for="{{ form.remember_me.id_for_label }}">
+            {{ form.remember_me }}
+            <span>Recordar dispositivo</span>
+          </label>
+          <a href="{% url 'usuarios:recuperar' %}" class="forgot-password"
+            >¿Olvidaste tu contraseña?</a
+          >
+        </div>
+
+        <button type="submit" class="btn-primary-modern">
+          Ingresar al Sistema
+          <i class="bi bi-arrow-right-short" style="font-size: 1.3rem"></i>
+        </button>
+      </form>
     </div>
+  </div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const inputs = document.querySelectorAll('input[type="text"], input[type="password"], input[type="number"], input[type="email"]');
-        inputs.forEach(input => {
-            input.classList.add('form-control-modern');
-            if (!input.hasAttribute('placeholder')) {
-                input.setAttribute('placeholder', ' ');
-            }
-        });
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputs = document.querySelectorAll(
+      'input[type="text"], input[type="password"], input[type="number"], input[type="email"]',
+    );
+    inputs.forEach((input) => {
+      input.classList.add("form-control-modern");
+      if (!input.hasAttribute("placeholder")) {
+        input.setAttribute("placeholder", " ");
+      }
     });
+  });
 </script>
 {% endblock %}
