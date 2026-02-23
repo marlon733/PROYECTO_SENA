@@ -27,16 +27,11 @@ class Venta(models.Model):
         on_delete=models.PROTECT,
         related_name='ventas'
     )
-    cantidad = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2,
-        default=0.00,
-        validators=[MinValueValidator(Decimal('0.01'))]
-    )
+    cantidad = models.PositiveSmallIntegerField(default=1)
+    
     precio_unitario = models.DecimalField(
         max_digits=10, 
         decimal_places=2,
-        default=0.00,
         validators=[MinValueValidator(Decimal('0.01'))]
     )
     

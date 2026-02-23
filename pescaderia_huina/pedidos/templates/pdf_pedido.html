@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Pedido #{{ pedido.id }}</title>
+    <style>
+        @page {
+            size: letter portrait;
+            margin: 2cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .title { font-size: 24px; font-weight: bold; color: #0f3976; margin-bottom: 5px;}
+        .subtitle { font-size: 14px; color: #666; }
+        
+        .info-table { width: 100%; margin-bottom: 30px; }
+        .info-table td { padding: 5px; vertical-align: top; }
+        
+        /* CSS ajustado específicamente para xhtml2pdf */
+        .products-table { width: 100%; }
+        .products-table th { 
+            background-color: #e7f1ff; 
+            color: #0f3976; 
+            padding: 10px 5px; 
+            text-align: left; 
+            border-bottom: 2px solid #0f3976; 
+        }
+        .products-table td { 
+            padding: 10px 5px; 
+            border-bottom: 1px solid #cccccc; 
+        }
+        
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
+        .total-row td { 
+            font-weight: bold; 
+            font-size: 14px; 
+            padding-top: 15px;
+            border-bottom: none; /* Quitamos la línea final en el total */
+        }
+        .total-amount { color: #0f3976; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">ORDEN DE PEDIDO #{{ pedido.id }}</div>
+        <div class="subtitle">Fecha de emisión: {{ pedido.fecha|date:"d/m/Y" }}</div>
+    </div>
+
+    <table class="info-table" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+                <strong>DATOS DEL PROVEEDOR:</strong><br>
+                Razón Social: {{ pedido.proveedor.nombre_contacto }}<br>
+                NIT: {{ pedido.proveedor.nit }}
+            </td>
+            <td class="text-right">
+                <strong>ESTADO DEL PEDIDO:</strong><br>
+                {% if pedido.estado == 'REC' %} RECIBIDO
+                {% elif pedido.estado == 'PEN' %} PENDIENTE
+                {% else %} CANCELADO {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <table class="products-table" cellspacing="0" cellpadding="0">
+        <thead>
+            <tr>
+                <th>PRODUCTO</th>
+                <th class="text-center">CANTIDAD</th>
+                <th class="text-right">PRECIO UN.</th>
+                <th class="text-right">SUBTOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in detalles %}
+            <tr>
+                <td>{{ d.producto.nombre }}</td>
+                <td class="text-center">{{ d.cantidad|floatformat:"-1" }} {{ d.presentacion|title }}</td>
+                <td class="text-right">${{ d.precio_unitario|floatformat:0 }}</td>
+                <td class="text-right">${{ d.subtotal_calculado|floatformat:0 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">No hay productos registrados.</td>
+            </tr>
+            {% endfor %}
+            
+            <tr class="total-row">
+                <td colspan="3" class="text-right">TOTAL GENERAL:</td>
+                <td class="text-right total-amount">${{ pedido.valor_total|floatformat:0 }}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
