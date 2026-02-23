@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 from proveedores.models import Proveedor  
 from productos.models import Producto
 
@@ -16,11 +17,11 @@ class Pedido(models.Model):
         verbose_name="Proveedor"
     )
     fecha = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
+    # El default='PEN' asegura que nazca como Pendiente en la BD
     estado = models.CharField(max_length=3, choices=ESTADOS_CHOICES, default='PEN')
     valor_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
     def __str__(self):
-
         return f"Pedido #{self.id} - {self.proveedor.nombre_contacto}"
 
     class Meta:
@@ -40,7 +41,15 @@ class DetallePedido(models.Model):
 
     @property
     def subtotal(self):
-        return self.cantidad * self.precio_unitario
+        """
+        Calcula el subtotal replicando la lógica del frontend.
+        Se usa Decimal para evitar problemas de precisión financiera con los flotantes.
+        """
+        factor = Decimal('1.0')
+        if self.presentacion and self.presentacion.lower() in ['libra', 'libras', 'lib']:
+            factor = Decimal('0.5')
+            
+        return self.cantidad * self.precio_unitario * factor
 
     def __str__(self):
         return f"{self.producto.nombre} (x{self.cantidad})"

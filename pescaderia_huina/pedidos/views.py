@@ -1,10 +1,12 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.forms import inlineformset_factory
 from django.db.models import Sum, Q, F
 from django.template.loader import get_template
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from xhtml2pdf import pisa
 from .models import Pedido, DetallePedido
 from .forms import PedidoForm, DetallePedidoForm
@@ -137,7 +139,7 @@ def eliminar_pedido(request, id):
         return redirect('pedidos:lista_pedidos')
     return render(request, 'eliminar_pedido.html', {'pedido': pedido})
 
-# NUEVA VISTA: VER DETALLES DEL PEDIDO
+# VER DETALLES DEL PEDIDO
 @login_required
 def detalle_pedido(request, id):
     pedido = get_object_or_404(Pedido, id=id)
@@ -175,3 +177,33 @@ def detalle_pedido(request, id):
     return render(request, 'detalle_pedido.html', {
         'pedido': pedido
     })
+
+
+# ==========================================
+# NUEVA VISTA: CAMBIAR ESTADO DESDE LA LISTA
+# ==========================================
+@login_required
+@require_POST
+def cambiar_estado_pedido(request, pedido_id):
+    try:
+        # 1. Leemos el estado que manda el JavaScript mediante Fetch
+        data = json.loads(request.body)
+        nuevo_estado = data.get('estado')
+        
+        # 2. Buscamos el pedido en la base de datos
+        pedido = get_object_or_404(Pedido, id=pedido_id)
+        
+        # 3. Verificamos que sea un estado válido y guardamos
+        # Se agregan tanto las versiones cortas (PEN) como largas (pendiente) por compatibilidad
+        estados_validos = ['recibido', 'cancelado', 'pendiente', 'REC', 'CAN', 'PEN']
+        
+        if nuevo_estado in estados_validos:
+            pedido.estado = nuevo_estado
+            pedido.save()
+            # Opcional: Podrías usar "messages.success" aquí si no estuvieras usando JsonResponse
+            return JsonResponse({'success': True, 'estado': nuevo_estado})
+        else:
+            return JsonResponse({'success': False, 'error': 'Estado no válido'})
+            
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

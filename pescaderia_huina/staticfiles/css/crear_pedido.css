@@ -1,0 +1,111 @@
+
+    :root {
+        /* Misma Paleta Profesional */
+        --primary-blue: #0f3976; 
+        --dark-blue: #0f3976;    
+        --light-blue-bg: #f0f7ff; 
+        --header-blue-bg: #e7f1ff; 
+        --text-dark: #2c3e50;     
+        --text-muted: #6c757d;    
+        --white: #ffffff;
+    }
+
+    body {
+        background-color: var(--light-blue-bg);
+        color: var(--text-dark);
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    /*--- Cabecera de Página ---*/
+    .page-header { padding: 2rem 0 1.5rem 0; }
+    .page-title { font-size: 2rem; font-weight: 800; color: var(--dark-blue); letter-spacing: -0.5px; }
+
+    /*--- Tarjeta Principal ---*/
+    .card-modern {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        background-color: var(--white);
+    }
+
+    /*--- Inputs y Formularios ---*/
+    .form-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+    }
+    .form-control, .form-select {
+        border: 1px solid #dce9f9;
+        border-radius: 0.5rem;
+        padding: 0.6rem 1rem;
+        color: var(--text-dark);
+        transition: all 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+    .input-group-text {
+        background-color: var(--header-blue-bg);
+        border: 1px solid #dce9f9;
+        border-right: none;
+        color: var(--primary-blue);
+        border-top-left-radius: 0.5rem;
+        border-bottom-left-radius: 0.5rem;
+    }
+    .input-group .form-control { border-left: none; padding-left: 0; }
+    
+    /*--- Filas de Productos (Formset) ---*/
+    .detalle-row {
+        background-color: var(--white);
+        border: 1px solid #e7f1ff;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    .detalle-row:hover {
+        border-color: #b6d4fe;
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.08);
+        transform: translateY(-2px);
+    }
+    
+    /* Input Subtotal (Solo lectura) */
+    .subtotal-field {
+        background-color: var(--light-blue-bg) !important;
+        color: var(--primary-blue) !important;
+        font-weight: 800;
+        font-size: 1.1rem;
+        border-color: #dce9f9 !important;
+    }
+
+    /* Caja del Total General */
+    .gran-total-box {
+        background: linear-gradient(135deg, var(--header-blue-bg) 0%, var(--light-blue-bg) 100%);
+        border-left: 5px solid var(--primary-blue);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+    .gran-total-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .gran-total-value { color: var(--dark-blue); font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; }
+
+    /* Custom Checkbox Eliminar */
+    .delete-checkbox-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #dc3545;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+    .delete-checkbox-wrapper input[type="checkbox"] {
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-top: 0.3rem;
+        cursor: pointer;
+        accent-color: #dc3545;
+    }
