@@ -2,121 +2,112 @@
 {% block title %}Editar Producto{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-xl-7">
+<div class="card border-0 shadow-lg rounded-4 overflow-hidden">
 
-            <div class="card border-0 shadow-sm rounded-4">
+    <!-- 🔵 Header Azul Corporativo -->
+    <div class="card-header header-blue text-white py-4 px-5">
+        <h4 class="fw-semibold mb-1">Editar Producto</h4>
+        <p class="small mb-0 opacity-75">
+            Actualiza la información del producto
+        </p>
+    </div>
 
-                <!-- Header minimalista -->
-                <div class="card-header bg-transparent border-0 pt-5 pb-2 px-5">
-                    <h3 class="fw-semibold mb-1 text-dark">Editar Producto</h3>
-                    <p class="text-muted small mb-0">
-                        Actualiza la información del producto
-                    </p>
+    <div class="card-body px-5 pb-5 pt-4">
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="row">
+
+                <div class="col-md-6 mb-4">
+                    <label class="form-label small text-muted">
+                        Tipo de Producto
+                    </label>
+                    {{ form.tipo_producto }}
                 </div>
 
-                <div class="card-body px-5 pb-5 pt-4">
-
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
-
-                        <div class="row">
-
-                            <!-- Tipo Producto -->
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label small text-muted">
-                                    Tipo de Producto
-                                </label>
-                                {{ form.tipo_producto }}
-                            </div>
-
-                            <!-- Tipo Presentación -->
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label small text-muted">
-                                    Tipo de Presentación
-                                </label>
-                                {{ form.tipo_presentacion }}
-                            </div>
-
-                            <!-- Nombre -->
-                            <div class="col-12 mb-4">
-                                <label class="form-label small text-muted">
-                                    Nombre
-                                </label>
-                                {{ form.nombre }}
-                            </div>
-
-                            <!-- Descripción -->
-                            <div class="col-12 mb-4">
-                                <label class="form-label small text-muted">
-                                    Descripción
-                                </label>
-                                {{ form.descripcion }}
-                            </div>
-
-                            <!-- Cantidad -->
-                            <div class="col-md-6 mb-4">
-                                <label id="label_cantidad" class="form-label small text-muted">
-                                    Cantidad
-                                </label>
-                                {{ form.peso }}
-                            </div>
-
-                            <!-- Precio -->
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label small text-muted">
-                                    Precio
-                                </label>
-                                {{ form.precio }}
-                            </div>
-
-                        </div>
-
-                        <!-- Estado -->
-                        <div class="form-check form-switch mb-4 mt-2">
-                            {{ form.estado }}
-                            <label class="form-check-label small text-muted ms-2">
-                                Producto activo
-                            </label>
-                        </div>
-
-                        <!-- Botones -->
-                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
-                            <a href="{% url 'productos:productos_list' %}"
-                               class="btn btn-light px-4 rounded-3">
-                                Cancelar
-                            </a>
-
-                            <button class="btn btn-dark-blue px-4 rounded-3 text-white">
-                                Actualizar
-                            </button>
-                        </div>
-
-                    </form>
-
+                <div class="col-md-6 mb-4">
+                    <label class="form-label small text-muted">
+                        Tipo de Presentación
+                    </label>
+                    {{ form.tipo_presentacion }}
                 </div>
+
+                <div class="col-12 mb-4">
+                    <label class="form-label small text-muted">
+                        Nombre
+                    </label>
+                    {{ form.nombre }}
+                </div>
+
+                <div class="col-12 mb-4">
+                    <label class="form-label small text-muted">
+                        Descripción
+                    </label>
+                    {{ form.descripcion }}
+                </div>
+
+
+                <div class="col-md-6 mb-4">
+                    <label class="form-label small text-muted">
+                        Precio
+                    </label>
+                    {{ form.precio }}
+                </div>
+
             </div>
 
-        </div>
+            <div class="form-check form-switch mb-4 mt-2">
+                {{ form.estado }}
+                <label class="form-check-label small text-muted ms-2">
+                    Producto activo
+                </label>
+            </div>
+
+            <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                <a href="{% url 'productos:productos_list' %}"
+                   class="btn btn-light px-4 rounded-3">
+                    Cancelar
+                </a>
+
+                <button class="btn btn-primary-custom px-4 rounded-3 text-white">
+                    Actualizar
+                </button>
+            </div>
+
+        </form>
+
     </div>
+
+    <!-- 🔵 Footer Azul -->
+    <div class="card-footer footer-blue text-center py-3 small text-white">
+        Sistema de gestión - Pescadería Huina
+    </div>
+
 </div>
 
 <style>
 
-/* Azul navy oscuro profesional */
-.btn-dark-blue {
-    background-color: #0f172a;
+.header-blue {
+    background-color: #2C466B;
+}
+
+.footer-blue {
+    background-color: #2C466B;
+}
+
+.btn-primary-custom {
+    background-color: #2C466B;
     border: none;
     transition: all 0.2s ease;
 }
 
-.btn-dark-blue:hover {
-    background-color: #0b1220;
+.btn-primary-custom:hover {
+    background-color: #1f3554;
+    transform: translateY(-1px);
 }
 
-/* Inputs minimalistas */
 .form-control,
 .form-select {
     border-radius: 12px;
@@ -127,39 +118,107 @@
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #0f172a;
-    box-shadow: 0 0 0 0.15rem rgba(15, 23, 42, 0.15);
+    border-color: #2C466B;
+    box-shadow: 0 0 0 0.15rem rgba(44, 70, 107, 0.25);
 }
 
 .card {
     background-color: #ffffff;
+    border-radius: 20px;
 }
 
 label {
     font-weight: 500;
 }
 
+
+/* 🔵 Header con degradado */
+.header-blue {
+    background: linear-gradient(135deg, #2C466B, #1f3554);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 🔵 Footer */
+.footer-blue {
+    background: linear-gradient(135deg, #1f3554, #2C466B);
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 🟦 Botón principal más fuerte */
+.btn-primary-custom {
+    background: linear-gradient(135deg, #2C466B, #1f3554);
+    border: none;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(44, 70, 107, 0.25);
+}
+
+.btn-primary-custom:hover {
+    background: linear-gradient(135deg, #1f3554, #16263d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(44, 70, 107, 0.35);
+}
+
+/* Inputs más modernos */
+.form-control,
+.form-select {
+    border-radius: 14px;
+    border: 1px solid #dce1e7;
+    background-color: #f9fafc;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+/* Focus más visible */
+.form-control:focus,
+.form-select:focus {
+    background-color: #ffffff;
+    border-color: #2C466B;
+    box-shadow: 0 0 0 0.2rem rgba(44, 70, 107, 0.25);
+}
+
+/* Card con más profundidad */
+.card {
+    background-color: #ffffff;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Labels más marcados */
+label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #374151;
+    letter-spacing: 0.3px;
+}
+
+/* Separación visual entre secciones */
+.card-body {
+    background-color: #ffffff;
+}
+
+/* Switch más alineado */
+.form-check-input:checked {
+    background-color: #2C466B;
+    border-color: #2C466B;
+}
+
+/* Botón cancelar más elegante */
+.btn-light {
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.btn-light:hover {
+    background-color: #e5e7eb;
+}
+
 </style>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    let select = document.getElementById("tipo_presentacion");
-    let labelCantidad = document.getElementById("label_cantidad");
-    let pesoInput = document.getElementById("peso");
 
-    function actualizarEtiqueta() {
-        if (select.value === "LIB") {
-            labelCantidad.innerText = "Cantidad (Libras)";
-            pesoInput.step = "0.01";
-        } else {
-            labelCantidad.innerText = "Cantidad (Unidades)";
-            pesoInput.step = "1";
-        }
-    }
 
-    select.addEventListener("change", actualizarEtiqueta);
-    actualizarEtiqueta();
-});
-</script>
 
 {% endblock %}

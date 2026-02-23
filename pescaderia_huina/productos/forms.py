@@ -11,7 +11,7 @@ class ProductoForm(forms.ModelForm):
             "nombre",
             "descripcion",
             "tipo_presentacion",
-            "peso",
+            
             "precio",
             "estado",
         ]
@@ -21,7 +21,7 @@ class ProductoForm(forms.ModelForm):
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
             "descripcion": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
             "tipo_presentacion": forms.Select(attrs={"class": "form-select", "id": "tipo_presentacion"}),
-            "peso": forms.NumberInput(attrs={"class": "form-control", "id": "peso"}),
+           
             "precio": forms.NumberInput(attrs={"class": "form-control"}),
             "estado": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }

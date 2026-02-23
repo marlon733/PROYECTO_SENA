@@ -20,7 +20,7 @@ class Producto(models.Model):
     descripcion = models.CharField(max_length=100)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     tipo_presentacion = models.CharField(max_length=3, choices=TIPO_PRESENTACION)
-    peso = models.DecimalField(max_digits=10, decimal_places=2)
+   
     estado = models.BooleanField(default=True)
     
 
