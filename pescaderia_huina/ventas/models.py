@@ -18,27 +18,25 @@ class Venta(models.Model):
     
     
     # Cliente
-    nombre_cliente = models.CharField(max_length=100)
-    documento_cliente = models.CharField(max_length=20)
+    nombre_cliente = models.CharField(max_length=100, null=True, blank=True)
+    documento_cliente = models.CharField(max_length=20, null=True, blank=True)
     
-    # Producto
     producto = models.ForeignKey(
-        'productos.Producto', 
-        on_delete=models.PROTECT,
-        related_name='ventas'
-    )
-    cantidad = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2,
-        default=0.00,
-        validators=[MinValueValidator(Decimal('0.01'))]
-    )
+    'productos.Producto', 
+    on_delete=models.PROTECT,
+    related_name='ventas',
+    null=True,
+    blank=True
+)
+    cantidad = models.PositiveSmallIntegerField(default=1)
+    
     precio_unitario = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2,
-        default=0.00,
-        validators=[MinValueValidator(Decimal('0.01'))]
-    )
+    max_digits=10, 
+    decimal_places=2,
+    null=True,
+    blank=True,
+    validators=[MinValueValidator(Decimal('0.01'))]
+)
     
     # Detalles de la venta
     fecha_venta = models.DateTimeField(default=timezone.now)

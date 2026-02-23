@@ -1,6 +1,6 @@
 from django.db import models
 from proveedores.models import Proveedor  
-from productos.models import Producto     
+from productos.models import Producto
 
 
 class Pedido(models.Model):
@@ -31,7 +31,8 @@ class Pedido(models.Model):
 class DetallePedido(models.Model):
     pedido = models.ForeignKey(Pedido, related_name='detalles', on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField(default=1)
+    cantidad = models.DecimalField(max_digits=10, decimal_places=2)
+    presentacion = models.CharField(max_length=20, default='unidades', blank=True, null=True)
     precio_unitario = models.DecimalField(
         max_digits=10, decimal_places=2,
         help_text="Precio de compra al proveedor"
