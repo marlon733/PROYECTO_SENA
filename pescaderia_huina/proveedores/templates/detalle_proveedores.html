@@ -221,31 +221,47 @@
                 {% for producto in proveedor.productos.all %}
                 <div class="col-md-6 col-xl-4">
                     <div class="product-card h-100">
-                        {% if producto.tipo_producto == 'MA' %}
-                        <span class="product-badge badge-mariscos">Marisco</span>
-                        {% elif producto.tipo_producto == 'PE' %}
-                        <span class="product-badge badge-pescado">Pescado</span>
-                        {% else %}
-                        <span class="product-badge badge-pollo">Pollo</span>
-                        {% endif %}
+                        <div class="d-flex gap-1 flex-wrap mb-2">
+                            {% if producto.tipo_producto == 'MA' %}
+                            <span
+                                class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill">Marisco</span>
+                            {% elif producto.tipo_producto == 'PE' %}
+                            <span
+                                class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill">Pescado</span>
+                            {% else %}
+                            <span
+                                class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill">Pollo</span>
+                            {% endif %}
+                        </div>
 
-                        <h5 class="fw-bold text-dark pe-4 mb-1">{{ producto.nombre }}</h5>
-                        <p class="text-muted small mb-3">{{ producto.tipo_presentacion }} - {{ producto.peso }}kg</p>
+                        <h5 class="fw-bold text-dark mb-1">{{ producto.nombre }}</h5>
 
-                        <div class="d-flex justify-content-between align-items-end mt-2">
+                        <p class="text-muted small mb-2 text-truncate">{{ producto.descripcion }}</p>
+
+                        <div class="mb-3">
+                            <small class="text-uppercase fw-bold text-secondary"
+                                style="font-size: 0.65rem;">Presentación</small>
+                            <div class="d-flex align-items-center mt-1">
+                                <i class="bi bi-box2 text-primary me-2"></i>
+                                <span class="text-dark fw-medium small">
+                                    {{ producto.get_tipo_presentacion_display }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-end mt-auto pt-2 border-top">
                             <div>
                                 <small class="text-muted d-block text-uppercase"
-                                    style="font-size: 0.65rem; font-weight: 700;">Precio Venta</small>
+                                    style="font-size: 0.65rem; font-weight: 700;">Precio</small>
                                 <span class="price-tag">${{ producto.precio }}</span>
                             </div>
+
                             <div class="text-end">
-                                <small class="stock-indicator">
-                                    {% if producto.stock > 0 %}
-                                    <i class="bi bi-check-circle-fill text-success"></i> Stock: {{ producto.stock }}
-                                    {% else %}
-                                    <i class="bi bi-exclamation-circle-fill text-warning"></i> Sin Stock
-                                    {% endif %}
-                                </small>
+                                {% if producto.estado %}
+                                <span class="badge bg-success"><i class="bi bi-check-lg"></i> Activo</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inactivo</span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -255,8 +271,7 @@
                     <div class="empty-state">
                         <i class="bi bi-basket3 display-4 text-muted mb-3 d-block"></i>
                         <h5 class="fw-bold text-secondary">Este proveedor no tiene productos asociados</h5>
-                        <p class="text-muted">Ve al módulo de <strong>Productos</strong> para registrar mercancía y
-                            asignarla a este proveedor.</p>
+                        <p class="text-muted">Ve al módulo de <strong>Productos</strong> para registrar mercancía.</p>
                     </div>
                 </div>
                 {% endfor %}
