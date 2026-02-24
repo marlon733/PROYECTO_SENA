@@ -1,0 +1,189 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Reporte de Pedidos - Pescadería Huiña</title>
+    <style>
+        /* CONFIGURACIÓN DE PÁGINA HORIZONTAL */
+        @page {
+            size: letter landscape; 
+            margin: 1.5cm 1.5cm 2cm 1.5cm;
+            
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 1.5cm; right: 1.5cm; bottom: 1cm; height: 1cm;
+            }
+        }
+        
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #333333;
+            line-height: 1.3;
+        }
+
+        /* UTILIDADES VISUALES */
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-bold { font-weight: bold; }
+        .text-blue { color: #0f3976; }
+        .text-muted { color: #777777; }
+        
+        /* ESTRUCTURA BASE */
+        .layout-table { width: 100%; border-collapse: collapse; }
+        
+        /* CAJA DE RESUMEN SUPERIOR */
+        .summary-box {
+            background-color: #f8f9fa;
+            border: 1px solid #e1e4e8;
+            border-left: 4px solid #0f3976;
+            padding: 12px 15px;
+        }
+
+        /* TABLA PRINCIPAL DEL REPORTE */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        /* SOLUCIÓN AL DESCUADRE: Anchos fijos y forzados en el encabezado */
+        .report-table th {
+            background-color: #0f3976;
+            color: #ffffff;
+            padding: 12px 8px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: left;
+            border-bottom: 2px solid #082247;
+        }
+        
+        .report-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #eeeeee;
+            vertical-align: middle;
+        }
+
+        /* Efecto Cebra para no perderse leyendo a lo ancho */
+        .row-even { background-color: #f4f7fb; }
+        
+        /* ETIQUETAS DE ESTADO (Badges) */
+        .badge {
+            padding: 4px 8px;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-rec { background-color: #198754; }
+        .badge-pen { background-color: #f59f00; } /* Naranja/Mostaza para mejor contraste */
+        .badge-can { background-color: #dc3545; }
+
+        /* FILA DE GRAN TOTAL AISLADA */
+        .total-container {
+            margin-top: 15px;
+            width: 100%;
+        }
+        .total-box {
+            background-color: #0f3976;
+            color: #ffffff;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="footer_content" style="text-align: right; font-size: 9px; color: #888888; border-top: 1px solid #eeeeee; padding-top: 5px;">
+        Generado el: {{ fecha_generacion|date:"d/m/Y H:i" }} - Pescadería Huiña | Página <pdf:pagenumber> de <pdf:pagecount>
+    </div>
+
+    <table class="layout-table" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="65%" style="vertical-align: top;">
+                <h1 class="text-blue" style="margin: 0; font-size: 26px; letter-spacing: 0.5px;">PESCADERÍA HUIÑA</h1>
+                <p class="text-muted" style="margin: 3px 0 0 0; font-size: 12px;">Reporte Mensual Consolidado de Pedidos</p>
+            </td>
+            <td width="35%" style="vertical-align: top;">
+                <div class="summary-box">
+                    <table width="100%" cellspacing="0" cellpadding="2">
+                        <tr>
+                            <td width="50%" style="color: #666; font-size: 10px;">TOTAL REGISTROS:</td>
+                            <td width="50%" class="text-right text-bold text-blue">{{ total_pedidos }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #666; font-size: 10px;">MONEDA:</td>
+                            <td class="text-right text-bold">Peso Colombiano (COP)</td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+    <div style="height: 15px;"></div>
+
+    <table class="report-table" cellspacing="0" cellpadding="0">
+        <thead>
+            <tr>
+                <th width="10%" class="text-center">ID</th>
+                <th width="15%" class="text-center">FECHA</th>
+                <th width="35%">DATOS DEL PROVEEDOR</th>
+                <th width="15%" class="text-center">ESTADO</th>
+                <th width="25%" class="text-right">VALOR TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pedidos %}
+            <tr {% if forloop.counter|divisibleby:2 %}class="row-even"{% endif %}>
+                <td class="text-center text-bold text-blue">#{{ p.id }}</td>
+                <td class="text-center text-muted">{{ p.fecha|date:"d/m/Y" }}</td>
+                <td>
+                    <strong>{{ p.proveedor.nombre_contacto }}</strong><br>
+                    <span style="color: #888888; font-size: 9px;">NIT: {{ p.proveedor.nit }}</span>
+                </td>
+                <td class="text-center">
+                    {% if p.estado == 'REC' or p.estado == 'recibido' %} 
+                        <span class="badge badge-rec">RECIBIDO</span>
+                    {% elif p.estado == 'PEN' or p.estado == 'pendiente' %} 
+                        <span class="badge badge-pen">PENDIENTE</span>
+                    {% else %} 
+                        <span class="badge badge-can">CANCELADO</span> 
+                    {% endif %}
+                </td>
+                <td class="text-right text-bold">$ {{ p.valor_total|default:"0"|floatformat:0|intcomma }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center" style="padding: 40px; color: #999;">No se encontraron pedidos en este rango de fechas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if pedidos %}
+    <table class="total-container" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="65%"></td> <td width="35%">
+                <table width="100%" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td class="total-box">
+                            <table width="100%">
+                                <tr>
+                                    <td width="40%">GRAN TOTAL:</td>
+                                    <td width="60%" class="text-right">$ {{ suma_total|default:"0"|floatformat:0|intcomma }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    {% endif %}
+
+</body>
+</html>

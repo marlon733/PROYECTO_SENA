@@ -2,79 +2,111 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Pedido #{{ pedido.id }}</title>
+    <title>Pedido #{{ pedido.id }} - Pescadería Huina</title>
     <style>
         @page {
             size: letter portrait;
-            margin: 2cm;
+            margin: 1.5cm;
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
+            font-size: 11px;
+            color: #333333;
         }
-        .header { text-align: center; margin-bottom: 30px; }
-        .title { font-size: 24px; font-weight: bold; color: #0f3976; margin-bottom: 5px;}
-        .subtitle { font-size: 14px; color: #666; }
-        
-        .info-table { width: 100%; margin-bottom: 30px; }
-        .info-table td { padding: 5px; vertical-align: top; }
-        
-        /* CSS ajustado específicamente para xhtml2pdf */
-        .products-table { width: 100%; }
-        .products-table th { 
-            background-color: #e7f1ff; 
-            color: #0f3976; 
-            padding: 10px 5px; 
-            text-align: left; 
-            border-bottom: 2px solid #0f3976; 
+
+        /* Tipografía y alineación */
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-bold { font-weight: bold; }
+        .text-blue { color: #0f3976; }
+
+        /* Cajas de Información (Solución al borde cortado) */
+        .info-box {
+            background-color: #f7f9fc;
+            border: 1px solid #d1d5db;
+            padding: 10px;
         }
-        .products-table td { 
-            padding: 10px 5px; 
+        
+        /* Tablas base */
+        .pdf-table { width: 100%; }
+        
+        /* Tabla de Productos */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .items-table th {
+            background-color: #0f3976;
+            color: #ffffff;
+            padding: 8px 5px;
+            text-align: left;
+            font-size: 11px;
+        }
+        /* Solución a las líneas divisorias */
+        .items-table td {
+            padding: 10px 5px;
             border-bottom: 1px solid #cccccc; 
         }
         
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        
-        .total-row td { 
-            font-weight: bold; 
-            font-size: 14px; 
+        /* Fila del Total */
+        .items-table .total-row td {
+            border-bottom: none; /* Quitamos la línea del total */
             padding-top: 15px;
-            border-bottom: none; /* Quitamos la línea final en el total */
+            font-size: 13px;
+            font-weight: bold;
         }
-        .total-amount { color: #0f3976; font-size: 16px; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="title">ORDEN DE PEDIDO #{{ pedido.id }}</div>
-        <div class="subtitle">Fecha de emisión: {{ pedido.fecha|date:"d/m/Y" }}</div>
-    </div>
 
-    <table class="info-table" cellspacing="0" cellpadding="0">
+    <table class="pdf-table" cellspacing="0" cellpadding="0">
         <tr>
-            <td>
-                <strong>DATOS DEL PROVEEDOR:</strong><br>
-                Razón Social: {{ pedido.proveedor.nombre_contacto }}<br>
-                NIT: {{ pedido.proveedor.nit }}
+            <td width="60%">
+                <h1 class="text-blue" style="margin: 0; font-size: 24px; letter-spacing: 1px;">PESCADERÍA HUIÑA</h1>
+                <p style="color: #666; font-size: 12px; margin: 2px 0 0 0;">Reporte Oficial de Pedido</p>
             </td>
-            <td class="text-right">
-                <strong>ESTADO DEL PEDIDO:</strong><br>
-                {% if pedido.estado == 'REC' %} RECIBIDO
-                {% elif pedido.estado == 'PEN' %} PENDIENTE
-                {% else %} CANCELADO {% endif %}
+            <td width="40%" class="text-right" style="vertical-align: bottom;">
+                <h2 class="text-blue" style="margin: 0; font-size: 20px;">ORDEN #{{ pedido.id }}</h2>
+            </td>
+        </tr>
+    </table>
+    
+    <hr style="color: #0f3976; background-color: #0f3976; height: 2px; margin: 15px 0 25px 0; border: none;">
+
+    <table class="pdf-table" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="48%" style="vertical-align: top;">
+                <div class="info-box">
+                    <div class="text-blue text-bold" style="margin-bottom: 8px; text-align: center;">DATOS DEL PROVEEDOR</div>
+                    <p style="margin: 0; padding: 3px 0;"><strong>Razón Social:</strong> {{ pedido.proveedor.nombre_contacto }}</p>
+                    <p style="margin: 0; padding: 3px 0;"><strong>NIT:</strong> {{ pedido.proveedor.nit }}</p>
+                </div>
+            </td>
+            
+            <td width="4%"></td>
+            
+            <td width="48%" style="vertical-align: top;">
+                <div class="info-box">
+                    <div class="text-blue text-bold" style="margin-bottom: 8px; text-align: center;">DETALLES DEL PEDIDO</div>
+                    <p style="margin: 0; padding: 3px 0; text-align: right;"><strong>Fecha de emisión:</strong> {{ pedido.fecha|date:"d/m/Y" }}</p>
+                    <p style="margin: 0; padding: 3px 0; text-align: right;"><strong>Estado:</strong> 
+                        {% if pedido.estado == 'REC' %} RECIBIDO
+                        {% elif pedido.estado == 'PEN' %} PENDIENTE
+                        {% else %} CANCELADO {% endif %}
+                    </p>
+                </div>
             </td>
         </tr>
     </table>
 
-    <table class="products-table" cellspacing="0" cellpadding="0">
+    <table class="items-table" cellspacing="0" cellpadding="0">
         <thead>
             <tr>
-                <th>PRODUCTO</th>
-                <th class="text-center">CANTIDAD</th>
-                <th class="text-right">PRECIO UN.</th>
-                <th class="text-right">SUBTOTAL</th>
+                <th width="40%">PRODUCTO</th>
+                <th width="20%" class="text-center">CANTIDAD</th>
+                <th width="20%" class="text-center">PRECIO UN.</th>
+                <th width="20%" class="text-right">SUBTOTAL</th>
             </tr>
         </thead>
         <tbody>
@@ -82,20 +114,21 @@
             <tr>
                 <td>{{ d.producto.nombre }}</td>
                 <td class="text-center">{{ d.cantidad|floatformat:"-1" }} {{ d.presentacion|title }}</td>
-                <td class="text-right">${{ d.precio_unitario|floatformat:0 }}</td>
+                <td class="text-center">${{ d.precio_unitario|floatformat:0 }}</td>
                 <td class="text-right">${{ d.subtotal_calculado|floatformat:0 }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" class="text-center">No hay productos registrados.</td>
+                <td colspan="4" class="text-center" style="padding: 20px; color: #666;">No hay productos registrados.</td>
             </tr>
             {% endfor %}
             
             <tr class="total-row">
                 <td colspan="3" class="text-right">TOTAL GENERAL:</td>
-                <td class="text-right total-amount">${{ pedido.valor_total|floatformat:0 }}</td>
+                <td class="text-right text-blue" style="font-size: 15px;">${{ pedido.valor_total|floatformat:0 }}</td>
             </tr>
         </tbody>
     </table>
+
 </body>
 </html>

@@ -7,6 +7,7 @@ from django.forms import inlineformset_factory
 from django.db.models import Sum, Q, F
 from django.template.loader import get_template
 from django.http import HttpResponse, JsonResponse
+from django.utils import timezone
 from xhtml2pdf import pisa
 from .models import Pedido, DetallePedido
 from .forms import PedidoForm, DetallePedidoForm
@@ -49,6 +50,38 @@ def lista_pedidos(request):
     if fecha_fin:
         pedidos = pedidos.filter(fecha__date__lte=fecha_fin)    # lte = Menor o igual que
         
+    # ==========================================
+    # 3. NUEVA LÓGICA: EXPORTAR REPORTE A PDF
+    # ==========================================
+    if request.GET.get('export') == 'pdf':
+        # Sumamos el total de los pedidos que quedaron después de los filtros
+        suma_total = sum(p.valor_total for p in pedidos if p.valor_total)
+        
+        # Preparamos los datos para el template del PDF
+        context = {
+            'pedidos': pedidos,
+            'fecha_generacion': timezone.now(),
+            'total_pedidos': pedidos.count(),
+            'suma_total': suma_total
+        }
+        
+        # Llamamos al nuevo HTML del reporte
+        template = get_template('reporte_mensual_pdf.html') 
+        html = template.render(context)
+        
+        # Configuramos la respuesta para forzar la descarga del PDF
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="Reporte_Pedidos_Pescaderia.pdf"'
+        
+        # Generamos el archivo
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        
+        if pisa_status.err:
+            return HttpResponse('Hubo un error al generar el PDF del reporte', status=500)
+            
+        return response
+
+    # 4. Si no es PDF, renderiza la vista web normal
     return render(request, 'lista_pedidos.html', {'pedidos': pedidos})
 
 @login_required
