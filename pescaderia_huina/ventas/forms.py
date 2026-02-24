@@ -70,7 +70,6 @@ class VentaForm(forms.ModelForm):
         # Filtrar solo productos activos con stock
         self.fields['producto'].queryset = Producto.objects.filter(
             estado=True, 
-            stock__gt=0
         )
 
     # Validaciones personalizadas
@@ -87,13 +86,6 @@ class VentaForm(forms.ModelForm):
         producto = cleaned_data.get('producto')
         cantidad = cleaned_data.get('cantidad')
         tipo_presentacion = cleaned_data.get('tipo_presentacion')
-        
-        if producto and cantidad:
-            # Validar stock disponible
-            if cantidad > producto.stock:
-                raise forms.ValidationError(
-                    f'No hay suficiente stock. Disponible: {producto.stock}'
-                )
                 
          # Empacado al Vacío y Bandeja deben ser unidades enteras
         if cantidad and tipo_presentacion in ('EMPACADO_VACIO', 'BANDEJA'):
