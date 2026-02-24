@@ -1,11 +1,11 @@
 from django.db import models
-from decimal import Decimal
 from proveedores.models import Proveedor  
 from productos.models import Producto
 
 
 class Pedido(models.Model):
-    ESTADOS_CHOICES = [
+    # CORRECCIÓN: Usamos las claves de 3 letras que espera la base de datos
+    OPCIONES_ESTADO = [
         ('PEN', 'Pendiente'),
         ('REC', 'Recibido'),
         ('CAN', 'Cancelado'),
@@ -17,8 +17,10 @@ class Pedido(models.Model):
         verbose_name="Proveedor"
     )
     fecha = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
-    # El default='PEN' asegura que nazca como Pendiente en la BD
-    estado = models.CharField(max_length=3, choices=ESTADOS_CHOICES, default='PEN')
+    
+    # CORRECCIÓN: Cambiamos max_length a 3 y el default a 'PEN'
+    estado = models.CharField(max_length=3, choices=OPCIONES_ESTADO, default='PEN')
+    
     valor_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
     def __str__(self):
@@ -41,15 +43,7 @@ class DetallePedido(models.Model):
 
     @property
     def subtotal(self):
-        """
-        Calcula el subtotal replicando la lógica del frontend.
-        Se usa Decimal para evitar problemas de precisión financiera con los flotantes.
-        """
-        factor = Decimal('1.0')
-        if self.presentacion and self.presentacion.lower() in ['libra', 'libras', 'lib']:
-            factor = Decimal('0.5')
-            
-        return self.cantidad * self.precio_unitario * factor
+        return self.cantidad * self.precio_unitario
 
     def __str__(self):
         return f"{self.producto.nombre} (x{self.cantidad})"
