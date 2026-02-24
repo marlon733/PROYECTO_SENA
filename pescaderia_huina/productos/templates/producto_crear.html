@@ -1,3 +1,4 @@
+html
 {% extends 'core/panel_admin_base.html' %}
 {% block title %}Agregar Producto{% endblock %}
 
@@ -9,11 +10,10 @@
 
             <div class="card">
 
-                <!-- 🔵 Header Azul -->
                 <div class="card-header header-blue text-white px-5 py-4">
-                    <h3 class="fw-semibold mb-1">Nuevo Producto</h3>
+                    <h3 class="fw-semibold mb-1">Nuevo Producto de Catálogo</h3>
                     <p class="small mb-0 opacity-75">
-                        Completa la información del producto
+                        Asigna un nuevo producto a un proveedor existente
                     </p>
                 </div>
 
@@ -21,51 +21,68 @@
 
                     <form method="post">
                         {% csrf_token %}
-                        {{ form.non_field_errors }}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
 
                         <div class="row">
 
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label">
-                                    Tipo de Producto
+                            <div class="col-12 mb-4">
+                                <label class="form-label text-primary fw-bold">
+                                    <i class="bi bi-shop me-1"></i> Seleccionar Proveedor
                                 </label>
+                                {{ form.proveedor }}
+                                {% if form.proveedor.errors %}
+                                    <div class="text-danger small mt-1">{{ form.proveedor.errors }}</div>
+                                {% endif %}
+                                <div class="form-text small text-muted">
+                                    El producto quedará vinculado a este proveedor.
+                                </div>
+                            </div>
+
+                            <hr class="text-muted opacity-25 mb-4">
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Tipo de Producto</label>
                                 {{ form.tipo_producto }}
                             </div>
 
                             <div class="col-md-6 mb-4">
-                                <label class="form-label">
-                                    Tipo de Presentación
-                                </label>
+                                <label class="form-label">Presentación</label>
                                 {{ form.tipo_presentacion }}
                             </div>
 
                             <div class="col-12 mb-4">
-                                <label class="form-label">
-                                    Nombre
-                                </label>
+                                <label class="form-label">Nombre Comercial</label>
                                 {{ form.nombre }}
                             </div>
 
                             <div class="col-12 mb-4">
-                                <label class="form-label">
-                                    Descripción
-                                </label>
+                                <label class="form-label">Descripción Detallada</label>
                                 {{ form.descripcion }}
                             </div>
 
                             <div class="col-md-6 mb-4">
-                                <label class="form-label">
-                                    Precio
-                                </label>
+                                <label class="form-label">Precio de Venta ($)</label>
                                 {{ form.precio }}
+                            </div>
+                            
+                            <div class="col-md-6 mb-4 d-flex align-items-center">
+                                <div class="p-3 bg-light rounded-3 w-100 border text-muted small">
+                                    <i class="bi bi-info-circle me-1"></i> 
+                                    El <strong>Stock</strong> iniciará en 0. Se actualizará al registrar compras.
+                                </div>
                             </div>
 
                         </div>
 
-                        <div class="form-check form-switch mb-4 mt-2">
+                        <div class="form-check form-switch mb-4 mt-2 p-3 bg-light rounded-3 border">
                             {{ form.estado }}
-                            <label class="form-check-label ms-2">
-                                Producto activo
+                            <label class="form-check-label ms-2 fw-semibold text-dark">
+                                Producto Activo en Catálogo
                             </label>
                         </div>
 
@@ -75,8 +92,8 @@
                                 Cancelar
                             </a>
 
-                            <button class="btn btn-primary-custom px-4 rounded-3 text-white">
-                                Guardar
+                            <button type="submit" class="btn btn-primary-custom px-4 rounded-3 text-white">
+                                <i class="bi bi-save me-2"></i>Guardar Producto
                             </button>
                         </div>
 
@@ -84,7 +101,6 @@
 
                 </div>
 
-                <!-- 🔵 Footer -->
                 <div class="card-footer footer-blue text-center py-3 small text-white">
                     Sistema de gestión - Pescadería Huina
                 </div>
@@ -96,86 +112,19 @@
 </div>
 
 <style>
-
-/* 🌊 Fondo suave */
-body {
-    background: linear-gradient(135deg, #f3f6fb, #e9eef5);
-}
-
-/* 🔵 Header */
-.header-blue {
-    background: linear-gradient(135deg, #2C466B, #1f3554);
-}
-
-/* 🔵 Footer */
-.footer-blue {
-    background: linear-gradient(135deg, #1f3554, #2C466B);
-}
-
-/* 🟦 Card */
-.card {
-    border-radius: 24px;
-    box-shadow: 0 20px 40px rgba(44, 70, 107, 0.12);
-    border: none;
-    overflow: hidden;
-}
-
-/* Inputs modernos */
-.form-control,
-.form-select {
-    background-color: #ffffff;
-    border: 1px solid #d6dbe3;
-    border-radius: 14px;
-    padding: 12px 16px;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-}
-
-/* Focus elegante */
-.form-control:focus,
-.form-select:focus {
-    border-color: #2C466B;
-    box-shadow: 0 0 0 0.2rem rgba(44, 70, 107, 0.2);
-}
-
-/* Labels */
-label {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: #374151;
-}
-
-/* Botón principal */
-.btn-primary-custom {
-    background: linear-gradient(135deg, #2C466B, #1f3554);
-    border: none;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    transition: all 0.25s ease;
-    box-shadow: 0 6px 18px rgba(44, 70, 107, 0.25);
-}
-
-.btn-primary-custom:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(44, 70, 107, 0.35);
-}
-
-/* Botón cancelar */
-.btn-light {
-    background-color: #f3f4f6;
-    border: 1px solid #e5e7eb;
-}
-
-.btn-light:hover {
-    background-color: #e5e7eb;
-}
-
-/* Switch activo */
-.form-check-input:checked {
-    background-color: #2C466B;
-    border-color: #2C466B;
-}
-
+/* Tus estilos originales se mantienen intactos */
+body { background: linear-gradient(135deg, #f3f6fb, #e9eef5); }
+.header-blue { background: linear-gradient(135deg, #2C466B, #1f3554); }
+.footer-blue { background: linear-gradient(135deg, #1f3554, #2C466B); }
+.card { border-radius: 24px; box-shadow: 0 20px 40px rgba(44, 70, 107, 0.12); border: none; overflow: hidden; }
+.form-control, .form-select { background-color: #ffffff; border: 1px solid #d6dbe3; border-radius: 14px; padding: 12px 16px; font-size: 0.95rem; transition: all 0.2s ease; }
+.form-control:focus, .form-select:focus { border-color: #2C466B; box-shadow: 0 0 0 0.2rem rgba(44, 70, 107, 0.2); }
+label { font-weight: 600; font-size: 0.85rem; color: #374151; }
+.btn-primary-custom { background: linear-gradient(135deg, #2C466B, #1f3554); border: none; font-weight: 600; letter-spacing: 0.4px; transition: all 0.25s ease; box-shadow: 0 6px 18px rgba(44, 70, 107, 0.25); }
+.btn-primary-custom:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(44, 70, 107, 0.35); }
+.btn-light { background-color: #f3f4f6; border: 1px solid #e5e7eb; }
+.btn-light:hover { background-color: #e5e7eb; }
+.form-check-input:checked { background-color: #2C466B; border-color: #2C466B; }
 </style>
 
 {% endblock %}
