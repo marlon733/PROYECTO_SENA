@@ -1,283 +1,59 @@
-{% extends 'core/panel_admin_base.html' %}
-{% load static %}
-
-{% block title %}Detalle y Catálogo{% endblock %}
-
-{% block extra_css %}
-<style>
-    /* --- Estilos Existentes (Optimizados) --- */
-    .card-ocean-detail {
-        border: none;
-        border-radius: 24px;
-        overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0, 97, 255, 0.15);
-        height: 100%;
-        /* Para que iguale altura */
-    }
-
-    .detail-header {
-        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
-        padding: 2rem 1rem 3rem;
-        position: relative;
-        text-align: center;
-        color: white;
-    }
-
-    .detail-header::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 40px;
-        background: white;
-        border-radius: 50% 50% 0 0 / 20px 20px 0 0;
-    }
-
-    .provider-icon-large {
-        width: 80px;
-        height: 80px;
-        /* Un poco más pequeño para ajustar al layout */
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(5px);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1rem;
-        border: 2px solid rgba(255, 255, 255, 0.4);
-        font-size: 2.5rem;
-        color: white;
-    }
-
-    .info-item {
-        background-color: #f8fbff;
-        border-radius: 12px;
-        padding: 1rem;
-        display: flex;
-        align-items: center;
-        /* Centrado vertical */
-        margin-bottom: 1rem;
-        border: 1px solid #eef2f6;
-    }
-
-    .info-icon {
-        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
-        width: 35px;
-        height: 35px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1rem;
-        margin-right: 0.8rem;
-        flex-shrink: 0;
-    }
-
-    /* --- NUEVOS ESTILOS PARA PRODUCTOS --- */
-    .product-card {
-        background: white;
-        border: 1px solid #eef2f6;
-        border-radius: 16px;
-        padding: 1.5rem;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        border-color: #60efff;
-    }
-
-    .product-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 20px;
-    }
-
-    .badge-mariscos {
-        background-color: #ffe0e6;
-        color: #ff4757;
-    }
-
-    .badge-pescado {
-        background-color: #e0f2fe;
-        color: #0ea5e9;
-    }
-
-    .badge-pollo {
-        background-color: #fff7ed;
-        color: #ea580c;
-    }
-
-    .price-tag {
-        font-size: 1.2rem;
-        font-weight: 800;
-        color: #0061ff;
-    }
-
-    .stock-indicator {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #64748b;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 3rem;
-        background: #f8fbff;
-        border-radius: 16px;
-        border: 2px dashed #cbd5e1;
-    }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="container-fluid px-4 py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-secondary">Gestión de Proveedores</h4>
-        <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-            <i class="bi bi-arrow-left me-1"></i> Volver
-        </a>
-    </div>
-
-    <div class="row g-4">
-
-        <div class="col-lg-4">
-            <div class="card card-ocean-detail">
-                <div class="detail-header">
-                    <div class="provider-icon-large">
-                        {% if proveedor.tipo_persona == 'natural' %}
-                        <i class="bi bi-person-circle"></i>
-                        {% else %}
-                        <i class="bi bi-building"></i>
-                        {% endif %}
-                    </div>
-                    <h3 class="fw-bold mb-1">{{ proveedor.nombre_contacto }}</h3>
-                    <div
-                        class="badge bg-white text-primary bg-opacity-25 border border-white border-opacity-50 px-3 py-1 rounded-pill mt-2">
-                        {{ proveedor.get_tipo_persona_display }}
-                    </div>
-                </div>
-
-                <div class="card-body px-4 pb-4 pt-1">
-                    <div class="text-center mb-4 position-relative" style="top: -20px; z-index: 2;">
-                        <span class="bg-white px-3 py-2 rounded-3 shadow-sm border fw-bold text-primary">
-                            {{ proveedor.nit }}
-                        </span>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-envelope"></i></div>
-                        <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Correo</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.correo }}</span>
-                        </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-telephone"></i></div>
-                        <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Teléfono</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.telefono }}</span>
-                        </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
-                        <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Ubicación</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.ciudad }}</span>
-                            <div class="small text-muted text-truncate" style="max-width: 200px;">{{ proveedor.direccion
-                                }}</div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 text-center">
-                        <a href="{% url 'proveedores:modificar_proveedores' proveedor.id %}"
-                            class="btn btn-primary w-100 rounded-pill py-2 shadow-sm">
-                            <i class="bi bi-pencil-square me-2"></i> Editar Datos
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-8">
+<div class="col-lg-8">
             <div class="d-flex align-items-center mb-4 border-bottom pb-3">
                 <h5 class="fw-bold text-dark mb-0">
-                    <i class="bi bi-box-seam me-2 text-primary"></i>Catálogo de Productos del Proveedor
+                    <i class="bi bi-journal-bookmark me-2 text-primary"></i>Catálogo de Productos Ofertados
                 </h5>
             </div>
 
             <div class="row g-3">
                 {% for producto in proveedor.productos.all %}
                 <div class="col-md-6 col-xl-4">
-                    <div class="product-card h-100">
+                    <div class="product-card h-100 position-relative">
                         <div class="d-flex gap-1 flex-wrap mb-2">
                             {% if producto.tipo_producto == 'MA' %}
-                            <span
-                                class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill">Marisco</span>
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill">Marisco</span>
                             {% elif producto.tipo_producto == 'PE' %}
-                            <span
-                                class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill">Pescado</span>
+                                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill">Pescado</span>
                             {% else %}
-                            <span
-                                class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill">Pollo</span>
+                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill">Pollo</span>
                             {% endif %}
                         </div>
 
                         <h5 class="fw-bold text-dark mb-1">{{ producto.nombre }}</h5>
-
                         <p class="text-muted small mb-2 text-truncate">{{ producto.descripcion }}</p>
 
-                        <div class="mb-3">
-                            <small class="text-uppercase fw-bold text-secondary"
-                                style="font-size: 0.65rem;">Presentación</small>
-                            <div class="d-flex align-items-center mt-1">
-                                <i class="bi bi-box2 text-primary me-2"></i>
-                                <span class="text-dark fw-medium small">
+                        <div class="mb-3 p-2 bg-light rounded border border-light">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-box2 text-secondary me-2"></i>
+                                <span class="text-dark fw-bold small">
                                     {{ producto.get_tipo_presentacion_display }}
                                 </span>
                             </div>
                         </div>
-
-                        <div class="d-flex justify-content-between align-items-end mt-auto pt-2 border-top">
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
                             <div>
-                                <small class="text-muted d-block text-uppercase"
-                                    style="font-size: 0.65rem; font-weight: 700;">Precio</small>
-                                <span class="price-tag">${{ producto.precio }}</span>
+                                <small class="text-muted d-block text-uppercase" style="font-size: 0.65rem; font-weight: 700;">Precio Lista</small>
+                                <span class="price-tag fs-5">${{ producto.precio }}</span>
                             </div>
-
+                            
                             <div class="text-end">
-                                {% if producto.estado %}
-                                <span class="badge bg-success"><i class="bi bi-check-lg"></i> Activo</span>
-                                {% else %}
-                                <span class="badge bg-secondary">Inactivo</span>
-                                {% endif %}
+                                <small class="text-muted d-block" style="font-size: 0.7rem;">En Bodega</small>
+                                <span class="fw-bold {% if producto.stock > 0 %}text-success{% else %}text-secondary{% endif %}">
+                                    {{ producto.stock|floatformat:0 }} Unids.
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
                 {% empty %}
                 <div class="col-12">
-                    <div class="empty-state">
-                        <i class="bi bi-basket3 display-4 text-muted mb-3 d-block"></i>
-                        <h5 class="fw-bold text-secondary">Este proveedor no tiene productos asociados</h5>
-                        <p class="text-muted">Ve al módulo de <strong>Productos</strong> para registrar mercancía.</p>
+                    <div class="empty-state py-5">
+                        <i class="bi bi-journal-plus display-4 text-muted mb-3 d-block"></i>
+                        <h5 class="fw-bold text-secondary">Catálogo Vacío</h5>
+                        <p class="text-muted">Aún no has registrado qué productos ofrece este proveedor.</p>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
-
-    </div>
-</div>
-{% endblock %}
