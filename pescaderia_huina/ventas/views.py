@@ -80,11 +80,6 @@ class VentaCreateView(LoginRequiredMixin, generic.CreateView):
             venta = form.save(commit=False)
             venta.save()
             
-            # Actualizar stock del producto
-            producto = venta.producto
-            producto.stock -= venta.cantidad
-            producto.save()
-            
             messages.success(
                 self.request,
                 f'La venta #{venta.id} para {venta.nombre_cliente} ha sido registrada exitosamente.'
@@ -122,19 +117,10 @@ class VentaUpdateView(LoginRequiredMixin, generic.UpdateView):
         with transaction.atomic():
             venta_original = Venta.objects.get(pk=self.object.pk)
             
-            # Revertir el stock original
-            producto_original = venta_original.producto
-            producto_original.stock += venta_original.cantidad
-            producto_original.save()
             
             # Guardar la venta actualizada
             venta = form.save(commit=False)
             venta.save()
-            
-            # Aplicar el nuevo stock
-            producto_nuevo = venta.producto
-            producto_nuevo.stock -= venta.cantidad
-            producto_nuevo.save()
             
             messages.success(
                 self.request,
@@ -176,16 +162,6 @@ class VentaCancelarView(LoginRequiredMixin, generic.FormView):
     def form_valid(self, form):
         """Cancelar la venta y revertir el stock"""
         with transaction.atomic():
-            # Revertir stock
-            producto = self.venta.producto
-            producto.stock += self.venta.cantidad
-            producto.save()
-            
-            # Actualizar venta
-            self.venta.estado = 'CANCELADA'
-            self.venta.motivo_cancelacion = form.cleaned_data['motivo']
-            self.venta.fecha_cancelacion = timezone.now()
-            self.venta.save()
             
             messages.success(
                 self.request,
