@@ -12,7 +12,7 @@ TIPO_PRESENTACION = [
     ('LIB', 'A granel (Libras)'),
 ]
 
-pedido = models.ForeignKey('pedidos.Pedido', on_delete=models.PROTECT, related_name='productos')
+
 
 class Producto(models.Model):
     tipo_producto = models.CharField(max_length=3, choices=TIPO_PRODUCTO, default='PE')
@@ -21,7 +21,8 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     tipo_presentacion = models.CharField(max_length=3, choices=TIPO_PRESENTACION)
     estado = models.BooleanField(default=True)
-    
+    proveedor = models.ForeignKey('proveedores.Proveedor', on_delete=models.PROTECT, related_name='productos')
+    pedido = models.ForeignKey('pedidos.Pedido', on_delete=models.PROTECT, related_name='productos')
 
     def __str__(self):
         return self.nombre
