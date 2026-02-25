@@ -5,13 +5,15 @@
 
 {% block content %}
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:wght@700&display=swap"
+    rel="stylesheet">
 
 <style>
     /* Estilos idénticos a las secciones anteriores para consistencia total */
     .catalog-wrapper-elegant {
         --premium-navy: #1a2c42;
-        --premium-gold: #c5a47e; 
+        --premium-gold: #c5a47e;
         --text-dark: #333333;
         --text-light: #777777;
         --bg-light: #f9fbfd;
@@ -22,7 +24,8 @@
         padding: 4rem 1rem;
     }
 
-    h2.elegant-title, h3.card-title {
+    h2.elegant-title,
+    h3.card-title {
         font-family: 'Playfair Display', serif;
         color: var(--premium-navy);
     }
@@ -67,16 +70,16 @@
         background: var(--white);
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
         transition: all 0.4s ease;
-        border: 1px solid rgba(0,0,0,0.03);
+        border: 1px solid rgba(0, 0, 0, 0.03);
         display: flex;
         flex-direction: column;
     }
 
     .product-card-elegant:hover {
         transform: translateY(-7px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         border-color: var(--premium-gold);
     }
 
@@ -110,7 +113,7 @@
         text-transform: uppercase;
         letter-spacing: 1px;
         border-radius: 2px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     .card-body-elegant {
@@ -138,7 +141,7 @@
     .card-footer-elegant {
         margin-top: auto;
         padding-top: 1.5rem;
-        border-top: 1px solid rgba(0,0,0,0.05);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -152,7 +155,7 @@
         font-weight: 700;
         line-height: 1;
     }
-    
+
     .price-unit-elegant {
         font-size: 0.85rem;
         color: var(--text-light);
@@ -172,104 +175,243 @@
 </style>
 
 <div class="catalog-wrapper-elegant">
-    
+
     <div class="section-header-elegant">
-        <h2 class="elegant-title">Pollo Fresco de Campo</h2>
-        <p class="section-subtitle">Aves seleccionadas, sin conservantes y con el sabor natural que su familia merece.</p>
+        <h2 class="elegant-title">Pollo el DORADO</h2>
+        <p class="section-subtitle">Aves seleccionadas, sin conservantes y con el sabor natural que su familia merece.
+        </p>
     </div>
 
     <div class="products-grid-elegant">
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <span class="badge-gold">Más Vendido</span>
-                <img src="" alt="Pechuga de Pollo">
+                <span class="badge-gold">Práctico</span>
+                <img src="{% static 'img/Filete_Muslo.jpg' %}" alt="Bandeja de filete de muslos">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Corte Deshuesado</span>
+                <h3 class="card-title">Filete de Muslos</h3>
+                <p class="card-desc">Filetes de muslo seleccionados, sin hueso y listos para cocinar. Destacan por su
+                    jugosidad y suavidad, ideales para una preparación rápida y saludable en casa.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$9.800</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <img src="{% static 'img/Filete_Contramuslo.jpg' %}" alt="Bandeja de filete de contramuslos">
             </div>
             <div class="card-body-elegant">
                 <span class="origin-tag-subtle">Corte Premium</span>
-                <h3 class="card-title">Pechuga Entera</h3>
-                <p class="card-desc">Pechuga de pollo fresca con hueso y piel. Carne blanca, magra y jugosa, perfecta para caldos o desmechar.</p>
+                <h3 class="card-title">Filete de Contramuslos</h3>
+                <p class="card-desc">Corte magro y de excelente sabor, sin piel ni cartílagos. Presentado en bandeja
+                    higiénica, garantizando frescura óptima para sus recetas diarias.</p>
                 <div class="card-footer-elegant">
-                    <div class="price-elegant">$14.500</div>
-                    <span class="price-unit-elegant">Precio por Kilogramo</span>
+                    <div class="price-elegant">$13.450</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
                 </div>
             </div>
         </article>
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <span class="badge-gold">Familiar</span>
-                <img src="" alt="Pollo Entero">
+                <span class="badge-gold">Tradicional</span>
+                <img src="{% static 'img/Patapescuezo.jpg' %}" alt="Bolsa de patapescuezo">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Granja</span>
-                <h3 class="card-title">Pollo Entero Gigante</h3>
-                <p class="card-desc">Pollo campesino entero, limpio y sin menudencias. Ideal para asar al horno o para grandes reuniones familiares.</p>
+                <span class="origin-tag-subtle">Sustancia Natural</span>
+                <h3 class="card-title">Bolsa de Patapescuezo</h3>
+                <p class="card-desc">Selección de patas y pescuezos frescos. Limpieza profunda y empaque hermético,
+                    ideal para aportar sabor y nutrientes esenciales a sus caldos y sopas caseras.</p>
                 <div class="card-footer-elegant">
-                    <div class="price-elegant">$11.000</div>
-                    <span class="price-unit-elegant">Precio por libra</span>
+                    <div class="price-elegant">$3.100</div>
+                    <span class="price-unit-elegant">Precio por bolsa</span>
                 </div>
             </div>
         </article>
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="" alt="Perniles de Pollo">
+                <span class="badge-gold">Alto Proteico</span>
+                <img src="{% static 'img/Lomitos_Pechuga.jpg' %}" alt="Bandeja de lomitos de pechuga">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Corte Tradicional</span>
-                <h3 class="card-title">Pernil de Pollo</h3>
-                <p class="card-desc">Muslo y contramuslo unidos. La parte más sabrosa y jugosa del pollo, excelente para estofados y sudados.</p>
+                <span class="origin-tag-subtle">Corte Magro</span>
+                <h3 class="card-title">Lomitos de Pechuga</h3>
+                <p class="card-desc">Cortes internos de la pechuga, reconocidos por su extrema suavidad y bajo contenido
+                    graso. Perfectos para dietas balanceadas y de fácil porcionamiento.</p>
                 <div class="card-footer-elegant">
-                    <div class="price-elegant">$9.500</div>
-                    <span class="price-unit-elegant">Precio por libra</span>
+                    <div class="price-elegant">$7.950</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
                 </div>
             </div>
         </article>
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <span class="badge-gold">Para Compartir</span>
-                <img src="" alt="Alitas de Pollo">
+                <img src="{% static 'img/Alas_Costillar.jpg' %}" alt="Bandeja de alas con costillar">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Snack</span>
-                <h3 class="card-title">Alitas de Pollo</h3>
-                <p class="card-desc">Alitas enteras frescas. Ideales para marinar y hacer al carbón, BBQ o fritas. Un favorito para picar.</p>
+                <span class="origin-tag-subtle">Corte con Hueso</span>
+                <h3 class="card-title">Alas con Costillar</h3>
+                <p class="card-desc">Alas frescas con parte del costillar, lo que aporta mayor carnosidad. Ideales para
+                    hornear o freír, manteniendo siempre su textura crujiente y jugosa.</p>
                 <div class="card-footer-elegant">
-                    <div class="price-elegant">$12.000</div>
-                    <span class="price-unit-elegant">Precio por Kilogramo</span>
+                    <div class="price-elegant">$5.150</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
                 </div>
             </div>
         </article>
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="" alt="Filete de Pollo">
+                <img src="{% static 'img/Higados_Pollo.jpg' %}" alt="Bandeja de hígados de pollo">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Saludable</span>
-                <h3 class="card-title">Filete de Pechuga</h3>
-                <p class="card-desc">Filetes limpios, sin grasa, sin piel y sin hueso. Listos para la plancha. La opción más práctica y baja en calorías.</p>
+                <span class="origin-tag-subtle">Menudencia Fresca</span>
+                <h3 class="card-title">Hígados de Pollo</h3>
+                <p class="card-desc">Hígados seleccionados y limpios, de textura firme y color uniforme. Una fuente rica
+                    en hierro y vitaminas, empacados bajo estrictas normas de higiene.</p>
                 <div class="card-footer-elegant">
-                    <div class="price-elegant">$18.000</div>
-                    <span class="price-unit-elegant">Precio por Kilogramo</span>
+                    <div class="price-elegant">$1.750</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
                 </div>
             </div>
         </article>
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <span class="badge-gold">Sabor Intenso</span>
-                <img src="" alt="Gallina">
+                <img src="{% static 'img/Corazones_Pollo.jpg' %}" alt="Bandeja de corazones de pollo">
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Especial Sancocho</span>
-                <h3 class="card-title">Gallina Criolla</h3>
-                <p class="card-desc">Gallina semipesada de campo. Carne firme y con un sabor concentrado inigualable para el sancocho tradicional.</p>
+                <span class="origin-tag-subtle">Menudencia Fresca</span>
+                <h3 class="card-title">Corazones de Pollo</h3>
+                <p class="card-desc">Corazones limpios y de tamaño uniforme. Producto fresco con un sabor
+                    característico, ideales para preparaciones rápidas en sartén o como complemento nutricional.</p>
                 <div class="card-footer-elegant">
-                    <div class="price-elegant">$25.000</div>
-                    <span class="price-unit-elegant">Precio por unidad</span>
+                    <div class="price-elegant">$3.300</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <span class="badge-gold">Pack x6</span>
+                <img src="{% static 'img/Muslos_x6.jpg' %}" alt="Bandeja de muslos x6">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Familiar</span>
+                <h3 class="card-title">Bandeja de Muslos (x6)</h3>
+                <p class="card-desc">Seis unidades de muslo fresco con piel. Una opción económica y práctica para
+                    organizar las comidas de la semana con la mejor calidad avícola.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$10.950</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <span class="badge-gold">Pack x6</span>
+                <img src="{% static 'img/Contramuslos.jpg' %}" alt="Bandeja de contramuslos x6">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Familiar</span>
+                <h3 class="card-title">Bandeja de Contramuslos (x6)</h3>
+                <p class="card-desc">Seis contramuslos seleccionados por su tamaño y frescura. Ideales para estofados o
+                    preparaciones al horno, conservando toda su jugosidad.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$11.850</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <span class="badge-gold">Doble</span>
+                <img src="{% static 'img/Pechugas_x2.jpg' %}" alt="Bandeja de pechugas x2">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Gran Formato</span>
+                <h3 class="card-title">Bandeja de Pechugas (x2)</h3>
+                <p class="card-desc">Dos pechugas enteras de gran tamaño. Carne magra y fresca, perfectas para filetear
+                    o desmechar según sus necesidades en la cocina.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$21.400</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <img src="{% static 'img/Mollejas_Pollo.jpg' %}" alt="Bandeja de mollejas">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Menudencia Fresca</span>
+                <h3 class="card-title">Mollejas de Pollo</h3>
+                <p class="card-desc">Mollejas pre-limpias de textura firme. Un producto fresco y seleccionado bajo altos
+                    estándares de calidad, listo para su cocción.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$3.850</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <img src="{% static 'img/Menudencias.jpg' %}" alt="Bolsa de menudencias">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Variedad</span>
+                <h3 class="card-title">Bolsa de Menudencias</h3>
+                <p class="card-desc">Mix variado de vísceras frescas (hígado, corazón, molleja). Limpias y porcionadas
+                    para facilitar la elaboración de guisos o caldos tradicionales.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$1.100</div>
+                    <span class="price-unit-elegant">Precio por bolsa</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <span class="badge-gold">Surtido</span>
+                <img src="{% static 'img/Bandeja_Mixta.jpg' %}" alt="Bandeja mixta de pollo">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Combo Práctico</span>
+                <h3 class="card-title">Bandeja Mixta</h3>
+                <p class="card-desc">Selección balanceada de presas de pollo variadas. Una opción versátil que permite
+                    disfrutar de diferentes cortes en una sola compra, garantizando siempre frescura.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$5.700</div>
+                    <span class="price-unit-elegant">Precio por bandeja</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="product-card-elegant">
+            <div class="card-img-container">
+                <span class="badge-gold">Ahorro</span>
+                <img src="{% static 'img/Patas_x10.jpg' %}" alt="Bolsa de patas de pollo x10">
+            </div>
+            <div class="card-body-elegant">
+                <span class="origin-tag-subtle">Colágeno Natural</span>
+                <h3 class="card-title">Patas de Pollo (x10)</h3>
+                <p class="card-desc">Diez unidades de patas de pollo perfectamente limpias. Ideales para la extracción
+                    de colágeno natural en cocciones lentas y caldos de alta nutrición.</p>
+                <div class="card-footer-elegant">
+                    <div class="price-elegant">$1.200</div>
+                    <span class="price-unit-elegant">Precio por bolsa</span>
                 </div>
             </div>
         </article>
