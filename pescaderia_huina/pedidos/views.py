@@ -14,7 +14,6 @@ from .forms import PedidoForm, DetallePedidoForm
 from productos.models import Producto
 from proveedores.models import Proveedor
 
-
 # Creamos la fábrica de formularios. Permite crear múltiples Detalles vinculados a 1 Pedido
 DetallePedidoFormSet = inlineformset_factory(
     Pedido, 
@@ -54,15 +53,26 @@ def lista_pedidos(request):
     # 3. NUEVA LÓGICA: EXPORTAR REPORTE A PDF
     # ==========================================
     if request.GET.get('export') == 'pdf':
-        # Sumamos el total de los pedidos que quedaron después de los filtros
-        suma_total = sum(p.valor_total for p in pedidos if p.valor_total)
         
+        # --- AQUÍ INTEGRAMOS LA LÓGICA DE LOS CONTADORES ---
+        total_pedidos = pedidos.count()
+        ordenes_confirmadas = pedidos.filter(estado__in=['REC', 'recibido']).count()
+        ordenes_pendientes = pedidos.filter(estado__in=['PEN', 'pendiente']).count()
+        ordenes_canceladas = pedidos.filter(estado__in=['CAN', 'cancelado']).count()
+        
+        # Calculamos la suma total
+        suma_total = pedidos.aggregate(total=Sum('valor_total'))['total'] or 0
+        # ---------------------------------------------------
+
         # Preparamos los datos para el template del PDF
         context = {
             'pedidos': pedidos,
             'fecha_generacion': timezone.now(),
-            'total_pedidos': pedidos.count(),
-            'suma_total': suma_total
+            'total_pedidos': total_pedidos,               # Actualizado
+            'ordenes_confirmadas': ordenes_confirmadas,   # Nuevo
+            'ordenes_pendientes': ordenes_pendientes,     # Nuevo
+            'ordenes_canceladas': ordenes_canceladas,     # Nuevo
+            'suma_total': suma_total                      # Actualizado
         }
         
         # Llamamos al nuevo HTML del reporte
@@ -104,7 +114,6 @@ def crear_pedido(request):
                 for detalle in detalles:
                     detalle.pedido = nuevo_pedido # Vinculamos al pedido padre
                     
-                    # Asegúrate de que tu modelo DetallePedido tenga los campos cantidad y precio_unitario
                     subtotal = (detalle.cantidad or 0) * (detalle.precio_unitario or 0)
                     total_general += subtotal
                     detalle.save()
