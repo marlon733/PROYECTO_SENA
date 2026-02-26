@@ -1,16 +1,18 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.forms import inlineformset_factory
 from django.db.models import Sum, Q, F
 from django.template.loader import get_template
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.utils import timezone
 from xhtml2pdf import pisa
 from .models import Pedido, DetallePedido
 from .forms import PedidoForm, DetallePedidoForm
 from productos.models import Producto
 from proveedores.models import Proveedor
-
 
 # Creamos la fábrica de formularios. Permite crear múltiples Detalles vinculados a 1 Pedido
 DetallePedidoFormSet = inlineformset_factory(
@@ -47,6 +49,49 @@ def lista_pedidos(request):
     if fecha_fin:
         pedidos = pedidos.filter(fecha__date__lte=fecha_fin)    # lte = Menor o igual que
         
+    # ==========================================
+    # 3. NUEVA LÓGICA: EXPORTAR REPORTE A PDF
+    # ==========================================
+    if request.GET.get('export') == 'pdf':
+        
+        # --- AQUÍ INTEGRAMOS LA LÓGICA DE LOS CONTADORES ---
+        total_pedidos = pedidos.count()
+        ordenes_confirmadas = pedidos.filter(estado__in=['REC', 'recibido']).count()
+        ordenes_pendientes = pedidos.filter(estado__in=['PEN', 'pendiente']).count()
+        ordenes_canceladas = pedidos.filter(estado__in=['CAN', 'cancelado']).count()
+        
+        # Calculamos la suma total
+        suma_total = pedidos.aggregate(total=Sum('valor_total'))['total'] or 0
+        # ---------------------------------------------------
+
+        # Preparamos los datos para el template del PDF
+        context = {
+            'pedidos': pedidos,
+            'fecha_generacion': timezone.now(),
+            'total_pedidos': total_pedidos,               # Actualizado
+            'ordenes_confirmadas': ordenes_confirmadas,   # Nuevo
+            'ordenes_pendientes': ordenes_pendientes,     # Nuevo
+            'ordenes_canceladas': ordenes_canceladas,     # Nuevo
+            'suma_total': suma_total                      # Actualizado
+        }
+        
+        # Llamamos al nuevo HTML del reporte
+        template = get_template('reporte_mensual_pdf.html') 
+        html = template.render(context)
+        
+        # Configuramos la respuesta para forzar la descarga del PDF
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="Reporte_Pedidos_Pescaderia.pdf"'
+        
+        # Generamos el archivo
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        
+        if pisa_status.err:
+            return HttpResponse('Hubo un error al generar el PDF del reporte', status=500)
+            
+        return response
+
+    # 4. Si no es PDF, renderiza la vista web normal
     return render(request, 'lista_pedidos.html', {'pedidos': pedidos})
 
 @login_required
@@ -69,7 +114,6 @@ def crear_pedido(request):
                 for detalle in detalles:
                     detalle.pedido = nuevo_pedido # Vinculamos al pedido padre
                     
-                    # Asegúrate de que tu modelo DetallePedido tenga los campos cantidad y precio_unitario
                     subtotal = (detalle.cantidad or 0) * (detalle.precio_unitario or 0)
                     total_general += subtotal
                     detalle.save()
@@ -137,7 +181,7 @@ def eliminar_pedido(request, id):
         return redirect('pedidos:lista_pedidos')
     return render(request, 'eliminar_pedido.html', {'pedido': pedido})
 
-# NUEVA VISTA: VER DETALLES DEL PEDIDO
+# VER DETALLES DEL PEDIDO
 @login_required
 def detalle_pedido(request, id):
     pedido = get_object_or_404(Pedido, id=id)
@@ -175,3 +219,33 @@ def detalle_pedido(request, id):
     return render(request, 'detalle_pedido.html', {
         'pedido': pedido
     })
+
+
+# ==========================================
+# NUEVA VISTA: CAMBIAR ESTADO DESDE LA LISTA
+# ==========================================
+@login_required
+@require_POST
+def cambiar_estado_pedido(request, pedido_id):
+    try:
+        # 1. Leemos el estado que manda el JavaScript mediante Fetch
+        data = json.loads(request.body)
+        nuevo_estado = data.get('estado')
+        
+        # 2. Buscamos el pedido en la base de datos
+        pedido = get_object_or_404(Pedido, id=pedido_id)
+        
+        # 3. Verificamos que sea un estado válido y guardamos
+        # Se agregan tanto las versiones cortas (PEN) como largas (pendiente) por compatibilidad
+        estados_validos = ['recibido', 'cancelado', 'pendiente', 'REC', 'CAN', 'PEN']
+        
+        if nuevo_estado in estados_validos:
+            pedido.estado = nuevo_estado
+            pedido.save()
+            # Opcional: Podrías usar "messages.success" aquí si no estuvieras usando JsonResponse
+            return JsonResponse({'success': True, 'estado': nuevo_estado})
+        else:
+            return JsonResponse({'success': False, 'error': 'Estado no válido'})
+            
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

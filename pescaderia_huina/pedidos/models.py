@@ -4,7 +4,8 @@ from productos.models import Producto
 
 
 class Pedido(models.Model):
-    ESTADOS_CHOICES = [
+    # CORRECCIÓN: Usamos las claves de 3 letras que espera la base de datos
+    OPCIONES_ESTADO = [
         ('PEN', 'Pendiente'),
         ('REC', 'Recibido'),
         ('CAN', 'Cancelado'),
@@ -16,11 +17,13 @@ class Pedido(models.Model):
         verbose_name="Proveedor"
     )
     fecha = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
-    estado = models.CharField(max_length=3, choices=ESTADOS_CHOICES, default='PEN')
+    
+    # CORRECCIÓN: Cambiamos max_length a 3 y el default a 'PEN'
+    estado = models.CharField(max_length=3, choices=OPCIONES_ESTADO, default='PEN')
+    
     valor_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
     def __str__(self):
-
         return f"Pedido #{self.id} - {self.proveedor.nombre_contacto}"
 
     class Meta:
