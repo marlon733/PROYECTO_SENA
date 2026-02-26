@@ -1,130 +1,184 @@
-html
 {% extends 'core/panel_admin_base.html' %}
-{% block title %}Agregar Producto{% endblock %}
+{% block title %}Registro Masivo de Productos{% endblock %}
 
 {% block content %}
-
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-xl-7">
+        <div class="col-12 col-xl-10"> <form method="post" id="form-productos">
+                {% csrf_token %}
 
-            <div class="card">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                    <div class="card-header header-blue text-white py-4 px-5 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-semibold mb-1">Registro de Catálogo</h3>
+                            <p class="small mb-0 opacity-75">Agrega múltiples productos a un mismo proveedor</p>
+                        </div>
+                        <i class="bi bi-box-seam display-6 opacity-50"></i>
+                    </div>
 
-                <div class="card-header header-blue text-white px-5 py-4">
-                    <h3 class="fw-semibold mb-1">Nuevo Producto de Catálogo</h3>
-                    <p class="small mb-0 opacity-75">
-                        Asigna un nuevo producto a un proveedor existente
-                    </p>
-                </div>
-
-                <div class="card-body px-5 pb-5 pt-4">
-
-                    <form method="post">
-                        {% csrf_token %}
+                    <div class="card-body px-4 px-md-5 pt-5">
                         
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger">
-                                {{ form.non_field_errors }}
-                            </div>
-                        {% endif %}
-
-                        <div class="row">
-
-                            <div class="col-12 mb-4">
-                                <label class="form-label text-primary fw-bold">
-                                    <i class="bi bi-shop me-1"></i> Seleccionar Proveedor
-                                </label>
-                                {{ form.proveedor }}
-                                {% if form.proveedor.errors %}
-                                    <div class="text-danger small mt-1">{{ form.proveedor.errors }}</div>
-                                {% endif %}
-                                <div class="form-text small text-muted">
-                                    El producto quedará vinculado a este proveedor.
-                                </div>
-                            </div>
-
-                            <hr class="text-muted opacity-25 mb-4">
-
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label">Tipo de Producto</label>
-                                {{ form.tipo_producto }}
-                            </div>
-
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label">Presentación</label>
-                                {{ form.tipo_presentacion }}
-                            </div>
-
-                            <div class="col-12 mb-4">
-                                <label class="form-label">Nombre Comercial</label>
-                                {{ form.nombre }}
-                            </div>
-
-                            <div class="col-12 mb-4">
-                                <label class="form-label">Descripción Detallada</label>
-                                {{ form.descripcion }}
-                            </div>
-
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label">Precio de Venta ($)</label>
-                                {{ form.precio }}
-                            </div>
-                            
-                            <div class="col-md-6 mb-4 d-flex align-items-center">
-                                <div class="p-3 bg-light rounded-3 w-100 border text-muted small">
-                                    <i class="bi bi-info-circle me-1"></i> 
-                                    El <strong>Stock</strong> iniciará en 0. Se actualizará al registrar compras.
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="form-check form-switch mb-4 mt-2 p-3 bg-light rounded-3 border">
-                            {{ form.estado }}
-                            <label class="form-check-label ms-2 fw-semibold text-dark">
-                                Producto Activo en Catálogo
+                        <div class="bg-light p-4 rounded-3 border mb-5">
+                            <label class="form-label text-primary fw-bold text-uppercase small mb-2">
+                                <i class="bi bi-shop me-1"></i> Proveedor Asignado
                             </label>
+                            {{ proveedor_form.proveedor }}
+                            <div class="form-text mt-2">
+                                Todos los productos de la lista inferior se asignarán a este proveedor.
+                            </div>
                         </div>
 
-                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
-                            <a href="{% url 'productos:productos_list' %}"
-                               class="btn btn-light px-4 rounded-3">
-                                Cancelar
-                            </a>
+                        {{ formset.management_form }} <div class="table-responsive">
+                            <table class="table table-borderless align-middle" id="tabla-productos">
+                                <thead class="border-bottom">
+                                    <tr class="text-uppercase small text-muted text-center">
+                                        <th style="width: 15%;">Tipo</th>
+                                        <th style="width: 25%;">Nombre</th>
+                                        <th style="width: 20%;">Presentación</th>
+                                        <th style="width: 15%;">Precio</th>
+                                        <th style="width: 20%;">Descripción</th>
+                                        <th style="width: 5%;">Activo</th>
+                                        <th style="width: 5%;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="formset-container">
+                                    {% for form in formset %}
+                                    <tr class="producto-row border-bottom border-light">
+                                        {% for hidden in form.hidden_fields %}
+                                            {{ hidden }}
+                                        {% endfor %}
+                                        
+                                        <td class="p-2">{{ form.tipo_producto }}</td>
+                                        <td class="p-2">{{ form.nombre }}</td>
+                                        <td class="p-2">{{ form.tipo_presentacion }}</td>
+                                        <td class="p-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text border-end-0 bg-transparent text-muted">$</span>
+                                                {{ form.precio }}
+                                            </div>
+                                        </td>
+                                        <td class="p-2">{{ form.descripcion }}</td>
+                                        <td class="p-2 text-center">
+                                            <div class="form-check d-flex justify-content-center">
+                                                {{ form.estado }}
+                                            </div>
+                                        </td>
+                                        <td class="p-2 text-center">
+                                            {% if formset.can_delete %}
+                                                {{ form.DELETE }}
+                                            {% endif %}
+                                            <button type="button" class="btn btn-sm btn-outline-danger border-0 btn-eliminar-fila" title="Eliminar fila">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% if form.errors %}
+                                    <tr>
+                                        <td colspan="7" class="pt-0 pb-3 text-danger small">
+                                            {{ form.errors }}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
 
-                            <button type="submit" class="btn btn-primary-custom px-4 rounded-3 text-white">
-                                <i class="bi bi-save me-2"></i>Guardar Producto
+                        <div class="text-center mt-3 mb-5">
+                            <button type="button" id="add-row" class="btn btn-outline-primary rounded-pill px-4 hover-scale">
+                                <i class="bi bi-plus-circle-dotted me-2"></i>Agregar otra referencia
                             </button>
                         </div>
 
-                    </form>
+                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                            <a href="{% url 'productos:productos_list' %}" class="btn btn-light px-4 rounded-3 border">
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary-custom px-5 rounded-3 text-white shadow fw-bold">
+                                <i class="bi bi-save2 me-2"></i>Guardar Todo
+                            </button>
+                        </div>
 
+                    </div>
                 </div>
-
-                <div class="card-footer footer-blue text-center py-3 small text-white">
-                    Sistema de gestión - Pescadería Huina
-                </div>
-
-            </div>
+            </form>
 
         </div>
     </div>
 </div>
 
+<table style="display:none;">
+    <tbody id="empty-form-row">
+        <tr class="producto-row border-bottom border-light">
+            <td class="p-2">{{ formset.empty_form.tipo_producto }}</td>
+            <td class="p-2">{{ formset.empty_form.nombre }}</td>
+            <td class="p-2">{{ formset.empty_form.tipo_presentacion }}</td>
+            <td class="p-2">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text border-end-0 bg-transparent text-muted">$</span>
+                    {{ formset.empty_form.precio }}
+                </div>
+            </td>
+            <td class="p-2">{{ formset.empty_form.descripcion }}</td>
+            <td class="p-2 text-center">
+                <div class="form-check d-flex justify-content-center">
+                    {{ formset.empty_form.estado }}
+                </div>
+            </td>
+            <td class="p-2 text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger border-0 btn-eliminar-fila">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addBtn = document.getElementById('add-row');
+        const container = document.getElementById('formset-container');
+        const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+        const emptyRow = document.getElementById('empty-form-row').innerHTML;
+
+        // Función para agregar fila
+        addBtn.addEventListener('click', function() {
+            let formIdx = totalForms.value; // Índice actual (ej: 1)
+            
+            // Reemplazamos el prefijo __prefix__ por el número actual
+            let newRowHtml = emptyRow.replace(/__prefix__/g, formIdx);
+            
+            // Insertamos la nueva fila
+            container.insertAdjacentHTML('beforeend', newRowHtml);
+            
+            // Actualizamos el contador total de formularios
+            totalForms.value = parseInt(formIdx) + 1;
+        });
+
+        // Función para eliminar fila (delegación de eventos)
+        container.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-eliminar-fila')) {
+                const row = e.target.closest('tr');
+                // Si es la única fila, solo limpiar inputs, no borrar
+                if (container.querySelectorAll('tr.producto-row').length > 1) {
+                    row.remove();
+                    // Nota: Idealmente reordenar índices, pero Django suele manejar saltos si se envían bien.
+                    // Para simplicidad, solo ocultamos visualmente. 
+                } else {
+                    alert("Debe registrar al menos un producto.");
+                }
+            }
+        });
+    });
+</script>
+
 <style>
-/* Tus estilos originales se mantienen intactos */
-body { background: linear-gradient(135deg, #f3f6fb, #e9eef5); }
+/* Estilos extra */
 .header-blue { background: linear-gradient(135deg, #2C466B, #1f3554); }
-.footer-blue { background: linear-gradient(135deg, #1f3554, #2C466B); }
-.card { border-radius: 24px; box-shadow: 0 20px 40px rgba(44, 70, 107, 0.12); border: none; overflow: hidden; }
-.form-control, .form-select { background-color: #ffffff; border: 1px solid #d6dbe3; border-radius: 14px; padding: 12px 16px; font-size: 0.95rem; transition: all 0.2s ease; }
-.form-control:focus, .form-select:focus { border-color: #2C466B; box-shadow: 0 0 0 0.2rem rgba(44, 70, 107, 0.2); }
-label { font-weight: 600; font-size: 0.85rem; color: #374151; }
-.btn-primary-custom { background: linear-gradient(135deg, #2C466B, #1f3554); border: none; font-weight: 600; letter-spacing: 0.4px; transition: all 0.25s ease; box-shadow: 0 6px 18px rgba(44, 70, 107, 0.25); }
-.btn-primary-custom:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(44, 70, 107, 0.35); }
-.btn-light { background-color: #f3f4f6; border: 1px solid #e5e7eb; }
-.btn-light:hover { background-color: #e5e7eb; }
-.form-check-input:checked { background-color: #2C466B; border-color: #2C466B; }
+.btn-primary-custom { background: linear-gradient(135deg, #2C466B, #1f3554); border: none; }
+.btn-primary-custom:hover { background: linear-gradient(135deg, #1f3554, #16263d); transform: translateY(-2px); }
+.hover-scale:hover { transform: scale(1.02); transition: transform 0.2s; }
+.form-control:focus, .form-select:focus { box-shadow: none; border-color: #2C466B; }
 </style>
 
 {% endblock %}
