@@ -40,21 +40,35 @@ def lista_pedidos(request):
             Q(id__icontains=query) | 
             Q(proveedor__nombre_contacto__icontains=query) | 
             Q(proveedor__nit__icontains=query) |
-            Q(detalles__producto__nombre__icontains=query) # Busca en el nombre del producto
-        ).distinct() # IMPORTANTE: distinct() evita que un pedido salga duplicado si tiene varios productos que coinciden
+            Q(detalles__producto__nombre__icontains=query)
+        ).distinct()
 
     # 2. Filtro por Rango de Fechas
     if fecha_inicio:
-        pedidos = pedidos.filter(fecha__date__gte=fecha_inicio) # gte = Mayor o igual que
+        pedidos = pedidos.filter(fecha__date__gte=fecha_inicio) 
     if fecha_fin:
-        pedidos = pedidos.filter(fecha__date__lte=fecha_fin)    # lte = Menor o igual que
+        pedidos = pedidos.filter(fecha__date__lte=fecha_fin)    
         
     # ==========================================
     # 3. NUEVA LÓGICA: EXPORTAR REPORTE A PDF
     # ==========================================
     if request.GET.get('export') == 'pdf':
         
-        # --- AQUÍ INTEGRAMOS LA LÓGICA DE LOS CONTADORES ---
+        # --- LÓGICA PARA EL TÍTULO DEL RANGO DE FECHAS EN EL PDF ---
+        if fecha_inicio and fecha_fin:
+            texto_rango = f"Del {fecha_inicio} al {fecha_fin}"
+        elif fecha_inicio:
+            texto_rango = f"Desde el {fecha_inicio}"
+        elif fecha_fin:
+            texto_rango = f"Hasta el {fecha_fin}"
+        else:
+            # Si no hay filtros, mostramos el mes y año actual
+            meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+            mes_actual = timezone.now().month
+            anio_actual = timezone.now().year
+            texto_rango = f"{meses[mes_actual]} {anio_actual}"
+        
+        # --- LÓGICA DE LOS CONTADORES ---
         total_pedidos = pedidos.count()
         ordenes_confirmadas = pedidos.filter(estado__in=['REC', 'recibido']).count()
         ordenes_pendientes = pedidos.filter(estado__in=['PEN', 'pendiente']).count()
@@ -62,20 +76,20 @@ def lista_pedidos(request):
         
         # Calculamos la suma total
         suma_total = pedidos.aggregate(total=Sum('valor_total'))['total'] or 0
-        # ---------------------------------------------------
 
         # Preparamos los datos para el template del PDF
         context = {
             'pedidos': pedidos,
             'fecha_generacion': timezone.now(),
-            'total_pedidos': total_pedidos,               # Actualizado
-            'ordenes_confirmadas': ordenes_confirmadas,   # Nuevo
-            'ordenes_pendientes': ordenes_pendientes,     # Nuevo
-            'ordenes_canceladas': ordenes_canceladas,     # Nuevo
-            'suma_total': suma_total                      # Actualizado
+            'mes_reporte': texto_rango,                   # <-- AQUÍ PASAMOS EL RANGO
+            'total_pedidos': total_pedidos,               
+            'ordenes_confirmadas': ordenes_confirmadas,   
+            'ordenes_pendientes': ordenes_pendientes,     
+            'ordenes_canceladas': ordenes_canceladas,     
+            'suma_total': suma_total                      
         }
         
-        # Llamamos al nuevo HTML del reporte
+        # Llamamos al HTML del reporte
         template = get_template('reporte_mensual_pdf.html') 
         html = template.render(context)
         
