@@ -1,234 +1,282 @@
 {% extends 'core/panel_admin_base.html' %}
 {% load static %}
 
-{% block title %}Detalle del Proveedor{% endblock %}
+{% block title %}Detalle y Catálogo{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Estilos Ocean para Detalle */
+    /* --- Estilos Existentes (Optimizados) --- */
     .card-ocean-detail {
         border: none;
         border-radius: 24px;
         overflow: hidden;
         box-shadow: 0 20px 60px rgba(0, 97, 255, 0.15);
+        height: 100%;
+        /* Para que iguale altura */
     }
 
     .detail-header {
         background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
-        padding: 3rem 2rem 4rem; /* Padding extra abajo para el contenido superpuesto */
+        padding: 2rem 1rem 3rem;
         position: relative;
         text-align: center;
         color: white;
     }
 
-    /* Curva suave inversa en la parte inferior del header */
     .detail-header::after {
         content: '';
-        position: absolute; bottom: 0; left: 0; right: 0;
-        height: 60px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
         background: white;
-        border-radius: 50% 50% 0 0 / 30px 30px 0 0; 
+        border-radius: 50% 50% 0 0 / 20px 20px 0 0;
     }
 
     .provider-icon-large {
-        width: 100px; height: 100px;
-        background: rgba(255,255,255,0.2);
+        width: 80px;
+        height: 80px;
+        /* Un poco más pequeño para ajustar al layout */
+        background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(5px);
         border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 1.5rem;
-        border: 2px solid rgba(255,255,255,0.4);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        font-size: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        font-size: 2.5rem;
         color: white;
     }
 
-    /* Etiqueta de grupos de datos */
-    .data-group-label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        color: #94a3b8;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        display: block;
-    }
-
-    /* Tarjetas de información individual */
     .info-item {
         background-color: #f8fbff;
-        border-radius: 16px;
-        padding: 1.2rem;
+        border-radius: 12px;
+        padding: 1rem;
         display: flex;
-        align-items: flex-start;
-        transition: transform 0.2s;
+        align-items: center;
+        /* Centrado vertical */
+        margin-bottom: 1rem;
         border: 1px solid #eef2f6;
-        height: 100%;
-    }
-
-    .info-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 97, 255, 0.05);
-        border-color: #dbeafe;
     }
 
     .info-icon {
         background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
-        width: 45px; height: 45px;
-        border-radius: 12px;
-        display: flex; align-items: center; justify-content: center;
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         color: white;
-        font-size: 1.2rem;
-        margin-right: 1rem;
+        font-size: 1rem;
+        margin-right: 0.8rem;
         flex-shrink: 0;
     }
 
-    .info-content small {
-        display: block;
-        color: #64748b;
-        font-size: 0.8rem;
-        font-weight: 500;
-        margin-bottom: 2px;
-    }
-    
-    .info-content strong {
-        color: #1e293b;
-        font-size: 1rem;
-        font-weight: 600;
-        word-break: break-word;
+    /* --- NUEVOS ESTILOS PARA PRODUCTOS --- */
+    .product-card {
+        background: white;
+        border: 1px solid #eef2f6;
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
 
-    /* Botón Editar Flotante */
-    .btn-edit-float {
-        background: linear-gradient(45deg, #ffca28, #ffc107);
-        color: #001233;
-        font-weight: 800;
-        border-radius: 50px;
-        padding: 12px 30px;
-        border: none;
-        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
-        transition: all 0.3s;
-        text-decoration: none;
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border-color: #60efff;
     }
-    
-    .btn-edit-float:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(255, 193, 7, 0.5);
-        color: #001233;
+
+    .product-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    .badge-mariscos {
+        background-color: #ffe0e6;
+        color: #ff4757;
+    }
+
+    .badge-pescado {
+        background-color: #e0f2fe;
+        color: #0ea5e9;
+    }
+
+    .badge-pollo {
+        background-color: #fff7ed;
+        color: #ea580c;
+    }
+
+    .price-tag {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #0061ff;
+    }
+
+    .stock-indicator {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #64748b;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: #f8fbff;
+        border-radius: 16px;
+        border: 2px dashed #cbd5e1;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+<div class="container-fluid px-4 py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-secondary">Gestión de Proveedores</h4>
+        <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            <i class="bi bi-arrow-left me-1"></i> Volver
+        </a>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-4">
             <div class="card card-ocean-detail">
-                
                 <div class="detail-header">
                     <div class="provider-icon-large">
                         {% if proveedor.tipo_persona == 'natural' %}
-                            <i class="bi bi-person-circle"></i>
+                        <i class="bi bi-person-circle"></i>
                         {% else %}
-                            <i class="bi bi-building"></i>
+                        <i class="bi bi-building"></i>
                         {% endif %}
                     </div>
-                    
-                    <h2 class="fw-bold mb-2">{{ proveedor.nombre_contacto }}</h2>
-                    
-                    <div class="d-flex justify-content-center gap-2 mb-3">
-                        <span class="badge bg-white text-primary bg-opacity-25 backdrop-blur border border-white border-opacity-50 px-3 py-2 rounded-pill">
-                            {{ proveedor.get_tipo_persona_display }}
-                        </span>
-                        
-                        {% if proveedor.estado %}
-                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm">
-                                <i class="bi bi-check-circle-fill me-1"></i> Activo
-                            </span>
-                        {% else %}
-                            <span class="badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm">
-                                <i class="bi bi-x-circle-fill me-1"></i> Inactivo
-                            </span>
-                        {% endif %}
+                    <h3 class="fw-bold mb-1">{{ proveedor.nombre_contacto }}</h3>
+                    <div
+                        class="badge bg-white text-primary bg-opacity-25 border border-white border-opacity-50 px-3 py-1 rounded-pill mt-2">
+                        {{ proveedor.get_tipo_persona_display }}
                     </div>
                 </div>
 
-                <div class="card-body px-4 px-md-5 pb-5 pt-2">
-                    
-                    <div class="row mb-4 justify-content-center">
-                        <div class="col-md-6 text-center">
-                            <div class="p-3 rounded-4 bg-white shadow-sm border position-relative" style="top: -40px; z-index: 2;">
-                                <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.7rem;">
-                                    {% if proveedor.tipo_persona == 'natural' %}NO. CÉDULA{% else %}NIT EMPRESARIAL{% endif %}
-                                </small>
-                                <span class="fs-4 fw-black text-primary letter-spacing-1">{{ proveedor.nit }}</span>
-                            </div>
+                <div class="card-body px-4 pb-4 pt-1">
+                    <div class="text-center mb-4 position-relative" style="top: -20px; z-index: 2;">
+                        <span class="bg-white px-3 py-2 rounded-3 shadow-sm border fw-bold text-primary">
+                            {{ proveedor.nit }}
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-envelope"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size: 0.7rem;">Correo</small>
+                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.correo }}</span>
                         </div>
                     </div>
 
-                    <span class="data-group-label text-center border-bottom pb-2 mb-4">Información de Contacto</span>
-                    
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <div class="info-item">
-                                <div class="info-icon"><i class="bi bi-envelope"></i></div>
-                                <div class="info-content">
-                                    <small>Correo Electrónico</small>
-                                    <strong>{{ proveedor.correo }}</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-item">
-                                <div class="info-icon"><i class="bi bi-telephone"></i></div>
-                                <div class="info-content">
-                                    <small>Teléfono / Celular</small>
-                                    <strong>{{ proveedor.telefono }}</strong>
-                                </div>
-                            </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-telephone"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size: 0.7rem;">Teléfono</small>
+                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.telefono }}</span>
                         </div>
                     </div>
 
-                    <span class="data-group-label text-center border-bottom pb-2 mb-4">Ubicación</span>
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="info-item">
-                                <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
-                                <div class="info-content">
-                                    <small>Ciudad</small>
-                                    <strong>{{ proveedor.ciudad }}</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-item">
-                                <div class="info-icon"><i class="bi bi-map"></i></div>
-                                <div class="info-content">
-                                    <small>Dirección Física</small>
-                                    <strong>{{ proveedor.direccion }}</strong>
-                                </div>
-                            </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size: 0.7rem;">Ubicación</small>
+                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.ciudad }}</span>
+                            <span class="small text-muted text-truncate" style="max-width: 200px;">{{ proveedor.direccion}}</span>
                         </div>
                     </div>
 
-                    <hr class="my-5 opacity-10">
-
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="{% url 'proveedores:lista_proveedores' %}" 
-                           class="btn btn-link text-decoration-none text-secondary fw-bold">
-                            <i class="bi bi-arrow-left me-2"></i> Volver a la lista
-                        </a>
-                        
-                        <a href="{% url 'proveedores:modificar_proveedores' proveedor.id %}" 
-                           class="btn btn-edit-float">
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'proveedores:modificar_proveedores' proveedor.id %}"
+                            class="btn btn-primary w-100 rounded-pill py-2 shadow-sm">
                             <i class="bi bi-pencil-square me-2"></i> Editar Datos
                         </a>
                     </div>
-
                 </div>
             </div>
         </div>
+
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center mb-4 border-bottom pb-3">
+                <h5 class="fw-bold text-dark mb-0">
+                    <i class="bi bi-box-seam me-2 text-primary"></i>Catálogo de Productos del Proveedor
+                </h5>
+            </div>
+
+            <div class="row g-3">
+                {% for producto in proveedor.productos.all %}
+                <div class="col-md-6 col-xl-4">
+                    <div class="product-card h-100">
+                        <div class="d-flex gap-1 flex-wrap mb-2">
+                            {% if producto.tipo_producto == 'MA' %}
+                            <span
+                                class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill">Marisco</span>
+                            {% elif producto.tipo_producto == 'PE' %}
+                            <span
+                                class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill">Pescado</span>
+                            {% else %}
+                            <span
+                                class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill">Pollo</span>
+                            {% endif %}
+                        </div>
+
+                        <h5 class="fw-bold text-dark mb-1">{{ producto.nombre }}</h5>
+
+                        <p class="text-muted small mb-2 text-truncate">{{ producto.descripcion }}</p>
+
+                        <div class="mb-3">
+                            <small class="text-uppercase fw-bold text-secondary"
+                                style="font-size: 0.65rem;">Presentación</small>
+                            <div class="d-flex align-items-center mt-1">
+                                <i class="bi bi-box2 text-primary me-2"></i>
+                                <span class="text-dark fw-medium small">
+                                    {{ producto.get_tipo_presentacion_display }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-end mt-auto pt-2 border-top">
+                            <div>
+                                <small class="text-muted d-block text-uppercase"
+                                    style="font-size: 0.65rem; font-weight: 700;">Precio</small>
+                                <span class="price-tag">${{ producto.precio }}</span>
+                            </div>
+
+                            <div class="text-end">
+                                {% if producto.estado %}
+                                <span class="badge bg-success"><i class="bi bi-check-lg"></i> Activo</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inactivo</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="bi bi-basket3 display-4 text-muted mb-3 d-block"></i>
+                        <h5 class="fw-bold text-secondary">Este proveedor no tiene productos asociados</h5>
+                        <p class="text-muted">Ve al módulo de <strong>Productos</strong> para registrar mercancía.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}

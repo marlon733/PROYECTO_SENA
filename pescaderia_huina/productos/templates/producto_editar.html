@@ -1,212 +1,224 @@
 {% extends 'core/panel_admin_base.html' %}
-
 {% block title %}Editar Producto{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="card border-0 shadow-lg rounded-4 overflow-hidden">
 
-    <div class="card shadow-lg border-0" style="border-top: 4px solid #1e3a5f !important;">
-        <!-- Header con colores de la pescadería -->
-        <div class="card-header text-white py-3" 
-             style="background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-pencil-square fs-4 me-3"></i>
-                <div>
-                    <h4 class="mb-0 fw-bold">Editar Producto</h4>
-                    <small class="opacity-75">Actualiza la información del inventario</small>
-                </div>
-            </div>
-        </div>
+    <!-- 🔵 Header Azul Corporativo -->
+    <div class="card-header header-blue text-white py-4 px-5">
+        <h4 class="fw-semibold mb-1">Editar Producto</h4>
+        <p class="small mb-0 opacity-75">
+            Actualiza la información del producto
+        </p>
+    </div>
 
-        <div class="card-body p-4">
+    <div class="card-body px-5 pb-5 pt-4">
 
-            <form method="post">
-                {% csrf_token %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
 
-                <!-- Fila 1: Tipo y Nombre -->
-                <div class="row">
-                    <!-- Tipo de Producto -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">
-                            <i class="bi bi-tag text-primary me-2"></i>
-                            Tipo de Producto
-                        </label>
-                        <select name="tipo_producto" class="form-select form-select-lg" required>
-                            <option value="">Seleccione una opción</option>
-                            <option value="MP" {% if producto.tipo_producto == 'MP' %}selected{% endif %}>
-                                Mariscos 
-                            </option>
-                            <option value="PT" {% if producto.tipo_producto == 'PT' %}selected{% endif %}>
-                                 Pescado
-                            </option>
-                            <option value="IN" {% if producto.tipo_producto == 'IN' %}selected{% endif %}>
-                                 Pollo
-                            </option>
-                        </select>
-                    </div>
+            <div class="row">
 
-                    <!-- Nombre -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">
-                            <i class="bi bi-box-seam text-primary me-2"></i>
-                            Nombre del Producto
-                        </label>
-                        <input type="text"
-                               name="nombre"
-                               class="form-control form-control-lg"
-                               value="{{ producto.nombre }}"
-                               placeholder="Ej: Cangrejo fresco"
-                               required>
-                    </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label small text-muted">
+                        Tipo de Producto
+                    </label>
+                    {{ form.tipo_producto }}
                 </div>
 
-                <!-- Descripción -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">
-                        <i class="bi bi-card-text text-primary me-2"></i>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label small text-muted">
+                        Tipo de Presentación
+                    </label>
+                    {{ form.tipo_presentacion }}
+                </div>
+
+                <div class="col-12 mb-4">
+                    <label class="form-label small text-muted">
+                        Nombre
+                    </label>
+                    {{ form.nombre }}
+                </div>
+
+                <div class="col-12 mb-4">
+                    <label class="form-label small text-muted">
                         Descripción
                     </label>
-                    <textarea name="descripcion"
-                              class="form-control"
-                              rows="3"
-                              placeholder="Describe las características del producto"
-                              required>{{ producto.descripcion }}</textarea>
+                    {{ form.descripcion }}
                 </div>
 
-                <!-- Fila 2: Precio y Presentación -->
-                <div class="row">
-                    <!-- Precio -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">
-                            <i class="bi bi-currency-dollar text-success me-2"></i>
-                            Precio (COP)
-                        </label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text">$</span>
-                            <input type="number"
-                                   name="precio"
-                                   class="form-control"
-                                   value="{{ producto.precio }}"
-                                   step="0.01"
-                                   min="0"
-                                   placeholder="0.00"
-                                   required>
-                        </div>
-                    </div>
 
-                    <!-- Tipo presentación -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">
-                            <i class="bi bi-box text-primary me-2"></i>
-                            Tipo de Presentación
-                        </label>
-                        <input type="text"
-                               name="tipo_presentacion"
-                               class="form-control form-control-lg"
-                               value="{{ producto.tipo_presentacion }}"
-                               placeholder="Ej: Envasado, Por libra"
-                               required>
-                    </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label small text-muted">
+                        Precio
+                    </label>
+                    {{ form.precio }}
                 </div>
 
-                <!-- Fila 3: Peso y Stock -->
-                <div class="row">
-                    <!-- Peso -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">
-                            <i class="bi bi-reception-4 text-primary me-2"></i>
-                            Peso (kg)
-                        </label>
-                        <div class="input-group input-group-lg">
-                            <input type="number"
-                                   name="peso"
-                                   class="form-control"
-                                   value="{{ producto.peso }}"
-                                   step="0.01"
-                                   min="0"
-                                   placeholder="0.00"
-                                   required>
-                            <span class="input-group-text">kg</span>
-                        </div>
-                    </div>
+            </div>
 
-                    <!-- Stock -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">
-                            <i class="bi bi-boxes text-warning me-2"></i>
-                            Stock Disponible
-                        </label>
-                        <input type="number"
-                               name="stock"
-                               class="form-control form-control-lg"
-                               value="{{ producto.stock }}"
-                               min="0"
-                               placeholder="0"
-                               required>
-                    </div>
-                </div>
+            <div class="form-check form-switch mb-4 mt-2">
+                {{ form.estado }}
+                <label class="form-check-label small text-muted ms-2">
+                    Producto activo
+                </label>
+            </div>
 
-                <!-- Estado -->
-                <div class="mb-4 p-3 rounded" style="background-color: #f1f5f9;">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input"
-                               type="checkbox"
-                               name="estado"
-                               id="estado"
-                               style="width: 3em; height: 1.5em;"
-                               {% if producto.estado %}checked{% endif %}>
-                        <label class="form-check-label fw-semibold ms-2" for="estado">
-                            <i class="bi bi-toggle-on text-success me-2"></i>
-                            Producto Activo en el Inventario
-                        </label>
-                    </div>
-                    <small class="text-muted ms-5 ps-3">
-                        Los productos inactivos no aparecerán en el sistema de ventas
-                    </small>
-                </div>
+            <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                <a href="{% url 'productos:productos_list' %}"
+                   class="btn btn-light px-4 rounded-3">
+                    Cancelar
+                </a>
 
-                <!-- Botones -->
-                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                    <a href="{% url 'productos:productos_list' %}" 
-                       class="btn btn-outline-secondary btn-lg px-4">
-                        <i class="bi bi-arrow-left me-2"></i>
-                        Cancelar
-                    </a>
-                    <button type="submit" 
-                            class="btn btn-lg px-5 text-white fw-semibold"
-                            style="background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); border: none;">
-                        <i class="bi bi-check-circle me-2"></i>
-                        Guardar Cambios
-                    </button>
-                </div>
+                <button class="btn btn-primary-custom px-4 rounded-3 text-white">
+                    Actualizar
+                </button>
+            </div>
 
-            </form>
+        </form>
 
-        </div>
+    </div>
 
-        <!-- Footer informativo -->
-        <div class="card-footer text-center py-2" 
-             style="background-color: #e0f2fe; border-top: 1px solid #bae6fd;">
-            <small class="text-primary">
-                <i class="bi bi-info-circle me-1"></i>
-                Todos los campos son obligatorios
-            </small>
-        </div>
+    <!-- 🔵 Footer Azul -->
+    <div class="card-footer footer-blue text-center py-3 small text-white">
+        Sistema de gestión - Pescadería Huina
     </div>
 
 </div>
 
 <style>
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
-    }
-    
-    .btn:hover {
-        transform: translateY(-2px);
-        transition: all 0.3s ease;
-    }
+
+.header-blue {
+    background-color: #2C466B;
+}
+
+.footer-blue {
+    background-color: #2C466B;
+}
+
+.btn-primary-custom {
+    background-color: #2C466B;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-custom:hover {
+    background-color: #1f3554;
+    transform: translateY(-1px);
+}
+
+.form-control,
+.form-select {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 12px 16px;
+    font-size: 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #2C466B;
+    box-shadow: 0 0 0 0.15rem rgba(44, 70, 107, 0.25);
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 20px;
+}
+
+label {
+    font-weight: 500;
+}
+
+
+/* 🔵 Header con degradado */
+.header-blue {
+    background: linear-gradient(135deg, #2C466B, #1f3554);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 🔵 Footer */
+.footer-blue {
+    background: linear-gradient(135deg, #1f3554, #2C466B);
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 🟦 Botón principal más fuerte */
+.btn-primary-custom {
+    background: linear-gradient(135deg, #2C466B, #1f3554);
+    border: none;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(44, 70, 107, 0.25);
+}
+
+.btn-primary-custom:hover {
+    background: linear-gradient(135deg, #1f3554, #16263d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(44, 70, 107, 0.35);
+}
+
+/* Inputs más modernos */
+.form-control,
+.form-select {
+    border-radius: 14px;
+    border: 1px solid #dce1e7;
+    background-color: #f9fafc;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+/* Focus más visible */
+.form-control:focus,
+.form-select:focus {
+    background-color: #ffffff;
+    border-color: #2C466B;
+    box-shadow: 0 0 0 0.2rem rgba(44, 70, 107, 0.25);
+}
+
+/* Card con más profundidad */
+.card {
+    background-color: #ffffff;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Labels más marcados */
+label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #374151;
+    letter-spacing: 0.3px;
+}
+
+/* Separación visual entre secciones */
+.card-body {
+    background-color: #ffffff;
+}
+
+/* Switch más alineado */
+.form-check-input:checked {
+    background-color: #2C466B;
+    border-color: #2C466B;
+}
+
+/* Botón cancelar más elegante */
+.btn-light {
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.btn-light:hover {
+    background-color: #e5e7eb;
+}
+
 </style>
+
+
+
 
 {% endblock %}
