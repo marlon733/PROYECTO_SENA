@@ -7,12 +7,11 @@ from proveedores.models import Proveedor
 class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
-        # El ID se genera solo, la fecha es auto_now_add y el valor_total lo calculamos
-        fields = ['proveedor', 'estado']
+        fields = ['proveedor']
         widgets = {
             'proveedor': forms.Select(attrs={'class': 'form-select'}),
-            'estado': forms.Select(attrs={'class': 'form-select'}),
         }
+
 
 class DetallePedidoForm(forms.ModelForm):
     OPCIONES_PRESENTACION = [
@@ -48,6 +47,7 @@ class DetallePedidoForm(forms.ModelForm):
             'producto': forms.Select(attrs={'class': 'form-select'}),
             'precio_unitario': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': 'any'}),
         }
+        
     def clean_cantidad(self):
         cantidad = self.cleaned_data.get('cantidad')
         if cantidad <= 0:

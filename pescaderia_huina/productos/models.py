@@ -1,9 +1,9 @@
 from django.db import models
-# Importamos el modelo de la otra app para "traer los IDs"
+# Asegúrate de que la importación apunte correctamente a tu app de proveedores
 from proveedores.models import Proveedor 
 
 class Producto(models.Model):
-    # --- Opciones de Selección ---
+    # --- Opciones ---
     TIPO_PRODUCTO = [
         ('MA', 'Mariscos'),
         ('PE', 'Pescado'),
@@ -16,14 +16,14 @@ class Producto(models.Model):
         ('LIB', 'A granel (Libras)'),
     ]
 
-    # --- La Conexión Clave (Lo que pediste) ---
-    # Esto crea un campo desplegable en tu formulario donde
-    # seleccionas al proveedor por su nombre, pero guarda su ID internamente.
+    # --- RELACIÓN CON PROVEEDOR (Protegida) ---
     proveedor = models.ForeignKey(
         Proveedor, 
-        on_delete=models.CASCADE, # Si eliminas al proveedor, se borran sus productos
-        related_name='productos', # Permite buscar "proveedor.productos.all"
-        verbose_name="Seleccionar Proveedor"
+        on_delete=models.SET_NULL, # <--- CLAVE: Si borras el proveedor, el producto queda huerfano pero existe
+        null=True,                 # Permite guardar sin proveedor
+        blank=True,                
+        related_name='productos', 
+        verbose_name="Proveedor Asignado"
     )
     
     # --- Datos del Producto ---
@@ -59,5 +59,7 @@ class Producto(models.Model):
         verbose_name = "Producto"
         verbose_name_plural = "Productos"
 
-    def _str_(self):
-        return f"{self.nombre} - {self.proveedor.nombre_contacto}"
+    def __str__(self):
+        # Validación de seguridad: si borraron el proveedor, muestra texto alternativo
+        nombre_proveedor = self.proveedor.nombre_contacto if self.proveedor else "Sin Proveedor"
+        return f"{self.nombre} ({nombre_proveedor})"

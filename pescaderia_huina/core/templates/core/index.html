@@ -7,15 +7,10 @@
 {% block content %}
 <style>
     :root {
-        /* Mismos colores que master.html y módulos */
         --ocean-primary: #0061ff;
-        /* Azul Eléctrico Principal */
         --ocean-cyan: #60efff;
-        /* Cian Brillante */
         --ocean-dark: #001233;
-        /* Azul Noche (Textos oscuros) */
         --ocean-light: #f0f7ff;
-        /* Fondo Pagina */
         --ocean-gradient: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
     }
 
@@ -27,7 +22,9 @@
 
     /* Animaciones */
     @keyframes float-mascot {
-        0% {
+
+        0%,
+        100% {
             transform: translateY(0px) rotate(0deg);
         }
 
@@ -35,27 +32,22 @@
             transform: translateY(-20px) rotate(2deg);
             filter: drop-shadow(0 30px 50px rgba(0, 97, 255, 0.3));
         }
-
-        100% {
-            transform: translateY(0px) rotate(0deg);
-        }
     }
 
-
+    /* Hero Responsive */
     .hero-huina {
-
         background: linear-gradient(160deg, #001233 0%, #0061ff 60%, #1097eaa0 100%);
-        min-height: 92vh;
+        min-height: 80vh;
+        /* Ajustado para mejor visibilidad */
         position: relative;
         display: flex;
         align-items: center;
         overflow: hidden;
         color: white;
-        padding-top: 4rem;
-        padding-bottom: 10rem;
+        padding-top: 6rem;
+        padding-bottom: 8rem;
     }
 
-    /* Textura de fondo sutil */
     .hero-huina::before {
         content: '';
         position: absolute;
@@ -73,7 +65,6 @@
         animation: float-mascot 5.5s ease-in-out infinite;
     }
 
-    /* Separador de Ola - Color corregido para fundirse con el fondo */
     .wave-separator {
         position: absolute;
         bottom: -2px;
@@ -85,15 +76,21 @@
 
     .wave-separator path {
         fill: var(--ocean-light);
-        /* Coincide con el fondo de la siguiente sección */
     }
 
-    /* CARDS FLOTANTES */
+    /* CARDS FLOTANTES RESPONSIVE */
     .floating-cards-section {
-        margin-top: -120px;
+        margin-top: -80px;
+        /* Menos agresivo para móvil */
         position: relative;
         z-index: 10;
-        padding-bottom: 4rem;
+        padding-bottom: 3rem;
+    }
+
+    @media (min-width: 992px) {
+        .floating-cards-section {
+            margin-top: -120px;
+        }
     }
 
     .category-card {
@@ -102,44 +99,60 @@
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
         box-shadow: 0 20px 40px rgba(0, 34, 255, 0.08);
-        /* Sombra azulada suave */
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         height: 100%;
         overflow: hidden;
     }
 
-
     .category-card:hover {
-        transform: translateY(-20px) scale(1.03);
+        transform: translateY(-15px) scale(1.02);
         box-shadow: 0 30px 60px rgba(0, 97, 255, 0.15);
     }
 
+    /* ESTILOS BASE DEL ICONO */
     .category-icon {
-        width: 95px;
-        height: 95px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 2rem;
+        margin: 0 auto 1.5rem;
         color: white;
-        font-size: 3rem;
-        /* Gradiente unificado para consistencia */
+        font-size: 2.5rem;
+    }
+
+    /* COLORES ESPECÍFICOS POR CATEGORÍA */
+
+    /* Pescados: Azul (Tal como estaba) */
+    .icon-pescados {
         background: var(--ocean-gradient);
         box-shadow: 0 10px 20px rgba(76, 0, 255, 0.2);
     }
 
+    /* Mariscos: Naranja */
+    .icon-mariscos {
+        background: linear-gradient(135deg, #ff9a44, #fc6076);
+        box-shadow: 0 10px 20px rgba(255, 154, 68, 0.3);
+    }
+
+    /* Pollos: Amarillo */
+    .icon-pollos {
+        background: linear-gradient(135deg, #ffcf1b, #ff881b);
+        box-shadow: 0 10px 20px rgba(255, 207, 27, 0.3);
+    }
+
     /* Pasos de Compra */
     .step-circle {
-        width: 70px;
-        height: 70px;
+        width: 60px;
+        height: 60px;
         background: var(--ocean-gradient);
         color: white;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         font-weight: bold;
         margin-bottom: 1.5rem;
         position: relative;
@@ -150,18 +163,30 @@
     .step-line::before {
         content: '';
         position: absolute;
-        top: 35px;
+        top: 30px;
         left: 50%;
         width: 100%;
         height: 3px;
         background: #dceeff;
         z-index: 1;
-        /* Color de línea ajustado */
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
         .step-line::before {
             display: none;
+        }
+
+        .hero-huina {
+            text-align: center;
+            padding-bottom: 6rem;
+        }
+
+        .display-3 {
+            font-size: 2.5rem;
+        }
+
+        .lead {
+            font-size: 1.1rem !important;
         }
     }
 
@@ -173,21 +198,17 @@
     .testimonial-card {
         background: white;
         border-radius: 20px;
-        padding: 2rem;
+        padding: 1.5rem;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         border-left: 5px solid var(--ocean-primary);
         transition: transform 0.3s;
     }
 
-    .testimonial-card:hover {
-        transform: translateY(-5px);
-    }
-
-    /* Info Box */
+    /* Info Box & Map */
     .info-box {
         background: white;
-        border-radius: 20px;
-        padding: 2.5rem;
+        border-radius: 25px;
+        padding: 2rem;
         height: 100%;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
     }
@@ -195,95 +216,48 @@
     .icon-contact {
         background: var(--ocean-gradient);
         color: white;
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 12px;
-        font-size: 1.2rem;
     }
 
-    /* Botones */
-    .btn-huina-primary {
-        background: linear-gradient(45deg, #ffd700, #ffca28);
-        /* Dorado para contraste */
-        color: var(--ocean-dark);
-        font-weight: 800;
-        padding: 15px 38px;
-        border-radius: 50px;
-        border: none;
-        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-huina-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba(255, 215, 0, 0.6);
-        color: var(--ocean-dark);
-    }
-
-    /* FAQ ACORDEÓN */
-    .accordion-button:not(.collapsed) {
-        color: var(--ocean-primary);
-        background-color: #f0f7ff;
-        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .125);
-        font-weight: 600;
-    }
-
-    .accordion-button:focus {
-        border-color: var(--ocean-cyan);
-        box-shadow: 0 0 0 0.25rem rgba(96, 239, 255, 0.25);
-    }
-
-    .accordion-item {
-        border: none;
-        margin-bottom: 10px;
-        border-radius: 12px !important;
-        overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-    }
-
-    /* BANNER FINAL */
-    .final-cta {
-        background: var(--ocean-gradient);
-        color: white;
-        border-radius: 30px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 20px 50px rgba(0, 97, 255, 0.25);
-    }
 </style>
 
 <header class="hero-huina">
-    <div class="container position-relative z-2 h-100">
-        <div class="row align-items-center h-100">
-            <div class="col-lg-6 text-center text-lg-start animate__animated animate__fadeInLeft">
+    <div class="container position-relative z-2">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6 animate__animated animate__fadeInLeft">
                 <div
-                    class="d-inline-flex align-items-center bg-white bg-opacity-10 backdrop-blur px-4 py-2 rounded-pill mb-4 border border-white border-opacity-20 shadow-sm">
+                    class="d-inline-flex align-items-center bg-white bg-opacity-10 backdrop-blur px-3 py-1 rounded-pill mb-4 border border-white border-opacity-20 shadow-sm">
                     <span
                         class="bg-warning p-1 rounded-circle me-2 animate__animated animate__pulse animate__infinite"></span>
-                    <small class="text-white fw-bold letter-spacing-2">CALIDAD HUINA</small>
+                    <small class="text-white fw-bold">CALIDAD HUINA</small>
                 </div>
-                <h1 class="display-3 fw-black mb-3 lh-sm text-shadow-soft" style="font-weight: 800;">
+                <h1 class="display-3 fw-bold mb-3 text-shadow-soft">
                     Fresco y Natural <br>
                     <span style="color: var(--ocean-cyan);">De alta Calidad.</span>
                 </h1>
-                <p class="lead mb-5 opacity-90 pe-lg-5 fs-4 mt-4 text-light">
-                    Pescados frescos, mariscos selectos y pollo de granja. <br> Del origen a tu hogar
+                <p class="lead mb-4 opacity-90 fs-4 text-light">
+                    Pescados frescos, mariscos selectos y pollo de granja. <br class="d-none d-md-block"> Del origen a
+                    tu hogar.
                 </p>
+                <div class="d-md-none text-center">
+                    <a href="#catalogo" class="btn btn-warning rounded-pill px-4 fw-bold">Ver Catálogo</a>
+                </div>
             </div>
+
             <div class="col-lg-6 text-center animate__animated animate__fadeInRight">
+                <div class="mascot-container">
+                    <img src="{% static 'img/pescador.png' %}" class="img-fluid px-4 px-md-0" alt="Pescador Huina">
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="wave-separator">
-        <img src="{% static 'img/pescador1.png' %}"
-            style="width: 600px; height: auto; position: relative; left: 800px; top: -70px;">
 
+    <div class="wave-separator">
         <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
             <path
                 d="M0,192L60,186.7C120,181,240,171,360,176C480,181,600,203,720,213.3C840,224,960,224,1080,202.7C1200,181,1320,139,1380,117.3L1440,96L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
@@ -292,36 +266,35 @@
     </div>
 </header>
 
-<section class="floating-cards-section container">
+<section id="catalogo" class="floating-cards-section container">
     <div class="row g-4 justify-content-center">
-        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp">
-            <div class="category-card p-5 text-center">
-                <div class="category-icon"><i class="bi bi-tsunami"></i></div>
-                <h3 class="fw-bold text-dark mb-3">Pescados</h3>
-                <p class="text-muted mb-4">Salmón, Tilapia, Bagre, Trucha y más.</p>
-                <a href="{% url 'core:pescados' %}"
-                    class="btn btn-link fw-bold stretched-link fs-5 text-decoration-none"
+        <div class="col-lg-4 col-md-6">
+            <div class="category-card p-4 p-md-5 text-center">
+                <div class="category-icon icon-pescados"><i class="bi bi-tsunami"></i></div>
+                <h3 class="fw-bold text-dark">Pescados</h3>
+                <p class="text-muted mb-4">Salmón, Tilapia, Bagre y más.</p>
+                <a href="{% url 'core:pescados' %}" class="btn btn-link fw-bold stretched-link text-decoration-none"
                     style="color: var(--ocean-primary);">Ver Catálogo →</a>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-1s">
-            <div class="category-card p-5 text-center">
-                <div class="category-icon"><i class="bi bi-stars"></i></div>
-                <h3 class="fw-bold text-dark mb-3">Mariscos</h3>
-                <p class="text-muted mb-4">Camarones, langostinos y mixturas.</p>
-                <a href="{% url 'core:mariscos' %}"
-                    class="btn btn-link fw-bold stretched-link fs-5 text-decoration-none"
-                    style="color: var(--ocean-primary);">Ver Catálogo →</a>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="category-card p-4 p-md-5 text-center">
+                <div class="category-icon icon-mariscos"><i class="bi bi-stars"></i></div>
+                <h3 class="fw-bold text-dark">Mariscos</h3>
+                <p class="text-muted mb-4">Camarones y mixturas selectas.</p>
+                <a href="{% url 'core:mariscos' %}" class="btn btn-link fw-bold stretched-link text-decoration-none"
+                    style="color: #ff7e00;">Ver Catálogo →</a>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-1s">
-            <div class="category-card p-5 text-center">
-                <div class="category-icon"><i class="bi bi-egg-fill"></i></div>
-                <h3 class="fw-bold text-dark mb-3">Pollos</h3>
-                <p class="text-muted mb-4">Pechugas, muslos, alas.</p>
-                <a href="{% url 'core:pollos' %}"
-                    class="btn btn-link fw-bold stretched-link fs-5 text-decoration-none"
-                    style="color: var(--ocean-primary);">Ver Catálogo →</a>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="category-card p-4 p-md-5 text-center">
+                <div class="category-icon icon-pollos"><i class="bi bi-egg-fill"></i></div>
+                <h3 class="fw-bold text-dark">Pollos</h3>
+                <p class="text-muted mb-4">Pechugas, muslos y alas de granja.</p>
+                <a href="{% url 'core:pollos' %}" class="btn btn-link fw-bold stretched-link text-decoration-none"
+                    style="color: #e6b800;">Ver Catálogo →</a>
             </div>
         </div>
     </div>
@@ -329,80 +302,72 @@
 
 <section class="py-5 bg-white border-bottom border-light">
     <div class="container">
-        <div class="row text-center divide-y-md align-items-center">
-            <div class="col-md-4 mb-4 mb-md-0">
-                <h2 class="fw-black display-4 mb-0" style="color: var(--ocean-primary);">10+</h2>
-                <p class="text-muted text-uppercase small letter-spacing-2 fw-bold">Años de experiencia</p>
+        <div class="row text-center align-items-center g-4">
+            <div class="col-md-4">
+                <h2 class="fw-bold display-5 mb-0" style="color: var(--ocean-primary);">10+</h2>
+                <p class="text-muted text-uppercase small fw-bold">Años de experiencia</p>
             </div>
-            <div class="col-md-4 mb-4 mb-md-0 border-start border-end border-light">
-                <h2 class="fw-black display-4 mb-0" style="color: var(--ocean-primary);">100%</h2>
-                <p class="text-muted text-uppercase small letter-spacing-2 fw-bold">Frescura Garantizada</p>
+            <div class="col-md-4 border-md-start border-md-end border-light">
+                <h2 class="fw-bold display-5 mb-0" style="color: var(--ocean-primary);">100%</h2>
+                <p class="text-muted text-uppercase small fw-bold">Frescura Garantizada</p>
             </div>
             <div class="col-md-4">
-                <h2 class="fw-black display-4 mb-0" style="color: var(--ocean-primary);">500+</h2>
-                <p class="text-muted text-uppercase small letter-spacing-2 fw-bold">Clientes Felices</p>
+                <h2 class="fw-bold display-5 mb-0" style="color: var(--ocean-primary);">500+</h2>
+                <p class="text-muted text-uppercase small fw-bold">Clientes Felices</p>
             </div>
         </div>
     </div>
 </section>
 
 <section class="py-5" style="background-color: var(--ocean-light);">
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <h6 class="text-uppercase text-primary fw-bold letter-spacing-2">Fácil y Rápido</h6>
+    <div class="container py-4">
+        <div class="text-center mb-5 px-3">
+            <h6 class="text-uppercase text-primary fw-bold">Fácil y Rápido</h6>
             <h2 class="fw-bold display-6" style="color: var(--ocean-dark);">Lleva el mar a tu casa en 3 pasos</h2>
         </div>
 
-        <div class="row text-center px-lg-5">
-            <div class="col-md-4 step-item position-relative mb-5">
+        <div class="row text-center g-4 px-md-5">
+            <div class="col-md-4 step-item position-relative">
                 <div class="step-line">
                     <div class="step-circle mx-auto"><i class="bi bi-cursor-fill"></i></div>
                 </div>
-                <h4 class="fw-bold mt-4" style="color: var(--ocean-dark);">1. Elige</h4>
-                <p class="text-muted px-4">Explora nuestro catálogo digital.</p>
+                <h4 class="fw-bold mt-3">1. Elige</h4>
+                <p class="text-muted px-lg-4">Explora nuestro catálogo digital.</p>
             </div>
-            <div class="col-md-4 step-item position-relative mb-5">
+            <div class="col-md-4 step-item position-relative">
                 <div class="step-line">
                     <div class="step-circle mx-auto"><i class="bi bi-whatsapp"></i></div>
                 </div>
-                <h4 class="fw-bold mt-4" style="color: var(--ocean-dark);">2. Pide</h4>
-                <p class="text-muted px-4">Comunicate via WhatsApp y confirma tu pedido.</p>
+                <h4 class="fw-bold mt-3">2. Pide</h4>
+                <p class="text-muted px-lg-4">Habla con nosotros por WhatsApp.</p>
             </div>
-            <div class="col-md-4 step-item position-relative mb-5">
+            <div class="col-md-4 step-item position-relative">
                 <div class="step-circle mx-auto"><i class="bi bi-box-seam-fill"></i></div>
-                <h4 class="fw-bold mt-4" style="color: var(--ocean-dark);">3. Recibe</h4>
-                <p class="text-muted px-4">Recibe en la puerta de tu casa con la cadena de frío intacta.</p>
+                <h4 class="fw-bold mt-3">3. Recibe</h4>
+                <p class="text-muted px-lg-4">Directo a tu hogar con cadena de frío.</p>
             </div>
         </div>
     </div>
 </section>
 
-<section class="py-5 animate__animated animate__fadeIn bg-white">
-    <div class="container py-5">
-        <div class="row align-items-center gx-5">
-            <div class="col-lg-6 mb-5 mb-lg-0">
-                <div class="position-relative pe-lg-5">
-                    <div class="position-absolute top-0 start-0 translate-middle opacity-10 rounded-circle z-0"
-                        style="width: 200px; height: 200px; background: var(--ocean-primary);"></div>
-                    <img src="{% static 'img/Alojote.jpg' %}"
-                        class="img-fluid rounded-5 shadow-lg w-100 position-relative z-1" alt="Interior Pescadería">
-                </div>
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <img src="{% static 'img/Alojote.jpg' %}" class="img-fluid rounded-5 shadow-lg" alt="Calidad Huina">
             </div>
-            <div class="col-lg-6 ps-lg-5">
-                <h6 class="text-uppercase fw-bold mb-3" style="color: var(--ocean-primary);">Garantía Huina</h6>
-                <h2 class="display-5 fw-bold mb-4" style="color: var(--ocean-dark);">Calidad que se siente.</h2>
-                <p class="text-muted fs-5 mb-4 lh-lg">
-                    No somos solo proveedores; somos tus aliados. Mantenemos la cadena de frío intacta para que
-                    disfrutes del verdadero sabor del mar en Boyacá.
-                </p>
+            <div class="col-lg-6">
+                <h6 class="text-uppercase fw-bold text-primary mb-3">Garantía Huina</h6>
+                <h2 class="display-6 fw-bold mb-4">Calidad que se siente.</h2>
+                <p class="text-muted mb-4 fs-5">Mantenemos la cadena de frío intacta para que disfrutes del verdadero
+                    sabor del mar en Boyacá.</p>
                 <ul class="list-unstyled">
-                    <li class="mb-3 d-flex align-items-center"><i
-                            class="bi bi-check-circle-fill text-primary me-3 fs-5"></i> Limpieza incluida a petición.
-                    </li>
-                    <li class="mb-3 d-flex align-items-center"><i
-                            class="bi bi-check-circle-fill text-primary me-3 fs-5"></i> Pesaje exacto y honesto.</li>
-                    <li class="mb-3 d-flex align-items-center"><i
-                            class="bi bi-check-circle-fill text-primary me-3 fs-5"></i> Empaque sellado al vacío.</li>
+                    <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-3"></i>
+                        Limpieza incluida a petición.</li>
+                    <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-3"></i>
+                        Pesaje exacto y honesto.</li>
+                    <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-3"></i>
+                        Empaque sellado al vacío.</li>
                 </ul>
             </div>
         </div>
@@ -412,41 +377,34 @@
 <section class="container py-5">
     <div class="row g-4">
         <div class="col-lg-7">
-            <div class="rounded-5 overflow-hidden shadow-sm h-100 position-relative bg-light"
-                style="min-height: 400px;">
+            <div class="rounded-5 overflow-hidden shadow-sm bg-light" style="height: 400px;">
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.076837882294!2d-72.9329766!3d5.7135833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a45c363297a73%3A0x6283b547820121!2sSogamoso%2C%20Boyac%C3%A1!5e0!3m2!1ses!2sco!4v1700000000000!5m2!1ses!2sco"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.298282361131!2d-72.9234!3d5.7164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwNDInNTkuMCJOIDcywrA1NSczMi4wIlc!5e0!3m2!1ses!2sco!4v1620000000000"
                     width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
             </div>
         </div>
-
         <div class="col-lg-5">
             <div class="info-box">
-                <h3 class="fw-bold mb-4" style="color: var(--ocean-dark);">Visítanos</h3>
-                <div class="d-flex align-items-start mb-4">
+                <h3 class="fw-bold mb-4">Visítanos</h3>
+                <div class="d-flex mb-4">
                     <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-geo-alt-fill"></i></div>
                     <div>
                         <h6 class="fw-bold mb-1">Sede Principal</h6>
-                        <p class="text-muted mb-0">Carrera 27 #2G - 33<br>Barrio Magdalena, Sogamoso</p>
+                        <p class="text-muted mb-0 small">Carrera 27 #2G - 33, Barrio Magdalena, Sogamoso</p>
                     </div>
                 </div>
-                <div class="d-flex align-items-start mb-4">
+                <div class="d-flex mb-4">
                     <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-clock-fill"></i></div>
                     <div>
                         <h6 class="fw-bold mb-1">Horario</h6>
-                        <p class="text-muted mb-0">Lun - Sáb: 7:00 AM - 6:00 PM</p>
-                        <p class="text-muted mb-0">Dom: 8:00 AM - 1:00 PM</p>
+                        <p class="text-muted mb-0 small">Lun - Sáb: 7:00 AM - 6:00 PM / Dom: 8:00 AM - 1:00 PM</p>
                     </div>
                 </div>
-                <div class="d-flex align-items-start">
-                    <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-telephone-fill"></i></div>
+                <div class="d-flex">
+                    <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-whatsapp"></i></div>
                     <div>
                         <h6 class="fw-bold mb-1">Domicilios</h6>
-                        <p class="text-muted mb-0">+57 322 828 0256</p>
-                        <a href="https://wa.me/573228280256" target="_blank"
-                            class="text-decoration-none fw-bold small text-primary">
-                            Ir a WhatsApp <i class="bi bi-arrow-right"></i>
-                        </a>
+                        <p class="text-muted mb-1">+57 322 828 0256</p>
                     </div>
                 </div>
             </div>
@@ -454,87 +412,5 @@
     </div>
 </section>
 
-<section class="py-5 bg-white">
-    <div class="container py-4">
-        <h2 class="text-center fw-bold mb-5" style="color: var(--ocean-dark);">Preguntas Frecuentes</h2>
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="accordion" id="accordionFAQ">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseOne">
-                                <i class="bi bi-truck me-2 text-primary"></i> ¿Tienen servicio a domicilio?
-                            </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionFAQ">
-                            <div class="accordion-body text-muted">Sí, cubrimos toda la zona urbana de Sogamoso.</div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTwo">
-                                <i class="bi bi-cash-coin me-2 text-primary"></i> ¿Métodos de pago?
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
-                            <div class="accordion-body text-muted">Efectivo, Nequi y Daviplata.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="py-5 position-relative" style="background-color: var(--ocean-light);">
-    <div class="container py-4">
-        <h2 class="text-center fw-bold mb-5" style="color: var(--ocean-dark);">Clientes Felices</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="testimonial-card h-100">
-                    <div class="mb-3 text-warning">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                    </div>
-                    <p class="text-muted fst-italic">"El salmón más fresco que he comprado. Llegó perfecto."</p>
-                    <h6 class="fw-bold mt-3 mb-0">- Luis Alberto Posada</h6>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="testimonial-card h-100">
-                    <div class="mb-3 text-warning">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                    </div>
-                    <p class="text-muted fst-italic">"Excelente atención y precios justos."</p>
-                    <h6 class="fw-bold mt-3 mb-0">- Restaurante El Puerto</h6>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="testimonial-card h-100">
-                    <div class="mb-3 text-warning">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                    </div>
-                    <p class="text-muted fst-italic">"El pollo de campo tiene muy buen sabor."</p>
-                    <h6 class="fw-bold mt-3 mb-0">- Carlos Rodríguez</h6>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="container mb-5 mt-5">
-    <div class="final-cta p-5 text-center shadow-lg">
-        <h2 class="fw-bold mb-3">¿Se te antojó algo de mar?</h2>
-        <p class="lead mb-4 opacity-75">No esperes más. Haz tu pedido hoy.</p>
-        <a href="https://wa.me/573228280256" target="_blank"
-            class="btn btn-light rounded-pill px-5 py-3 fw-bold text-primary shadow-sm hover-scale">
-            <i class="bi bi-whatsapp me-2"></i>Hacer Pedido Ahora
-        </a>
-    </div>
-</section>
 
 {% endblock %}

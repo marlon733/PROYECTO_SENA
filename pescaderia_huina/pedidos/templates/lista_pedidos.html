@@ -7,6 +7,16 @@
 
 <link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .btn-success-action { color: #198754 !important; }
+    .btn-success-action:hover { background-color: #198754 !important; color: #ffffff !important; transform: translateY(-2px); }
+    
+    .btn-danger-action { color: #dc3545 !important; }
+    .btn-danger-action:hover { background-color: #dc3545 !important; color: #ffffff !important; transform: translateY(-2px); }
+</style>
+
 <div class="container">
     <div class="page-header d-flex justify-content-between align-items-center">
         <div>
@@ -72,11 +82,13 @@
                 </span>
                 <div class="d-flex align-items-center gap-2">
                     <span class="text-muted small fw-bold text-uppercase me-2">Exportar:</span>
-                    <a href="?export=pdf{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}" class="btn btn-outline-danger btn-export pdf text-decoration-none">
-                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
-                    </a>
+                    
                     <a href="?export=excel{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}" class="btn btn-outline-success btn-export excel text-decoration-none">
                         <i class="bi bi-file-earmark-excel-fill"></i> Excel
+                    </a>
+
+                    <a href="?export=pdf{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}" class="btn btn-outline-danger btn-export pdf text-decoration-none">
+                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
                     </a>
                 </div>
             </div>
@@ -124,22 +136,35 @@
                             <td class="fw-bold text-center fs-5">
                                 {{ p.cantidad_total_calculada|default:"0"|floatformat:"-1" }}
                             </td>
-                            <td class="fw-bolder text-end total-value money-format pe-3">
+                            
+                            <td class="fw-bolder text-end total-value money-format pe-3" data-value="{{ p.valor_total|stringformat:'f' }}">
                                 {{ p.valor_total }}
                             </td>
+                            
                             <td class="text-center">
-                                {% if p.estado == 'REC' %}
+                                {% if p.estado == 'REC' or p.estado == 'recibido' %}
                                 <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Recibido</span>
-                                {% elif p.estado == 'PEN' %}
+                                {% elif p.estado == 'PEN' or p.estado == 'pendiente' %}
                                 <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 fw-bold"><i class="bi bi-hourglass-split me-1"></i> Pendiente</span>
                                 {% else %}
                                 <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fw-bold"><i class="bi bi-x-circle-fill me-1"></i> Cancelado</span>
                                 {% endif %}
                             </td>
+                            
                             <td class="text-center pe-4 text-nowrap">
+                                {% if p.estado == 'PEN' or p.estado == 'pendiente' %}
+                                    <button class="btn-icon-action btn-success-action btn-cambiar-estado" data-id="{{ p.id }}" data-estado="REC" data-bs-toggle="tooltip" title="Marcar como Recibido">
+                                        <i class="bi bi-check-lg fs-5"></i>
+                                    </button>
+                                    <button class="btn-icon-action btn-danger-action btn-cambiar-estado" data-id="{{ p.id }}" data-estado="CAN" data-bs-toggle="tooltip" title="Cancelar Pedido">
+                                        <i class="bi bi-x-lg fs-5"></i>
+                                    </button>
+                                {% endif %}
+                                
                                 <a href="{% url 'pedidos:editar_pedido' p.id %}" class="btn-icon-action" data-bs-toggle="tooltip" title="Editar Pedido">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </a>
+                                
                                 <a href="{% url 'pedidos:eliminar_pedido' p.id %}" class="btn-icon-action delete" data-bs-toggle="tooltip" title="Eliminar Pedido">
                                     <i class="bi bi-trash fs-5"></i>
                                 </a>
@@ -185,20 +210,101 @@
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
-    });
 
-    const formatter = new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
-
-    document.querySelectorAll('.money-format').forEach(el => {
-        const value = parseFloat(el.innerText);
-        if (!isNaN(value)) {
-            el.innerText = formatter.format(value).replace(/\s+/g, '');
+        // --- LÓGICA FETCH CON SWEETALERT2 ---
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
+
+        const botonesEstado = document.querySelectorAll('.btn-cambiar-estado');
+
+        botonesEstado.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pedidoId = this.getAttribute('data-id');
+                const nuevoEstado = this.getAttribute('data-estado'); 
+                
+                const esRecibido = nuevoEstado === 'REC';
+                const tituloAlert = esRecibido ? '¿Marcar como RECIBIDO?' : '¿CANCELAR pedido?';
+                const textoAlert = esRecibido ? 'Confirma que el proveedor entregó la mercancía.' : 'Esta acción anulará la orden de compra.';
+                const iconoAlert = esRecibido ? 'success' : 'warning';
+                const colorBoton = esRecibido ? '#198754' : '#dc3545';
+                const textoBoton = esRecibido ? 'Sí, recibir pedido' : 'Sí, cancelar pedido';
+
+                Swal.fire({
+                    title: tituloAlert,
+                    text: textoAlert,
+                    icon: iconoAlert,
+                    showCancelButton: true,
+                    confirmButtonColor: colorBoton,
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: textoBoton,
+                    cancelButtonText: 'No, regresar',
+                    reverseButtons: true, 
+                    customClass: { popup: 'rounded-4 shadow' } 
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/pedidos/cambiar-estado/${pedidoId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify({ 'estado': nuevoEstado }) 
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.success) {
+                                Swal.fire({
+                                    title: '¡Actualizado!',
+                                    text: 'El estado se guardó correctamente.',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    window.location.reload(); 
+                                });
+                            } else {
+                                Swal.fire('Error', 'Hubo un problema: ' + (data.error || 'Desconocido'), 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire('Error', 'Hubo un error de conexión con el servidor.', 'error');
+                        });
+                    }
+                });
+            });
+        });
+
+        // --- LÓGICA ACTUALIZADA PARA LEER DATA-VALUE ---
+        const formatter = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        document.querySelectorAll('.money-format').forEach(el => {
+            const rawValue = el.getAttribute('data-value');
+            if (rawValue) {
+                const value = parseFloat(rawValue);
+                if (!isNaN(value)) {
+                    el.innerText = formatter.format(value).replace(/\s+/g, '');
+                }
+            }
+        });
     });
 </script>
 {% endblock %}

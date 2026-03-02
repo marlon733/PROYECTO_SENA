@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Reporte de Ventas</title>
+    <style>
+        @page { size: letter landscape; margin: 1.5cm; }
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 11px; color: #333; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .title { font-size: 20px; font-weight: bold; color: #0a3d62; }
+        .subtitle { font-size: 11px; color: #666; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th {
+            background-color: #0a3d62;
+            color: white;
+            padding: 8px 5px;
+            text-align: left;
+            font-size: 10px;
+        }
+        td { padding: 7px 5px; border-bottom: 1px solid #ddd; font-size: 10px; }
+        tr:nth-child(even) { background-color: #f0f7ff; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .badge-completada { color: #0f5132; font-weight: bold; }
+        .badge-cancelada { color: #721c24; font-weight: bold; }
+        .badge-pendiente { color: #856404; font-weight: bold; }
+        .total-row { font-weight: bold; font-size: 12px; background-color: #e7f1ff; }
+        .footer { margin-top: 20px; font-size: 10px; color: #888; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">REPORTE DE VENTAS</div>
+        <div class="subtitle">Generado el: {{ fecha_reporte|date:"d/m/Y H:i" }}</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Documento</th>
+                <th>Producto</th>
+                <th class="text-center">Presentación</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-right">Precio Unit.</th>
+                <th class="text-right">Total</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center">Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+            <tr>
+                <td>{{ venta.id }}</td>
+                <td>{{ venta.nombre_cliente }}</td>
+                <td>{{ venta.documento_cliente }}</td>
+                <td>{{ venta.producto.nombre|default:"-" }}</td>
+                <td class="text-center">
+                    {% if venta.tipo_presentacion == 'EMPACADO_VACIO' %}Empacado al Vacío
+                    {% elif venta.tipo_presentacion == 'POR_LIBRA' %}Por Libra
+                    {% else %}Bandeja{% endif %}
+                </td>
+                <td class="text-center">
+                    {{ venta.cantidad }}
+                    {% if venta.tipo_presentacion == 'POR_LIBRA' %}lb{% else %}und{% endif %}
+                </td>
+                <td class="text-right">${{ venta.precio_unitario|floatformat:0 }}</td>
+                <td class="text-right">${{ venta.total|floatformat:0 }}</td>
+                <td class="text-center">
+                    {% if venta.estado == 'COMPLETADA' %}<span class="badge-completada">Completada</span>
+                    {% elif venta.estado == 'CANCELADA' %}<span class="badge-cancelada">Cancelada</span>
+                    {% else %}<span class="badge-pendiente">Pendiente</span>{% endif %}
+                </td>
+                <td class="text-center">{{ venta.fecha_venta|date:"d/m/Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="10" class="text-center">No hay ventas registradas.</td></tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="7" class="text-right">TOTAL INGRESOS (Completadas):</td>
+                <td class="text-right">${{ total_ingresos|floatformat:0 }}</td>
+                <td colspan="2"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">Pescadería Huina — Sistema de Gestión</div>
+</body>
+</html>

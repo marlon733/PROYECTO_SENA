@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template import loader
+from django.template.loader import get_template
 from django.http import HttpResponse
 from django.views import generic
 from django.urls import reverse_lazy
@@ -9,162 +9,178 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Sum
 from django.db import transaction
 from django.utils import timezone
+from xhtml2pdf import pisa
 from .models import Venta
 from .forms import VentaForm, CancelarVentaForm, BusquedaVentaForm
 from productos.models import Producto
 
 
+def _aplicar_filtros(queryset, form):
+    if not form.is_valid():
+        return queryset
+    estado = form.cleaned_data.get('estado')
+    buscar = form.cleaned_data.get('buscar')
+    fecha_inicio = form.cleaned_data.get('fecha_inicio')
+    fecha_fin = form.cleaned_data.get('fecha_fin')
+
+    if estado:
+        queryset = queryset.filter(estado=estado)
+    if buscar:
+        queryset = queryset.filter(
+            Q(nombre_cliente__icontains=buscar) |
+            Q(documento_cliente__icontains=buscar) |
+            Q(producto__nombre__icontains=buscar)
+        )
+    if fecha_inicio:
+        queryset = queryset.filter(fecha_venta__date__gte=fecha_inicio)
+    if fecha_fin:
+        queryset = queryset.filter(fecha_venta__date__lte=fecha_fin)
+    return queryset
+
+
 @login_required
 def ventas(request):
-    """Vista para listar todas las ventas"""
     lista_ventas = Venta.objects.all()
-    
-    # Aplicar filtros si existen
     form_busqueda = BusquedaVentaForm(request.GET)
-    if form_busqueda.is_valid():
-        estado = form_busqueda.cleaned_data.get('estado')
-        tipo_presentacion = form_busqueda.cleaned_data.get('tipo_presentacion')
-        buscar = form_busqueda.cleaned_data.get('buscar')
-        
-        if estado:
-            lista_ventas = lista_ventas.filter(estado=estado)
-        if tipo_presentacion:
-            lista_ventas = lista_ventas.filter(tipo_presentacion=tipo_presentacion)
-        if buscar:
-            lista_ventas = lista_ventas.filter(
-                Q(nombre_cliente__icontains=buscar) |
-                Q(documento_cliente__icontains=buscar) |
-                Q(producto__nombre__icontains=buscar)
-            )
+    lista_ventas = _aplicar_filtros(lista_ventas, form_busqueda)
+
+    if request.GET.get('export') == 'pdf':
+        template = get_template('pdf_ventas.html')
+        pdf_ventas = list(lista_ventas)
+        html = template.render({
+            'ventas': pdf_ventas,
+            'fecha_reporte': timezone.now(),
+            'mes_actual': timezone.now().strftime('%B %Y'),
+            'total_ventas': len(pdf_ventas),
+            'ventas_completadas': sum(1 for v in pdf_ventas if v.estado == 'COMPLETADA'),
+            'ventas_pendientes': sum(1 for v in pdf_ventas if v.estado == 'PENDIENTE'),
+            'ventas_canceladas': sum(1 for v in pdf_ventas if v.estado == 'CANCELADA'),
+            'total_ingresos': sum(v.total or 0 for v in pdf_ventas if v.estado == 'COMPLETADA'),
+        })
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="Reporte_Ventas.pdf"'
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        if pisa_status.err:
+            return HttpResponse('Error al generar PDF', status=500)
+        return response
     
-    # Calcular estadísticas
+
+    # Estadísticas globales (no filtradas)
     total_ventas = Venta.objects.filter(estado='COMPLETADA').count()
     total_ingresos = Venta.objects.filter(estado='COMPLETADA').aggregate(
         total=Sum('total')
     )['total'] or 0
-    
-    template = loader.get_template('lista_ventas.html')
+
     context = {
         'lista_ventas': lista_ventas,
         'form_busqueda': form_busqueda,
         'total_ventas': total_ventas,
         'total_ingresos': total_ingresos,
     }
-    return HttpResponse(template.render(context, request))
+    return render(request, 'lista_ventas.html', context)
 
 
 @login_required
 def detalle_venta(request, id_venta):
-    """Vista para ver el detalle de una venta"""
-    venta = Venta.objects.get(id=id_venta)
-    template = loader.get_template('detalle_venta.html')
-    context = {
-        'venta': venta,
-    }
-    return HttpResponse(template.render(context, request))
+    venta = get_object_or_404(Venta, id=id_venta)
 
+    if request.GET.get('export') == 'pdf':
+        template = get_template('pdf_ventas.html')
+        html = template.render({
+            'ventas': [venta],
+            'fecha_reporte': timezone.now(),
+            'mes_actual': timezone.now().strftime('%B %Y'),
+            'total_ventas': 1,
+            'ventas_completadas': 1 if venta.estado == 'COMPLETADA' else 0,
+            'ventas_pendientes': 1 if venta.estado == 'PENDIENTE' else 0,
+            'ventas_canceladas': 1 if venta.estado == 'CANCELADA' else 0,
+            'total_ingresos': venta.total or 0,
+        })
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="Venta_{venta.id}.pdf"'
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        if pisa_status.err:
+            return HttpResponse('Error al generar PDF', status=500)
+        return response
 
-# CREATE - VENTA
+    return render(request, 'detalle_venta.html', {'venta': venta})
+
 
 class VentaCreateView(LoginRequiredMixin, generic.CreateView):
-    """Vista para crear una nueva venta"""
     model = Venta
     form_class = VentaForm
     template_name = 'crear_venta.html'
     success_url = reverse_lazy('ventas:lista_ventas')
-    
+
     def form_valid(self, form):
-        """Procesar la venta y actualizar el stock"""
         with transaction.atomic():
-            # Guardar la venta
-            venta = form.save(commit=False)
-            venta.save()
-            
+            venta = form.save()
             messages.success(
                 self.request,
                 f'La venta #{venta.id} para {venta.nombre_cliente} ha sido registrada exitosamente.'
             )
-            return super().form_valid(form)
-    
+            return redirect(self.success_url)
+
     def form_invalid(self, form):
-        """Mostrar mensaje de error si el formulario es inválido"""
-        messages.error(
-            self.request,
-            'Por favor, corrija los errores en el formulario.'
-        )
+        messages.error(self.request, 'Por favor, corrija los errores en el formulario.')
         return super().form_invalid(form)
 
 
-# UPDATE - VENTA
 class VentaUpdateView(LoginRequiredMixin, generic.UpdateView):
-    """Vista para actualizar una venta existente"""
     model = Venta
     form_class = VentaForm
     template_name = 'editar_venta.html'
     success_url = reverse_lazy('ventas:lista_ventas')
     pk_url_kwarg = 'venta_id'
-    
+
     def dispatch(self, request, *args, **kwargs):
-        """Verificar que la venta no esté cancelada"""
         venta = self.get_object()
         if venta.estado == 'CANCELADA':
             messages.warning(request, 'No se puede editar una venta cancelada')
             return redirect('ventas:detalle_venta', id_venta=venta.id)
         return super().dispatch(request, *args, **kwargs)
-    
+
     def form_valid(self, form):
-        """Procesar la actualización y ajustar el stock"""
         with transaction.atomic():
-            venta_original = Venta.objects.get(pk=self.object.pk)
-            
-            
-            # Guardar la venta actualizada
-            venta = form.save(commit=False)
-            venta.save()
-            
+            venta = form.save()
             messages.success(
                 self.request,
                 f'La venta #{venta.id} ha sido actualizada exitosamente.'
             )
-            return super().form_valid(form)
-    
+            return redirect(self.success_url)
+
     def form_invalid(self, form):
-        """Mostrar mensaje de error si el formulario es inválido"""
-        messages.error(
-            self.request,
-            'Por favor, corrija los errores en el formulario.'
-        )
+        messages.error(self.request, 'Por favor, corrija los errores en el formulario.')
         return super().form_invalid(form)
 
 
-# CANCEL - VENTA (equivalente a DELETE)
 class VentaCancelarView(LoginRequiredMixin, generic.FormView):
-    """Vista para cancelar una venta"""
     template_name = 'cancelar_venta.html'
     form_class = CancelarVentaForm
-    
+
     def dispatch(self, request, *args, **kwargs):
-        """Obtener la venta y verificar si ya está cancelada"""
         self.venta = get_object_or_404(Venta, pk=kwargs['venta_id'])
         if self.venta.estado == 'CANCELADA':
             messages.warning(request, 'Esta venta ya está cancelada')
             return redirect('ventas:detalle_venta', id_venta=self.venta.id)
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['venta'] = self.venta
         return context
-    
+
     def get_success_url(self):
         return reverse_lazy('ventas:detalle_venta', kwargs={'id_venta': self.venta.id})
-    
+
     def form_valid(self, form):
-        """Cancelar la venta y revertir el stock"""
         with transaction.atomic():
-            
+            self.venta.estado = 'CANCELADA'
+            self.venta.motivo_cancelacion = form.cleaned_data['motivo']
+            self.venta.fecha_cancelacion = timezone.now()
+            self.venta.save()
             messages.success(
                 self.request,
                 f'La venta #{self.venta.id} ha sido cancelada exitosamente.'
             )
-            return super().form_valid(form)
+        return super().form_valid(form)
