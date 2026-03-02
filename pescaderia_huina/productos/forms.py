@@ -32,6 +32,14 @@ class ProductoItemForm(forms.ModelForm):
             "estado": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
+        
+    # Opcional: Personalizar las etiquetas si quieres que se vean diferente al modelo
+    def _init_(self, *args, **kwargs):
+        super(ProductoForm, self)._init_(*args, **kwargs)
+        # Esto hace que el dropdown de proveedores tenga una opción vacía al inicio
+        self.fields['proveedor'].empty_label = "Seleccione un Proveedor..."
+
+
 # Mantenemos tu formulario original para la edición individual
 class ProductoForm(forms.ModelForm):
     # ... (Tu código anterior del ProductoForm se queda igual) ...
@@ -55,3 +63,4 @@ class ProductoForm(forms.ModelForm):
         if self.instance.pk and self.instance.proveedor:
             consulta = consulta | Q(id=self.instance.proveedor.id)
         self.fields['proveedor'].queryset = Proveedor.objects.filter(consulta).order_by('nombre_contacto')
+

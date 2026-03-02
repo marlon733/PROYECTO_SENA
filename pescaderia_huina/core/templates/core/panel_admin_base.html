@@ -215,8 +215,11 @@
         .dropdown-menu-notify {
             border: none; border-radius: 16px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 0; overflow: hidden;
+            padding: 0;
             margin-top: 15px;
+            /* limitar altura y permitir desplazamiento si hay muchas alertas */
+            max-height: 300px;
+            overflow-y: auto;
         }
         .dropdown-header-notify {
             background: #f8fafc; padding: 15px 20px;
@@ -274,6 +277,11 @@
                 <li class="nav-item">
                     <a href="{% url 'productos:productos_list'%}" class="nav-link">
                         <i class="bi bi-box-seam-fill"></i> <span>Productos</span>
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a href="{% url 'core:inventario'%}" class="nav-link">
+                        <i class="bi bi-clipboard-check-fill"></i> <span>inventario</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -336,26 +344,39 @@
                 <div class="dropdown">
                     <button class="btn border-0 position-relative p-0" type="button" data-bs-toggle="dropdown">
                         <i class="bi bi-bell fs-4 text-secondary"></i>
+                        {% if low_stock_count > 0 %}
                         <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-white rounded-circle">
                             <span class="visually-hidden">Alertas</span>
+                            <span class="fs-6 text-white">{{ low_stock_count }}</span>
                         </span>
+                        {% endif %}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-notify shadow" style="min-width: 320px;">
                         <li><h6 class="dropdown-header-notify">Notificaciones</h6></li>
-                        <li>
-                            <a class="dropdown-item p-3 border-bottom" href="#">
-                                <div class="d-flex align-items-start">
-                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3">
-                                        <i class="bi bi-cart-fill"></i>
-                                    </div>
-                                    <div>
-                                        <p class="mb-0 small fw-bold text-dark">Nuevo pedido recibido</p>
-                                        <small class="text-muted" style="font-size: 0.7rem;">Hace 5 minutos</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li><a class="dropdown-item text-center small py-2 text-primary fw-bold" href="#">Ver todas</a></li>
+                        {% if low_stock_count > 0 %}
+                            {% for producto in low_stock_products %}
+                                <li>
+                                    <a class="dropdown-item p-3 border-bottom" href="{% url 'productos:producto_detalle' producto.id %}">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-2 me-3">
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                            </div>
+                                            <div>
+                                                <p class="mb-0 small fw-bold text-dark">
+                                                    {{ producto.nombre }} en stock: {{ producto.stock }}
+                                                </p>
+                                                <small class="text-muted" style="font-size: 0.7rem;">
+                                                    Umbral: {{ low_stock_threshold }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="p-3 text-center small text-muted">No hay alertas</li>
+                        {% endif %}
+                        <li><a class="dropdown-item text-center small py-2 text-primary fw-bold" href="{% url 'core:inventario' %}">Ver inventario</a></li>
                     </ul>
                 </div>
                 
@@ -612,7 +633,7 @@
         return confirm(message || '¿Estás seguro de realizar esta acción?');
     };
     </script>
-    
+    <script src="{% static 'js/accesibilidad.js' %}" defer></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
