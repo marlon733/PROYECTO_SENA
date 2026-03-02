@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(9w#_4phd&vc#+$h(-3-+nqkaj#-y3&w_8*3+!=8godz291rs4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'pescaderia_huina.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DESPUÉS (PostgreSQL - Supabase)
+# (PostgreSQL - Supabase)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

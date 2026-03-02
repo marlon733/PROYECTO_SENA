@@ -29,7 +29,6 @@ def dashboard_view(request):
     # Estadísticas generales
     total_usuarios = User.objects.count()
     usuarios_activos = User.objects.filter(is_active=True).count()
-    usuarios_staff = User.objects.filter(is_staff=True).count()
     nuevos_usuarios_mes = User.objects.filter(
         date_joined__month=request.user.date_joined.month
     ).count()
@@ -41,7 +40,6 @@ def dashboard_view(request):
         'titulo': 'Panel de Administración',
         'total_usuarios': total_usuarios,
         'usuarios_activos': usuarios_activos,
-        'usuarios_staff': usuarios_staff,
         'nuevos_usuarios_mes': nuevos_usuarios_mes,
         'ultimos_usuarios': ultimos_usuarios,
     }

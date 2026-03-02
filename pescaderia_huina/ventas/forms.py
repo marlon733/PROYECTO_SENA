@@ -67,7 +67,6 @@ class VentaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Filtrar solo productos activos con stock
         self.fields['producto'].queryset = Producto.objects.filter(
             estado=True, 
         )
@@ -115,28 +114,33 @@ class CancelarVentaForm(forms.Form):
 
 
 class BusquedaVentaForm(forms.Form):
-    """Formulario para buscar y filtrar ventas"""
     estado = forms.ChoiceField(
         required=False,
         label='Estado',
         choices=[('', 'Todos')] + Venta.ESTADOS,
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        })
-    )
-    tipo_presentacion = forms.ChoiceField(
-        required=False,
-        label='Tipo de Presentación',
-        choices=[('', 'Todos los tipos')] + Venta.TIPO_PRESENTACION,
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        })
+        widget=forms.Select(attrs={'class': 'form-select'})
     )
     buscar = forms.CharField(
         required=False,
         label='Buscar',
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Buscar por nombre de cliente o documento...'
+            'placeholder': 'Buscar por nombre, documento o producto...'
+        })
+    )
+    fecha_inicio = forms.DateField(
+        required=False,
+        label='Desde',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
+    fecha_fin = forms.DateField(
+        required=False,
+        label='Hasta',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
         })
     )

@@ -384,11 +384,9 @@
         <div class="content-wrapper">
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb small">
-                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}" class="text-decoration-none text-muted"><i class="bi bi-house me-1"></i>Home</a></li>
                     {% block breadcrumb_items %}{% endblock %}
                 </ol>
                 <div class="d-flex justify-content-between align-items-end mt-2">
-                    <h2 class="fw-800 mb-0 text-dark" style="letter-spacing: -0.5px;">{% block page_title %}Resumen General{% endblock %}</h2>
                     {% block header_actions %}{% endblock %}
                 </div>
             </nav>

@@ -28,14 +28,14 @@ class Venta(models.Model):
     null=True,
     blank=True
 )
-    cantidad = models.PositiveSmallIntegerField(default=1)
+    cantidad = models.DecimalField(max_digits=10, decimal_places=1, default=1)
     
     precio_unitario = models.DecimalField(
     max_digits=10, 
-    decimal_places=2,
+    decimal_places=1,
     null=True,
     blank=True,
-    validators=[MinValueValidator(Decimal('0.01'))]
+    validators=[MinValueValidator(Decimal('0.1'))]
 )
     
     # Detalles de la venta
@@ -43,10 +43,10 @@ class Venta(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
     total = models.DecimalField(
         max_digits=10, 
-        decimal_places=2,
+        decimal_places=1,
         null=True,
         blank=True,
-        validators=[MinValueValidator(Decimal('0.01'))]
+        validators=[MinValueValidator(Decimal('0.1'))]
     )
     observaciones = models.TextField(blank=True, null=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='COMPLETADA')
