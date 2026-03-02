@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.humanize',  # <--- Agregado para formato de números
+    'django.contrib.humanize',
     "core",
     "bootstrap5",
     "usuarios",

@@ -8,10 +8,10 @@
 <link rel="stylesheet" href="{% static 'css/detalle_pedido.css' %}">
 
 <div class="container py-4">
-    <div class="page-header d-flex justify-content-between align-items-center">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="page-title mb-1">
-                <i class="bi bi-receipt me-2 text-primary"></i>Detalle del Pedido <span class="id-badge">#{{ pedido.id }}</span>
+                <i class="bi bi-receipt me-2 text-primary"></i>Detalle del Pedido <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle fs-5 ms-2 rounded-pill">#{{ pedido.id }}</span>
             </h2>
             <p class="text-muted mb-0 fs-6">Resumen completo de la orden de compra.</p>
         </div>
@@ -24,7 +24,7 @@
 
     <div class="row g-4 mb-4">
         <div class="col-md-6">
-            <div class="card card-modern h-100 p-4 border-start border-4 border-primary">
+            <div class="card card-modern h-100 p-4 border-start border-4 border-primary shadow-sm">
                 <div class="d-flex align-items-center mb-3">
                     <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-3 text-primary">
                         <i class="bi bi-building fs-4"></i>
@@ -33,19 +33,23 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-12 mb-3">
-                        <div class="info-label">Razón Social / Contacto</div>
-                        <div class="info-value">{{ pedido.proveedor.nombre_contacto }}</div>
+                        <div class="info-label text-muted small fw-bold text-uppercase mb-1">Razón Social / Contacto</div>
+                        <div class="info-value fs-5 fw-semibold text-dark">{{ pedido.proveedor.nombre_contacto }}</div>
                     </div>
                     <div class="col-12">
-                        <div class="info-label">NIT / Identificación</div>
-                        <div class="info-value"><span class="badge bg-light text-dark border border-secondary-subtle rounded-pill px-3 py-2 fs-6">{{ pedido.proveedor.nit }}</span></div>
+                        <div class="info-label text-muted small fw-bold text-uppercase mb-1">NIT / Identificación</div>
+                        <div class="info-value">
+                            <span class="badge bg-light text-dark border border-secondary-subtle rounded-pill px-3 py-2 fs-6">
+                                {{ pedido.proveedor.nit }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="card card-modern h-100 p-4 border-start border-4 border-info">
+            <div class="card card-modern h-100 p-4 border-start border-4 border-info shadow-sm">
                 <div class="d-flex align-items-center mb-3">
                     <div class="bg-info bg-opacity-10 p-2 rounded-circle me-3 text-info">
                         <i class="bi bi-info-circle fs-4"></i>
@@ -54,18 +58,26 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-6 mb-3">
-                        <div class="info-label">Fecha de Registro</div>
-                        <div class="info-value"><i class="bi bi-calendar-event me-2 text-primary"></i>{{ pedido.fecha|date:"d M Y" }}</div>
+                        <div class="info-label text-muted small fw-bold text-uppercase mb-1">Fecha de Registro</div>
+                        <div class="info-value fs-6 fw-semibold text-dark">
+                            <i class="bi bi-calendar-event me-2 text-primary"></i>{{ pedido.fecha|date:"d M Y" }}
+                        </div>
                     </div>
                     <div class="col-6 mb-3">
-                        <div class="info-label">Estado Actual</div>
+                        <div class="info-label text-muted small fw-bold text-uppercase mb-1">Estado Actual</div>
                         <div class="mt-1">
-                            {% if pedido.estado == 'REC' %}
-                            <span class="status-badge status-recibido"><i class="bi bi-check-circle-fill me-1"></i> Recibido</span>
-                            {% elif pedido.estado == 'PEN' %}
-                            <span class="status-badge status-pendiente"><i class="bi bi-hourglass-split me-1"></i> Pendiente</span>
+                            {% if pedido.estado == 'REC' or pedido.estado == 'recibido' %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-6">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Recibido
+                                </span>
+                            {% elif pedido.estado == 'PEN' or pedido.estado == 'pendiente' %}
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-2 fs-6">
+                                    <i class="bi bi-hourglass-split me-1"></i> Pendiente
+                                </span>
                             {% else %}
-                            <span class="status-badge status-cancelado"><i class="bi bi-x-circle-fill me-1"></i> Cancelado</span>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2 fs-6">
+                                    <i class="bi bi-x-circle-fill me-1"></i> Cancelado
+                                </span>
                             {% endif %}
                         </div>
                     </div>
@@ -74,19 +86,19 @@
         </div>
     </div>
 
-    <div class="card card-modern mb-5">
+    <div class="card card-modern mb-5 shadow-sm">
         <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4">
             <h5 class="fw-bold text-dark mb-0"><i class="bi bi-box-seam me-2 text-primary"></i>Productos Solicitados</h5>
         </div>
         <div class="card-body p-0 overflow-hidden rounded-bottom-4">
             <div class="table-responsive">
                 <table class="table table-professional align-middle mb-0">
-                    <thead>
+                    <thead class="bg-light">
                         <tr>
-                            <th class="ps-4">Producto</th>
-                            <th class="text-center">Cantidad y Presentación</th>
-                            <th class="text-end">Precio Unitario</th>
-                            <th class="text-end pe-4">Subtotal</th>
+                            <th class="ps-4 text-muted text-uppercase small">Producto</th>
+                            <th class="text-center text-muted text-uppercase small">Cantidad y Presentación</th>
+                            <th class="text-end text-muted text-uppercase small">Precio Unitario</th>
+                            <th class="text-end pe-4 text-muted text-uppercase small">Subtotal</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -100,11 +112,14 @@
                                     {{ detalle.cantidad|floatformat:-1 }} {{ detalle.presentacion|default:"Uds." }}
                                 </span>
                             </td>
-                            <td class="text-end text-muted money-format">
+                            <td class="text-end text-muted money-format" data-value="{{ detalle.precio_unitario|stringformat:'f' }}">
                                 {{ detalle.precio_unitario }}
                             </td>
-                            <td class="text-end pe-4 fw-bold text-dark calc-subtotal" data-qty="{{ detalle.cantidad|stringformat:'f' }}" data-price="{{ detalle.precio_unitario|stringformat:'f' }}">
-                                </td>
+                            <td class="text-end pe-4 fw-bold text-dark calc-subtotal" 
+                                data-qty="{{ detalle.cantidad|stringformat:'f' }}" 
+                                data-price="{{ detalle.precio_unitario|stringformat:'f' }}"
+                                data-unit="{{ detalle.presentacion|default:'' }}">
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -118,11 +133,13 @@
                 </table>
             </div>
             
-            <div class="row justify-content-end p-4 m-0 bg-light">
+            <div class="row justify-content-end p-4 m-0 border-top bg-light">
                 <div class="col-md-5 col-lg-4">
-                    <div class="gran-total-box p-3 d-flex flex-column align-items-end justify-content-center shadow-sm">
-                        <span class="gran-total-label">Total del Pedido</span>
-                        <span class="gran-total-value money-format">{{ pedido.valor_total }}</span>
+                    <div class="gran-total-box p-4 rounded bg-white border d-flex flex-column align-items-end justify-content-center shadow-sm">
+                        <span class="gran-total-label text-muted fw-bold text-uppercase mb-1">Total del Pedido</span>
+                        <span class="gran-total-value fs-2 fw-bolder text-primary money-format" data-value="{{ pedido.valor_total|stringformat:'f' }}">
+                            {{ pedido.valor_total }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -145,18 +162,31 @@
             maximumFractionDigits: 0
         });
 
+        // 1. Formateo seguro para precios unitarios y Total General leyendo 'data-value'
         document.querySelectorAll('.money-format').forEach(el => {
-            const value = parseFloat(el.innerText.replace(/,/g, '.')); 
-            if (!isNaN(value)) {
-                el.innerText = formatter.format(value).replace(/\s+/g, '');
+            const rawValue = el.getAttribute('data-value');
+            if (rawValue) {
+                const value = parseFloat(rawValue);
+                if (!isNaN(value)) {
+                    el.innerText = formatter.format(value).replace(/\s+/g, '');
+                }
             }
         });
 
+        // 2. Cálculo de subtotales por fila teniendo en cuenta la presentación (Libras = x0.5)
         document.querySelectorAll('.calc-subtotal').forEach(el => {
             const qty = parseFloat(el.getAttribute('data-qty'));
             const price = parseFloat(el.getAttribute('data-price'));
+            const unit = el.getAttribute('data-unit');
+            
             if (!isNaN(qty) && !isNaN(price)) {
-                const subtotal = qty * price;
+                // Si la presentación es libras, aplicamos el factor de 0.5 para el cálculo visual
+                let factor = 1;
+                if (['libras', 'Lib', 'libra'].includes(unit)) {
+                    factor = 0.5;
+                }
+                
+                const subtotal = qty * price * factor;
                 el.innerText = formatter.format(subtotal).replace(/\s+/g, '');
             } else {
                 el.innerText = "$0";
