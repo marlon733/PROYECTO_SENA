@@ -8,25 +8,28 @@
 <link rel="stylesheet" href="{% static 'css/crear_pedido.css' %}">
 
 <div class="container py-4">
-    <div class="page-header d-flex justify-content-between align-items-center">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="page-title mb-1"><i class="bi bi-cart-plus me-2 text-primary"></i>Registrar Pedido</h2>
+            <h2 class="page-title mb-1">
+                <i class="bi bi-cart-plus me-2 text-primary"></i>Registrar Pedido
+            </h2>
             <p class="text-muted mb-0 fs-6">Completa los detalles del proveedor y añade los productos a la orden.</p>
         </div>
     </div>
 
-    <div class="card card-modern p-4 p-md-5 mb-5">
+    <div class="card card-modern p-4 p-md-5 mb-5 shadow-sm">
         <form method="POST" class="needs-validation" id="pedido-form">
             {% csrf_token %}
             
             <div class="row g-4 mb-5">
-                <div class="col-md-6"> <label class="form-label">Proveedor (NIT)</label>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Proveedor (NIT)</label>
                     <div class="input-group shadow-sm">
                         <span class="input-group-text"><i class="bi bi-building"></i></span>
                         {{ form_pedido.proveedor }}
                     </div>
                 </div>
-                </div>
+            </div>
             
             <div class="d-flex align-items-center mb-4">
                 <h5 class="fw-bold text-dark mb-0 me-3">Detalles de Productos</h5>
@@ -40,19 +43,20 @@
 
             <div id="detalles-container">
                 {% for form in formset %}
-                <div class="detalle-row p-3 mb-3 shadow-sm">
+                <div class="detalle-row p-3 mb-3 shadow-sm bg-light rounded border">
                     {{ form.id }} 
                     <div class="row g-3 align-items-end">
+                        
                         <div class="col-lg-4 col-md-12">
-                            <label class="form-label">Producto</label>
+                            <label class="form-label fw-semibold">Producto</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
+                                <span class="input-group-text bg-white"><i class="bi bi-box-seam"></i></span>
                                 {{ form.producto }}
                             </div>
                         </div>
                         
                         <div class="col-lg-3 col-md-4">
-                            <label class="form-label">Cantidad y Unidad</label>
+                            <label class="form-label fw-semibold">Cantidad y Unidad</label>
                             <div class="input-group">
                                 {{ form.cantidad }}
                                 {{ form.presentacion }}
@@ -60,26 +64,27 @@
                         </div>
                         
                         <div class="col-lg-2 col-md-4">
-                            <label class="form-label">Precio Unitario</label>
+                            <label class="form-label fw-semibold">Precio Unitario</label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text bg-white">$</span>
                                 {{ form.precio_unitario }}
                             </div>
                         </div>
                         
                         <div class="col-lg-2 col-md-3">
-                            <label class="form-label">Subtotal</label>
-                            <input type="text" class="form-control subtotal-field text-end" readonly value="$ 0">
+                            <label class="form-label fw-semibold">Subtotal</label>
+                            <input type="text" class="form-control subtotal-field text-end fw-bold" readonly value="$ 0">
                         </div>
 
-                        <div class="col-lg-1 col-md-1">
+                        <div class="col-lg-1 col-md-1 text-center">
                             {% if formset.can_delete %}
                                 <div class="delete-checkbox-wrapper" title="Marcar para eliminar">
-                                    <i class="bi bi-trash mb-1 fs-5"></i>
+                                    <i class="bi bi-trash text-danger mb-1 fs-5"></i>
                                     {{ form.DELETE }}
                                 </div>
                             {% endif %}
                         </div>
+                        
                     </div>
                     {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
                 </div>
@@ -88,9 +93,9 @@
 
             <div class="row justify-content-end mt-5">
                 <div class="col-md-6 col-lg-5">
-                    <div class="gran-total-box p-4 d-flex flex-column align-items-end justify-content-center">
-                        <span class="gran-total-label">Total General</span>
-                        <span class="gran-total-value" id="gran-total-display">$ 0</span>
+                    <div class="gran-total-box p-4 rounded bg-light border d-flex flex-column align-items-end justify-content-center">
+                        <span class="gran-total-label text-muted fw-bold text-uppercase mb-1">Total General</span>
+                        <span class="gran-total-value fs-2 fw-bolder text-primary" id="gran-total-display">$ 0</span>
                     </div>
                 </div>
             </div>
@@ -111,6 +116,10 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        
+        // ==========================================
+        // LÓGICA DE FORMSET Y TOTALES MATEMÁTICOS
+        // ==========================================
         const container = document.getElementById('detalles-container');
         const addButton = document.getElementById('add-item');
         const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]'); 
@@ -131,6 +140,7 @@
                 const unidadSelect = row.querySelector('select[name$="-presentacion"]');
                 const deleteCheck = row.querySelector('input[name$="-DELETE"]');
 
+                // Si la fila no está marcada para eliminar (o no tiene el checkbox de eliminar aún)
                 if (!deleteCheck || !deleteCheck.checked) {
                     const rawCant = cantInput?.value.replace(',', '.') || "0";
                     const rawPrec = precInput?.value.replace(',', '.') || "0";
@@ -139,7 +149,9 @@
                     const prec = parseFloat(rawPrec) || 0;
                     
                     let factor = 1;
-                    if (unidadSelect && (unidadSelect.value === 'libras' || unidadSelect.value === 'Lib' || unidadSelect.value === 'libra')) factor = 0.5;
+                    if (unidadSelect && ['libras', 'Lib', 'libra'].includes(unidadSelect.value)) {
+                        factor = 0.5;
+                    }
 
                     const subtotal = cant * prec * factor;
                     granTotal += subtotal;
@@ -150,38 +162,49 @@
                 }
             });
 
-            granTotalDisplay.innerText = formatter.format(granTotal).replace(/\s+/g, '');
+            if (granTotalDisplay) {
+                granTotalDisplay.innerText = formatter.format(granTotal).replace(/\s+/g, '');
+            }
         }
 
-        addButton.addEventListener('click', function() {
-            const rows = container.querySelectorAll('.detalle-row');
-            const formCount = rows.length;
-            
-            const newRow = rows[0].cloneNode(true);
-            
-            const regex = new RegExp(`-[0-9]+-`, 'g');
-            newRow.innerHTML = newRow.innerHTML.replace(regex, `-${formCount}-`);
-            
-            newRow.querySelectorAll('input, select').forEach(input => {
-                if (input.type !== 'hidden' && input.type !== 'checkbox') {
-                    input.value = '';
-                }
-                if (input.type === 'checkbox') {
-                    input.checked = false;
-                }
-            });
+        // Evento para clonar la fila del formset
+        if (addButton) {
+            addButton.addEventListener('click', function() {
+                const rows = container.querySelectorAll('.detalle-row');
+                const formCount = rows.length;
+                
+                const newRow = rows[0].cloneNode(true);
+                
+                // Actualizamos los índices para Django (ej. -0- a -1-)
+                const regex = new RegExp(`-[0-9]+-`, 'g');
+                newRow.innerHTML = newRow.innerHTML.replace(regex, `-${formCount}-`);
+                
+                // Limpiamos los valores de la nueva fila clonada
+                newRow.querySelectorAll('input, select').forEach(input => {
+                    if (input.type !== 'hidden' && input.type !== 'checkbox') {
+                        input.value = '';
+                    }
+                    if (input.type === 'checkbox') {
+                        input.checked = false;
+                    }
+                });
 
-            container.appendChild(newRow);
-            totalFormsInput.value = formCount + 1;
-            
-            calcularTotales(); 
-        });
+                container.appendChild(newRow);
+                totalFormsInput.value = formCount + 1;
+                
+                calcularTotales(); 
+            });
+        }
 
         container.addEventListener('input', calcularTotales);
         container.addEventListener('change', calcularTotales);
-
-        calcularTotales();
         
+        // Calculamos al inicio por si ya hay datos cargados
+        calcularTotales();
+
+        // ==========================================
+        // LÓGICA DE AUTO-CAPITALIZACIÓN DE TEXTO
+        // ==========================================
         document.addEventListener('input', function(e) {
             if (e.target.tagName.toLowerCase() === 'input' && e.target.type === 'text' && !e.target.readOnly) {
                 let val = e.target.value;
@@ -193,32 +216,22 @@
                 }
             }
         });
-    });
-</script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Obtenemos el campo del proveedor (ajusta el ID si Django le puso uno diferente)
+        // ==========================================
+        // LÓGICA AJAX: CARGAR PRODUCTOS POR PROVEEDOR
+        // ==========================================
         const proveedorSelect = document.getElementById('id_proveedor');
-        
-        // Obtenemos la URL que definimos en urls.py
         const urlBase = "{% url 'pedidos:ajax_cargar_productos' %}";
 
-        // Función para actualizar un select específico con los nuevos datos
         function actualizarSelectProductos(selectElement, datosProductos) {
-            // Guardamos el valor seleccionado actualmente (si lo hay) para intentar mantenerlo
             const valorActual = selectElement.value;
-            
-            // Limpiamos las opciones actuales
             selectElement.innerHTML = '<option value="">---------</option>';
             
-            // Agregamos las nuevas opciones
             datosProductos.forEach(producto => {
                 const option = document.createElement('option');
                 option.value = producto.id;
                 option.textContent = producto.nombre;
                 
-                // Si el producto que estaba seleccionado sigue en la lista, lo volvemos a seleccionar
                 if (producto.id.toString() === valorActual) {
                     option.selected = true;
                 }
@@ -227,29 +240,21 @@
             });
         }
 
-        // Evento que se dispara cuando cambias de proveedor
         if (proveedorSelect) {
             proveedorSelect.addEventListener('change', function() {
                 const proveedorId = this.value;
                 
-                // Si seleccionó un proveedor válido
                 if (proveedorId) {
-                    // Hacemos la petición al servidor
                     fetch(`${urlBase}?proveedor_id=${proveedorId}`)
                         .then(response => response.json())
                         .then(data => {
-                            // Buscamos todos los select de productos en el formset
-                            // Los campos de formset en Django suelen terminar en "-producto"
                             const selectsProductos = document.querySelectorAll('select[id$="-producto"]');
-                            
-                            // Actualizamos cada select de producto que haya en la pantalla
                             selectsProductos.forEach(select => {
                                 actualizarSelectProductos(select, data);
                             });
                         })
                         .catch(error => console.error('Error cargando productos:', error));
                 } else {
-                    // Si seleccionó "---------", vaciamos los selects de productos
                     const selectsProductos = document.querySelectorAll('select[id$="-producto"]');
                     selectsProductos.forEach(select => {
                         select.innerHTML = '<option value="">---------</option>';

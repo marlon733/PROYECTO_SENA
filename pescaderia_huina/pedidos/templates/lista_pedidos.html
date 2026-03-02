@@ -82,6 +82,11 @@
                 </span>
                 <div class="d-flex align-items-center gap-2">
                     <span class="text-muted small fw-bold text-uppercase me-2">Exportar:</span>
+                    
+                    <a href="?export=excel{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}" class="btn btn-outline-success btn-export excel text-decoration-none">
+                        <i class="bi bi-file-earmark-excel-fill"></i> Excel
+                    </a>
+
                     <a href="?export=pdf{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}" class="btn btn-outline-danger btn-export pdf text-decoration-none">
                         <i class="bi bi-file-earmark-pdf-fill"></i> PDF
                     </a>
@@ -159,6 +164,7 @@
                                 <a href="{% url 'pedidos:editar_pedido' p.id %}" class="btn-icon-action" data-bs-toggle="tooltip" title="Editar Pedido">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </a>
+                                
                                 <a href="{% url 'pedidos:eliminar_pedido' p.id %}" class="btn-icon-action delete" data-bs-toggle="tooltip" title="Eliminar Pedido">
                                     <i class="bi bi-trash fs-5"></i>
                                 </a>
@@ -291,7 +297,6 @@
         });
 
         document.querySelectorAll('.money-format').forEach(el => {
-            // Lee el valor crudo del atributo data-value que agregaste
             const rawValue = el.getAttribute('data-value');
             if (rawValue) {
                 const value = parseFloat(rawValue);
@@ -300,52 +305,6 @@
                 }
             }
         });
-    });
-
-    // Lógica para cargar productos dinámicamente según el proveedor
-    document.addEventListener("DOMContentLoaded", function() {
-        const proveedorSelect = document.getElementById('id_proveedor');
-        const urlBase = "{% url 'pedidos:ajax_cargar_productos' %}";
-
-        function actualizarSelectProductos(selectElement, datosProductos) {
-            const valorActual = selectElement.value;
-            selectElement.innerHTML = '<option value="">---------</option>';
-            
-            datosProductos.forEach(producto => {
-                const option = document.createElement('option');
-                option.value = producto.id;
-                option.textContent = producto.nombre;
-                
-                if (producto.id.toString() === valorActual) {
-                    option.selected = true;
-                }
-                
-                selectElement.appendChild(option);
-            });
-        }
-
-        if (proveedorSelect) {
-            proveedorSelect.addEventListener('change', function() {
-                const proveedorId = this.value;
-                
-                if (proveedorId) {
-                    fetch(`${urlBase}?proveedor_id=${proveedorId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const selectsProductos = document.querySelectorAll('select[id$="-producto"]');
-                            selectsProductos.forEach(select => {
-                                actualizarSelectProductos(select, data);
-                            });
-                        })
-                        .catch(error => console.error('Error cargando productos:', error));
-                } else {
-                    const selectsProductos = document.querySelectorAll('select[id$="-producto"]');
-                    selectsProductos.forEach(select => {
-                        select.innerHTML = '<option value="">---------</option>';
-                    });
-                }
-            });
-        }
     });
 </script>
 {% endblock %}
