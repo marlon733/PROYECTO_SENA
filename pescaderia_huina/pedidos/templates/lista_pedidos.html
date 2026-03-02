@@ -289,6 +289,8 @@
     const formatter = new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP',
+
+        
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
     });
@@ -297,6 +299,70 @@
         const value = parseFloat(el.innerText);
         if (!isNaN(value)) {
             el.innerText = formatter.format(value).replace(/\s+/g, '');
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Obtenemos el campo del proveedor (ajusta el ID si Django le puso uno diferente)
+        const proveedorSelect = document.getElementById('id_proveedor');
+        
+        // Obtenemos la URL que definimos en urls.py
+        const urlBase = "{% url 'pedidos:ajax_cargar_productos' %}";
+
+        // Función para actualizar un select específico con los nuevos datos
+        function actualizarSelectProductos(selectElement, datosProductos) {
+            // Guardamos el valor seleccionado actualmente (si lo hay) para intentar mantenerlo
+            const valorActual = selectElement.value;
+            
+            // Limpiamos las opciones actuales
+            selectElement.innerHTML = '<option value="">---------</option>';
+            
+            // Agregamos las nuevas opciones
+            datosProductos.forEach(producto => {
+                const option = document.createElement('option');
+                option.value = producto.id;
+                option.textContent = producto.nombre;
+                
+                // Si el producto que estaba seleccionado sigue en la lista, lo volvemos a seleccionar
+                if (producto.id.toString() === valorActual) {
+                    option.selected = true;
+                }
+                
+                selectElement.appendChild(option);
+            });
+        }
+
+        // Evento que se dispara cuando cambias de proveedor
+        if (proveedorSelect) {
+            proveedorSelect.addEventListener('change', function() {
+                const proveedorId = this.value;
+                
+                // Si seleccionó un proveedor válido
+                if (proveedorId) {
+                    // Hacemos la petición al servidor
+                    fetch(`${urlBase}?proveedor_id=${proveedorId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Buscamos todos los select de productos en el formset
+                            // Los campos de formset en Django suelen terminar en "-producto"
+                            const selectsProductos = document.querySelectorAll('select[id$="-producto"]');
+                            
+                            // Actualizamos cada select de producto que haya en la pantalla
+                            selectsProductos.forEach(select => {
+                                actualizarSelectProductos(select, data);
+                            });
+                        })
+                        .catch(error => console.error('Error cargando productos:', error));
+                } else {
+                    // Si seleccionó "---------", vaciamos los selects de productos
+                    const selectsProductos = document.querySelectorAll('select[id$="-producto"]');
+                    selectsProductos.forEach(select => {
+                        select.innerHTML = '<option value="">---------</option>';
+                    });
+                }
+            });
         }
     });
 </script>

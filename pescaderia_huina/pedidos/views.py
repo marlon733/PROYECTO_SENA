@@ -233,6 +233,24 @@ def detalle_pedido(request, id):
     return render(request, 'detalle_pedido.html', {
         'pedido': pedido
     })
+    
+@login_required
+def cargar_productos_proveedor(request):
+    proveedor_id = request.GET.get('proveedor_id')
+    
+    # Verificamos que sí llegó un ID
+    if proveedor_id:
+        # ASUNCIÓN: Tu modelo Producto tiene un campo llamado 'proveedor'
+        # Si la relación es ManyToMany, sería algo como filter(proveedores__id=proveedor_id)
+        productos = Producto.objects.filter(proveedor_id=proveedor_id).order_by('nombre')
+        
+        # Convertimos los productos a una lista de diccionarios
+        # list() es necesario para serializar el QuerySet a JSON
+        data = list(productos.values('id', 'nombre'))
+    else:
+        data = []
+        
+    return JsonResponse(data, safe=False)
 
 
 # ==========================================
@@ -263,3 +281,5 @@ def cambiar_estado_pedido(request, pedido_id):
             
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+    
+    
