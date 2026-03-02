@@ -1,0 +1,53 @@
+
+        @page {
+            size: letter portrait;
+            margin: 1.5cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #333333;
+        }
+
+        /* Tipografía y alineación */
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-bold { font-weight: bold; }
+        .text-blue { color: #0f3976; }
+
+        /* Cajas de Información (Solución al borde cortado) */
+        .info-box {
+            background-color: #f7f9fc;
+            border: 1px solid #d1d5db;
+            padding: 10px;
+        }
+        
+        /* Tablas base */
+        .pdf-table { width: 100%; }
+        
+        /* Tabla de Productos */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .items-table th {
+            background-color: #0f3976;
+            color: #ffffff;
+            padding: 8px 5px;
+            text-align: left;
+            font-size: 11px;
+        }
+        /* Solución a las líneas divisorias */
+        .items-table td {
+            padding: 10px 5px;
+            border-bottom: 1px solid #cccccc; 
+        }
+        
+        /* Fila del Total */
+        .items-table .total-row td {
+            border-bottom: none; /* Quitamos la línea del total */
+            padding-top: 15px;
+            font-size: 13px;
+            font-weight: bold;
+        }
