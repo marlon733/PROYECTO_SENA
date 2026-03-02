@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "proveedores",
     "ventas",
     "pedidos",
-    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
