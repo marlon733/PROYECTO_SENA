@@ -356,7 +356,7 @@
                         {% if low_stock_count > 0 %}
                             {% for producto in low_stock_products %}
                                 <li>
-                                    <a class="dropdown-item p-3 border-bottom" href="{% url 'productos:producto_detalle' producto.id %}">
+                                    <a class="dropdown-item p-3 border-bottom" >
                                         <div class="d-flex align-items-start">
                                             <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-2 me-3">
                                                 <i class="bi bi-exclamation-triangle-fill"></i>
