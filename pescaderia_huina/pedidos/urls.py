@@ -10,5 +10,5 @@ urlpatterns = [
     path('eliminar/<int:id>/', views.eliminar_pedido, name='eliminar_pedido'),
     path('detalle/<int:id>/', views.detalle_pedido, name='detalle_pedido'),
     path('cambiar-estado/<int:pedido_id>/', views.cambiar_estado_pedido, name='cambiar_estado_pedido'),
-    
+    path('ajax/cargar-productos/', views.cargar_productos_proveedor, name='ajax_cargar_productos'),
 ]

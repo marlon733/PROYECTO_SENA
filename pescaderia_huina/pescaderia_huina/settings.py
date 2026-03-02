@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.humanize',  # <--- Agregado para formato de números
+    'django.contrib.humanize',
     "core",
     "bootstrap5",
     "usuarios",
@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'pescaderia_huina.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DESPUÉS (PostgreSQL - Supabase)
+# (PostgreSQL - Supabase)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

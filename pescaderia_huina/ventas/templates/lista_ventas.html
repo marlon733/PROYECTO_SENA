@@ -89,6 +89,19 @@
             box-shadow: 0 6px 12px rgba(39, 174, 96, 0.3);
             color: white;
         }
+
+        .btn-export {
+            border-radius: 0.5rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+           font-size: 0.9rem;
+        }
+        .btn-export.pdf { color: #dc3545; border-color: #dc3545; }
+        .btn-export.pdf:hover { background-color: #dc3545; color: white; }
+
     </style>
 </head>
 <body class="bg-light">
@@ -109,7 +122,7 @@
             <div class="card stats-card shadow-sm">
                 <div class="card-body text-center py-4">
                     <h6 class="text-muted mb-3">Ingresos Totales</h6>
-                    <h2 class="mb-0 fw-bold text-success">${{ total_ingresos|floatformat:2 }}</h2>
+                    <h2 class="mb-0 fw-bold text-success">{{ total_ingresos|floatformat:2 }}</h2>
                 </div>
             </div>
         </div>
@@ -118,32 +131,61 @@
     <!-- Filtros de búsqueda -->
     <div class="card shadow mb-3" style="border: none; border-radius: 10px;">
         <div class="card-header filter-card text-white">
-            <h5 class="mb-0">Filtros de Búsqueda</h5>
+             <h5 class="mb-0">Filtros de Búsqueda</h5>
         </div>
         <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Estado</label>
-                    {{ form_busqueda.estado }}
-                </div>
-                <div class="col-md-5">
-                    <label class="form-label fw-semibold">Buscar</label>
-                    {{ form_busqueda.buscar }}
-                </div>
-                <div class="col-md-3 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-custom-primary flex-fill">Buscar</button>
-                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
-                </div>
-            </form>
+             <form method="get" class="row g-3">
+                  <div class="col-md-4">
+                       <label class="form-label fw-semibold">Estado</label>
+                       {{ form_busqueda.estado }}
+                  </div>
+                  <div class="col-md-5">
+                       <label class="form-label fw-semibold">Buscar</label>
+                       {{ form_busqueda.buscar }}
+                  </div>
+                  <div class="col-md-3 d-flex align-items-end gap-2">
+                       <button type="submit" class="btn btn-custom-primary flex-fill">Buscar</button>
+                       <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
+                  </div>
+                  <div class="col-md-4">
+                      <label class="form-label fw-semibold">Desde</label>
+                       {{ form_busqueda.fecha_inicio }}
+                  </div>
+                  <div class="col-md-4">
+                       <label class="form-label fw-semibold">Hasta</label>
+                       {{ form_busqueda.fecha_fin }}
+                  </div>
+               </form>
+
+               <hr class="my-3">
+
+               <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted small">
+                          {% if request.GET.estado or request.GET.buscar or request.GET.fecha_inicio or request.GET.fecha_fin %}
+                             <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1">
+                                 Mostrando resultados filtrados
+                             </span>
+                       {% else %}
+                            Mostrando todos los registros
+                       {% endif %}
+            </span>
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small fw-bold text-uppercase me-2">Exportar:</span>
+                <a href="?export=pdf{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}"
+                   class="btn btn-outline-danger btn-export pdf text-decoration-none">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                </a>
+            </div>
         </div>
     </div>
-
+</div>
+    
     <!-- Botón Agregar Nueva Venta -->
     <div class="text-end mb-4">
         <a href="{% url 'ventas:crear_venta' %}" class="btn btn-add-sale">
-             Agregar Nueva Venta
+        Agregar Nueva Venta
         </a>
-    </div>
+   </div>
 
     <!-- Mensajes -->
     {% if messages %}
@@ -167,7 +209,7 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-header text-white">
                         <tr>
-                            <th class="text-center" style="width: 60px;">#</th>
+                            <th class="text-center" style="width: 60px;"></th>
                             <th style="min-width: 150px;">Cliente</th>
                             <th style="min-width: 120px;">Documento</th>
                             <th style="min-width: 150px;">Producto</th>
@@ -263,10 +305,10 @@
 
         </div>
     </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </body>
 </html>
 {% endblock %}

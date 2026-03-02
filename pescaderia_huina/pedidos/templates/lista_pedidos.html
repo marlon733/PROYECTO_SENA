@@ -82,11 +82,13 @@
                 </span>
                 <div class="d-flex align-items-center gap-2">
                     <span class="text-muted small fw-bold text-uppercase me-2">Exportar:</span>
-                    <a href="?export=pdf{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}" class="btn btn-outline-danger btn-export pdf text-decoration-none">
-                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
-                    </a>
+                    
                     <a href="?export=excel{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}" class="btn btn-outline-success btn-export excel text-decoration-none">
                         <i class="bi bi-file-earmark-excel-fill"></i> Excel
+                    </a>
+
+                    <a href="?export=pdf{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}" class="btn btn-outline-danger btn-export pdf text-decoration-none">
+                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
                     </a>
                 </div>
             </div>
@@ -134,9 +136,11 @@
                             <td class="fw-bold text-center fs-5">
                                 {{ p.cantidad_total_calculada|default:"0"|floatformat:"-1" }}
                             </td>
-                            <td class="fw-bolder text-end total-value money-format pe-3">
+                            
+                            <td class="fw-bolder text-end total-value money-format pe-3" data-value="{{ p.valor_total|stringformat:'f' }}">
                                 {{ p.valor_total }}
                             </td>
+                            
                             <td class="text-center">
                                 {% if p.estado == 'REC' or p.estado == 'recibido' %}
                                 <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Recibido</span>
@@ -160,6 +164,7 @@
                                 <a href="{% url 'pedidos:editar_pedido' p.id %}" class="btn-icon-action" data-bs-toggle="tooltip" title="Editar Pedido">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </a>
+                                
                                 <a href="{% url 'pedidos:eliminar_pedido' p.id %}" class="btn-icon-action delete" data-bs-toggle="tooltip" title="Eliminar Pedido">
                                     <i class="bi bi-trash fs-5"></i>
                                 </a>
@@ -228,9 +233,8 @@
             boton.addEventListener('click', function(e) {
                 e.preventDefault();
                 const pedidoId = this.getAttribute('data-id');
-                const nuevoEstado = this.getAttribute('data-estado'); // Ahora esto recibe 'REC' o 'CAN'
+                const nuevoEstado = this.getAttribute('data-estado'); 
                 
-                // AQUÍ ADAPTAMOS LA CONDICIÓN PARA QUE LEA 'REC'
                 const esRecibido = nuevoEstado === 'REC';
                 const tituloAlert = esRecibido ? '¿Marcar como RECIBIDO?' : '¿CANCELAR pedido?';
                 const textoAlert = esRecibido ? 'Confirma que el proveedor entregó la mercancía.' : 'Esta acción anulará la orden de compra.';
@@ -238,7 +242,6 @@
                 const colorBoton = esRecibido ? '#198754' : '#dc3545';
                 const textoBoton = esRecibido ? 'Sí, recibir pedido' : 'Sí, cancelar pedido';
 
-                // Usamos SweetAlert en lugar del confirm() nativo
                 Swal.fire({
                     title: tituloAlert,
                     text: textoAlert,
@@ -248,24 +251,21 @@
                     cancelButtonColor: '#6c757d',
                     confirmButtonText: textoBoton,
                     cancelButtonText: 'No, regresar',
-                    reverseButtons: true, // Pone el botón de cancelar a la izquierda
-                    customClass: { popup: 'rounded-4 shadow' } // Bordes redondeados modernos
+                    reverseButtons: true, 
+                    customClass: { popup: 'rounded-4 shadow' } 
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        
-                        // Si el usuario confirma, hacemos la petición a Django
                         fetch(`/pedidos/cambiar-estado/${pedidoId}/`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRFToken': getCookie('csrftoken')
                             },
-                            body: JSON.stringify({ 'estado': nuevoEstado }) // Enviará 'REC' o 'CAN'
+                            body: JSON.stringify({ 'estado': nuevoEstado }) 
                         })
                         .then(response => response.json())
                         .then(data => {
                             if(data.success) {
-                                // Alerta bonita de éxito antes de recargar
                                 Swal.fire({
                                     title: '¡Actualizado!',
                                     text: 'El estado se guardó correctamente.',
@@ -287,20 +287,24 @@
                 });
             });
         });
-    });
 
-    const formatter = new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
+        // --- LÓGICA ACTUALIZADA PARA LEER DATA-VALUE ---
+        const formatter = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
 
-    document.querySelectorAll('.money-format').forEach(el => {
-        const value = parseFloat(el.innerText);
-        if (!isNaN(value)) {
-            el.innerText = formatter.format(value).replace(/\s+/g, '');
-        }
+        document.querySelectorAll('.money-format').forEach(el => {
+            const rawValue = el.getAttribute('data-value');
+            if (rawValue) {
+                const value = parseFloat(rawValue);
+                if (!isNaN(value)) {
+                    el.innerText = formatter.format(value).replace(/\s+/g, '');
+                }
+            }
+        });
     });
 </script>
 {% endblock %}
