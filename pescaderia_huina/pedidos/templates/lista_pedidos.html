@@ -131,9 +131,11 @@
                             <td class="fw-bold text-center fs-5">
                                 {{ p.cantidad_total_calculada|default:"0"|floatformat:"-1" }}
                             </td>
-                            <td class="fw-bolder text-end total-value money-format pe-3">
+                            
+                            <td class="fw-bolder text-end total-value money-format pe-3" data-value="{{ p.valor_total|stringformat:'f' }}">
                                 {{ p.valor_total }}
                             </td>
+                            
                             <td class="text-center">
                                 {% if p.estado == 'REC' or p.estado == 'recibido' %}
                                 <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Recibido</span>
@@ -225,9 +227,8 @@
             boton.addEventListener('click', function(e) {
                 e.preventDefault();
                 const pedidoId = this.getAttribute('data-id');
-                const nuevoEstado = this.getAttribute('data-estado'); // Ahora esto recibe 'REC' o 'CAN'
+                const nuevoEstado = this.getAttribute('data-estado'); 
                 
-                // AQUÍ ADAPTAMOS LA CONDICIÓN PARA QUE LEA 'REC'
                 const esRecibido = nuevoEstado === 'REC';
                 const tituloAlert = esRecibido ? '¿Marcar como RECIBIDO?' : '¿CANCELAR pedido?';
                 const textoAlert = esRecibido ? 'Confirma que el proveedor entregó la mercancía.' : 'Esta acción anulará la orden de compra.';
@@ -235,7 +236,6 @@
                 const colorBoton = esRecibido ? '#198754' : '#dc3545';
                 const textoBoton = esRecibido ? 'Sí, recibir pedido' : 'Sí, cancelar pedido';
 
-                // Usamos SweetAlert en lugar del confirm() nativo
                 Swal.fire({
                     title: tituloAlert,
                     text: textoAlert,
@@ -245,24 +245,21 @@
                     cancelButtonColor: '#6c757d',
                     confirmButtonText: textoBoton,
                     cancelButtonText: 'No, regresar',
-                    reverseButtons: true, // Pone el botón de cancelar a la izquierda
-                    customClass: { popup: 'rounded-4 shadow' } // Bordes redondeados modernos
+                    reverseButtons: true, 
+                    customClass: { popup: 'rounded-4 shadow' } 
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        
-                        // Si el usuario confirma, hacemos la petición a Django
                         fetch(`/pedidos/cambiar-estado/${pedidoId}/`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRFToken': getCookie('csrftoken')
                             },
-                            body: JSON.stringify({ 'estado': nuevoEstado }) // Enviará 'REC' o 'CAN'
+                            body: JSON.stringify({ 'estado': nuevoEstado }) 
                         })
                         .then(response => response.json())
                         .then(data => {
                             if(data.success) {
-                                // Alerta bonita de éxito antes de recargar
                                 Swal.fire({
                                     title: '¡Actualizado!',
                                     text: 'El estado se guardó correctamente.',
@@ -284,48 +281,41 @@
                 });
             });
         });
+
+        // --- LÓGICA ACTUALIZADA PARA LEER DATA-VALUE ---
+        const formatter = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        document.querySelectorAll('.money-format').forEach(el => {
+            // Lee el valor crudo del atributo data-value que agregaste
+            const rawValue = el.getAttribute('data-value');
+            if (rawValue) {
+                const value = parseFloat(rawValue);
+                if (!isNaN(value)) {
+                    el.innerText = formatter.format(value).replace(/\s+/g, '');
+                }
+            }
+        });
     });
 
-    const formatter = new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-
-        
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
-
-    document.querySelectorAll('.money-format').forEach(el => {
-        const value = parseFloat(el.innerText);
-        if (!isNaN(value)) {
-            el.innerText = formatter.format(value).replace(/\s+/g, '');
-        }
-    });
-</script>
-
-<script>
+    // Lógica para cargar productos dinámicamente según el proveedor
     document.addEventListener("DOMContentLoaded", function() {
-        // Obtenemos el campo del proveedor (ajusta el ID si Django le puso uno diferente)
         const proveedorSelect = document.getElementById('id_proveedor');
-        
-        // Obtenemos la URL que definimos en urls.py
         const urlBase = "{% url 'pedidos:ajax_cargar_productos' %}";
 
-        // Función para actualizar un select específico con los nuevos datos
         function actualizarSelectProductos(selectElement, datosProductos) {
-            // Guardamos el valor seleccionado actualmente (si lo hay) para intentar mantenerlo
             const valorActual = selectElement.value;
-            
-            // Limpiamos las opciones actuales
             selectElement.innerHTML = '<option value="">---------</option>';
             
-            // Agregamos las nuevas opciones
             datosProductos.forEach(producto => {
                 const option = document.createElement('option');
                 option.value = producto.id;
                 option.textContent = producto.nombre;
                 
-                // Si el producto que estaba seleccionado sigue en la lista, lo volvemos a seleccionar
                 if (producto.id.toString() === valorActual) {
                     option.selected = true;
                 }
@@ -334,29 +324,21 @@
             });
         }
 
-        // Evento que se dispara cuando cambias de proveedor
         if (proveedorSelect) {
             proveedorSelect.addEventListener('change', function() {
                 const proveedorId = this.value;
                 
-                // Si seleccionó un proveedor válido
                 if (proveedorId) {
-                    // Hacemos la petición al servidor
                     fetch(`${urlBase}?proveedor_id=${proveedorId}`)
                         .then(response => response.json())
                         .then(data => {
-                            // Buscamos todos los select de productos en el formset
-                            // Los campos de formset en Django suelen terminar en "-producto"
                             const selectsProductos = document.querySelectorAll('select[id$="-producto"]');
-                            
-                            // Actualizamos cada select de producto que haya en la pantalla
                             selectsProductos.forEach(select => {
                                 actualizarSelectProductos(select, data);
                             });
                         })
                         .catch(error => console.error('Error cargando productos:', error));
                 } else {
-                    // Si seleccionó "---------", vaciamos los selects de productos
                     const selectsProductos = document.querySelectorAll('select[id$="-producto"]');
                     selectsProductos.forEach(select => {
                         select.innerHTML = '<option value="">---------</option>';

@@ -107,7 +107,6 @@ def lista_pedidos(request):
 
     # 4. Si no es PDF, renderiza la vista web normal
     return render(request, 'lista_pedidos.html', {'pedidos': pedidos})
-
 @login_required
 def crear_pedido(request):
     if request.method == 'POST':
