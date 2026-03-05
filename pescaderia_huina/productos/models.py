@@ -46,12 +46,7 @@ class Producto(models.Model):
     )
     
     # Stock inicia en 0. Se llenará luego con el módulo de Compras/Pedidos.
-    stock = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2, 
-        default=0, 
-        verbose_name="Stock Actual"
-    )
+
 
     estado = models.BooleanField(default=True, verbose_name="Activo")
 
