@@ -21,7 +21,7 @@ class Pedido(models.Model):
     # CORRECCIÓN: Cambiamos max_length a 3 y el default a 'PEN'
     estado = models.CharField(max_length=3, choices=OPCIONES_ESTADO, default='PEN')
     
-    valor_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    valor_total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     def __str__(self):
         return f"Pedido #{self.id} - {self.proveedor.nombre_contacto}"

@@ -20,8 +20,8 @@ class CustomUserAdmin(UserAdmin):
     Personalización del admin de usuarios
     """
     inlines = (PerfilUsuarioInline,)
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined')
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'date_joined')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'date_joined')
+    list_filter = ( 'is_superuser', 'is_active', 'date_joined')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('-date_joined',)
 
