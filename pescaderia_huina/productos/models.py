@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum, Q
 # Asegúrate de que la importación apunte correctamente a tu app de proveedores
 from proveedores.models import Proveedor 
 
@@ -53,6 +54,20 @@ class Producto(models.Model):
     class Meta:
         verbose_name = "Producto"
         verbose_name_plural = "Productos"
+
+    @property
+    def cantidad_total_calculado(self):
+        """
+        Calcula la cantidad total de este producto en todos los pedidos pendientes.
+        """
+        from pedidos.models import DetallePedido, Pedido
+        
+        total = DetallePedido.objects.filter(
+            producto=self,
+            pedido__estado='PEN'  # Solo pedidos pendientes
+        ).aggregate(total=Sum('cantidad'))['total']
+        
+        return total or 0
 
     def __str__(self):
         # Validación de seguridad: si borraron el proveedor, muestra texto alternativo
