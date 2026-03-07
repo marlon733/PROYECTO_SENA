@@ -1,72 +1,52 @@
 {% extends 'core/panel_admin_base.html' %}
 {% load static %}
 
-{% block title %}Inventario de Productos | Pescadería Huina{% endblock %}
+{% block title %}Inventario de Pedidos | Pescadería Huina{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Estilos consistentes con página de ventas */
-    .filter-card {
-        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-        border: none;
-        border-radius: 10px 10px 0 0 !important;
-    }
-    
-    .table-header {
-        background: linear-gradient(135deg, var(--ocean-dark) 0%, var(--ocean-primary) 100%) !important;
-        color: white !important;
-    }
-    
-    .table-header th {
-        color: white !important;
-        font-weight: 600;
-        border: none;
-    }
-    
-    .btn-custom-primary {
-        background: linear-gradient(135deg, var(--ocean-primary) 0%, var(--accent-blue) 100%);
-        border: none;
-        color: white;
-        transition: all 0.3s;
-    }
-    
-    .btn-custom-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(30, 90, 125, 0.4);
-        color: white !important;
-    }
-    
-    .card-header-custom {
-        background: linear-gradient(135deg, var(--ocean-dark) 0%, var(--ocean-primary) 100%);
-        border: none;
-        border-radius: 10px 10px 0 0 !important;
-        color: white;
-    }
-    
-    .section-card {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-    
-    .table-responsive {
-        border-radius: 0 0 10px 10px;
-    }
-    
-    .section-title {
-        margin-bottom: 1rem;
-        font-weight: 700;
-        color: #334155;
-    }
-    
-    .count-badge {
-        background: linear-gradient(135deg, var(--ocean-primary) 0%, var(--ocean-cyan) 100%);
-        color: white;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
+.filter-card {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    border: none;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.table-header {
+    background: linear-gradient(135deg, var(--ocean-dark) 0%, var(--ocean-primary) 100%) !important;
+    color: white !important;
+}
+.table-header th {
+    color: white !important;
+    font-weight: 600;
+    border: none;
+}
+
+.section-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.table-responsive {
+    border-radius: 0 0 10px 10px;
+}
+
+.section-title {
+    margin-bottom: 1rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.count-badge {
+    background: linear-gradient(135deg, var(--ocean-primary) 0%, var(--ocean-cyan) 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+
 </style>
 {% endblock %}
 
@@ -74,14 +54,14 @@
 <div class="container-fluid py-4" style="background-color: #f8fafc;">
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="fw-800" style="letter-spacing: -1px;">Inventario de Productos</h1>
+            <h1 class="fw-800" style="letter-spacing: -1px;">Inventario de Pedidos</h1>
         </div>
     </div>
 
     <!-- Filtros de búsqueda -->
     <div class="card shadow mb-3" style="border: none; border-radius: 10px;">
         <div class="card-header filter-card text-white">
-            <h5 class="mb-0">Filtros de Búsqueda</h5>
+            <h5 class="mb-0">Consultar Inventario</h5>
         </div>
         <div class="card-body">
             <div class="row g-3">
@@ -100,12 +80,18 @@
                 </div>
                 <div class="col-md-3 d-flex align-items-end gap-2">
                     <button type="button" id="btnClear" class="btn btn-outline-secondary flex-fill">Limpiar</button>
+                    <a href="?export=pdf" class="btn btn-danger" title="Descargar en PDF">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </a>
+                    <a href="?export=excel" class="btn btn-success" title="Descargar en Excel">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    
+    <!-- Pescados -->
     <div class="row mb-4" data-category="PE">
         <div class="col-12">
             <h3 class="section-title">
@@ -119,7 +105,8 @@
                             <tr>
                                 <th style="min-width: 200px;">Nombre</th>
                                 <th style="min-width: 150px;">Proveedor</th>
-                                <th class="text-end" style="width: 120px;">Stock</th>
+                                <th style="min-width: 150px;">Presentación</th>
+                                <th class="text-end" style="width: 120px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,19 +114,20 @@
                             <tr data-product-name="{{ p.nombre|lower }}">
                                 <td><strong>{{ p.nombre }}</strong></td>
                                 <td>{{ p.proveedor }}</td>
+                                <td>{{ p.get_tipo_presentacion_display }}</td>
                                 <td class="text-end">
-                                    {% if p.stock < 10 %}
-                                        <span class="badge bg-danger">{{ p.stock }}</span>
-                                    {% elif p.stock < 15 %}
-                                        <span class="badge bg-warning text-dark">{{ p.stock }}</span>
+                                    {% if p.stock_disponible <= 0 %}
+                                        <span class="badge bg-danger">{{ p.stock_disponible }}</span>
+                                    {% elif p.stock_disponible <= 10 %}
+                                        <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
                                     {% else %}
-                                        <span class="badge bg-success">{{ p.stock }}</span>
+                                        <span class="badge bg-success">{{ p.stock_disponible }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr class="no-results-row">
-                                <td colspan="3" class="text-center text-muted py-4">No hay productos de tipo pescado.</td>
+                                <td colspan="4" class="text-center text-muted py-4">No hay productos de tipo pescado.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -163,7 +151,8 @@
                             <tr>
                                 <th style="min-width: 200px;">Nombre</th>
                                 <th style="min-width: 150px;">Proveedor</th>
-                                <th class="text-end" style="width: 120px;">Stock</th>
+                                <th style="min-width: 150px;">Presentación</th>
+                                <th class="text-end" style="width: 120px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -171,19 +160,20 @@
                             <tr data-product-name="{{ p.nombre|lower }}">
                                 <td><strong>{{ p.nombre }}</strong></td>
                                 <td>{{ p.proveedor }}</td>
+                                <td>{{ p.get_tipo_presentacion_display }}</td>
                                 <td class="text-end">
-                                    {% if p.stock < 10 %}
-                                        <span class="badge bg-danger">{{ p.stock }}</span>
-                                    {% elif p.stock < 15 %}
-                                        <span class="badge bg-warning text-dark">{{ p.stock }}</span>
+                                    {% if p.stock_disponible <= 0 %}
+                                        <span class="badge bg-danger">{{ p.stock_disponible }}</span>
+                                    {% elif p.stock_disponible <= 10 %}
+                                        <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
                                     {% else %}
-                                        <span class="badge bg-success">{{ p.stock }}</span>
+                                        <span class="badge bg-success">{{ p.stock_disponible }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr class="no-results-row">
-                                <td colspan="3" class="text-center text-muted py-4">No hay productos de tipo marisco.</td>
+                                <td colspan="4" class="text-center text-muted py-4">No hay productos de tipo marisco.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -207,7 +197,8 @@
                             <tr>
                                 <th style="min-width: 200px;">Nombre</th>
                                 <th style="min-width: 150px;">Proveedor</th>
-                                <th class="text-end" style="width: 120px;">Stock</th>
+                                <th style="min-width: 150px;">Presentación</th>
+                                <th class="text-end" style="width: 120px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -215,19 +206,20 @@
                             <tr data-product-name="{{ p.nombre|lower }}">
                                 <td><strong>{{ p.nombre }}</strong></td>
                                 <td>{{ p.proveedor }}</td>
+                                <td>{{ p.get_tipo_presentacion_display }}</td>
                                 <td class="text-end">
-                                    {% if p.stock < 10 %}
-                                        <span class="badge bg-danger">{{ p.stock }}</span>
-                                    {% elif p.stock < 15 %}
-                                        <span class="badge bg-warning text-dark">{{ p.stock }}</span>
+                                    {% if p.stock_disponible <= 0 %}
+                                        <span class="badge bg-danger">{{ p.stock_disponible }}</span>
+                                    {% elif p.stock_disponible <= 10 %}
+                                        <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
                                     {% else %}
-                                        <span class="badge bg-success">{{ p.stock }}</span>
+                                        <span class="badge bg-success">{{ p.stock_disponible }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr class="no-results-row">
-                                <td colspan="3" class="text-center text-muted py-4">No hay productos de tipo pollo.</td>
+                                <td colspan="4" class="text-center text-muted py-4">No hay productos de tipo pollo.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -245,39 +237,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const filterCategory = document.getElementById('filterCategory');
     const filterSearch = document.getElementById('filterSearch');
     const btnClear = document.getElementById('btnClear');
-    
-    // Elementos de categorías
+
     const categoryRows = {
         'PE': document.querySelector('[data-category="PE"]'),
         'MA': document.querySelector('[data-category="MA"]'),
         'PO': document.querySelector('[data-category="PO"]')
     };
-    
+
     function applyFilters() {
         const selectedCategory = filterCategory.value;
         const searchText = filterSearch.value.toLowerCase();
-        
-        // Filtrar categorías
+
         Object.keys(categoryRows).forEach(category => {
-            if (!selectedCategory || selectedCategory === category) {
-                categoryRows[category].style.display = 'flex';
-            } else {
-                categoryRows[category].style.display = 'none';
-            }
+            categoryRows[category].style.display = (!selectedCategory || selectedCategory === category) ? 'flex' : 'none';
         });
-        
-        // Filtrar productos dentro de cada categoría visible
+
         ['PE', 'MA', 'PO'].forEach(category => {
             const table = document.querySelector(`[data-table="${category}"]`);
             if (table && categoryRows[category].style.display !== 'none') {
                 const rows = table.querySelectorAll('tbody tr');
                 let hasVisibleResults = false;
-                
+
                 rows.forEach(row => {
-                    if (row.classList.contains('no-results-row')) {
-                        return; // Saltar fila de "sin resultados"
-                    }
-                    
+                    if (row.classList.contains('no-results-row')) return;
                     const productName = row.getAttribute('data-product-name') || '';
                     if (searchText === '' || productName.includes(searchText)) {
                         row.style.display = 'table-row';
@@ -286,8 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         row.style.display = 'none';
                     }
                 });
-                
-                // Mostrar/ocultar fila de "sin resultados"
+
                 const noResultsRow = table.querySelector('.no-results-row');
                 if (noResultsRow) {
                     noResultsRow.style.display = hasVisibleResults ? 'none' : 'table-row';
@@ -295,20 +276,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Event listeners
+
     filterCategory.addEventListener('change', applyFilters);
     filterSearch.addEventListener('keyup', applyFilters);
-    
+
     btnClear.addEventListener('click', function() {
         filterCategory.value = '';
         filterSearch.value = '';
         applyFilters();
     });
 
-    // asegurarse de que todo está visible al iniciar
-    filterCategory.value = '';
-    filterSearch.value = '';
     applyFilters();
 });
 </script>
