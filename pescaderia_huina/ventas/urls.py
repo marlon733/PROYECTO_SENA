@@ -9,6 +9,8 @@ urlpatterns = [
     path('crear/', views.VentaCreateView.as_view(), name='crear_venta'),
     path('<int:venta_id>/editar/', views.VentaUpdateView.as_view(), name='editar_venta'),
     path('<int:venta_id>/cancelar/', views.VentaCancelarView.as_view(), name='cancelar_venta'),
-    path('reporte/pdf/', views.ventas, name='reporte_ventas_pdf'),
-    path('reporte/pdf/', views.ventas, name='pdf_ventas_'),
+    path('exportar/pdf/', views.exportar_pdf, name='exportar_pdf'),
+    path('exportar/excel/', views.exportar_excel, name='exportar_excel'),
+    path('api/productos/buscar/', views.buscar_productos_api, name='buscar_productos_api'),
+    path('api/producto/<int:producto_id>/precio/', views.precio_producto_api, name='precio_producto_api'),
 ]

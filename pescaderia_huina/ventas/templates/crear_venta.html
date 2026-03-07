@@ -1,288 +1,382 @@
-<!DOCTYPE html>
 {% extends "core/panel_admin_base.html" %}
 {% block title %}Agregar Venta{% endblock %}
 
 {% block content %}
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Agregar Venta</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-dark: #0a3d62;
-            --primary-blue: #1e5a7d;
-        }
-        
-        .card-header-custom {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
-            border: none;
-        }
-        
-        .section-border {
-            border-bottom: 2px solid var(--primary-blue);
-        }
-
-        .tipo-presentacion-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .tipo-presentacion-option {
-            display: none; /* Ocultar radio nativo */
-        }
-
-        .tipo-presentacion-label {
-            cursor: pointer;
-            padding: 12px 20px;
-            border: 2px solid #dee2e6;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            min-width: 130px;
-            text-align: center;
-            background: #fff;
-            color: #6c757d;
-            user-select: none;
-        }
-
-        .tipo-presentacion-label .tipo-icon {
-            font-size: 1.6rem;
-        }
-
-        .tipo-presentacion-option:checked + .tipo-presentacion-label {
-            border-color: var(--primary-blue);
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(30, 90, 125, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .tipo-presentacion-label:hover {
-            border-color: var(--primary-blue);
-            color: var(--primary-dark);
-        }
-
-        .cantidad-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-
-        .badge-unidades {
-            background-color: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .badge-peso {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-    </style>
-</head>
-<body class="bg-light">
-
 <div class="container my-5">
-
-    <div class="card shadow">
-        <div class="card-header card-header-custom text-white">
+    <div class="card shadow" style="border:none; border-radius:10px;">
+        <div class="card-header text-white" style="background:linear-gradient(135deg,#0a3d62,#1e5a7d); border-radius:10px 10px 0 0;">
             <h4 class="mb-0"> Agregar Nueva Venta</h4>
         </div>
-
         <div class="card-body">
 
-            <!-- Mensajes de error -->
-            {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                {% endfor %}
-            {% endif %}
+            {% if messages %}{% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}{% endif %}
 
-            <!-- Errores del formulario -->
             {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {{ form.non_field_errors }}
-                </div>
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
             {% endif %}
 
-            <form method="post">
+            <form method="post" id="venta-form">
                 {% csrf_token %}
+                {{ item_formset.management_form }}
 
-                <!-- Información del Cliente -->
-                <h5 class="section-border pb-2 mb-3">Información del Cliente</h5>
-                <div class="row mb-3">
+                <!-- Cliente opcional -->
+                <h5 class="section-title">
+                     Información del Cliente
+                    <span class="badge bg-secondary fw-normal ms-2" style="font-size:.7rem;">opcional</span>
+                </h5>
+                <div class="row mb-4">
                     <div class="col-md-6">
                         <label class="form-label">{{ form.nombre_cliente.label }}</label>
                         {{ form.nombre_cliente }}
-                        {% if form.nombre_cliente.errors %}
-                            <div class="text-danger small">{{ form.nombre_cliente.errors }}</div>
-                        {% endif %}
+                        {% if form.nombre_cliente.errors %}<div class="text-danger small">{{ form.nombre_cliente.errors }}</div>{% endif %}
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">{{ form.documento_cliente.label }}</label>
                         {{ form.documento_cliente }}
-                        {% if form.documento_cliente.errors %}
-                            <div class="text-danger small">{{ form.documento_cliente.errors }}</div>
-                        {% endif %}
+                        {% if form.documento_cliente.errors %}<div class="text-danger small">{{ form.documento_cliente.errors }}</div>{% endif %}
                     </div>
                 </div>
 
-                 <!-- Tipo de Presentación -->
-                <h5 class="section-border pb-2 mb-3 mt-4">Tipo de Presentación</h5>
-                <div class="mb-3">
-                    {% if form.tipo_presentacion.errors %}
-                        <div class="text-danger small mb-2">{{ form.tipo_presentacion.errors }}</div>
-                    {% endif %}
-                    <div class="tipo-presentacion-group">
-                        {% for radio in form.tipo_presentacion %}
-                            <div>
-                                <input type="radio"
-                                       name="{{ radio.data.name }}"
-                                       value="{{ radio.data.value }}"
-                                       id="{{ radio.id_for_label }}"
-                                       class="tipo-presentacion-option"
-                                       {% if radio.data.selected %}checked{% endif %}>
-                                <label for="{{ radio.id_for_label }}" class="tipo-presentacion-label">
-                                    {% if radio.data.value == 'EMPACADO_VACIO' %}
-                                        <span class="tipo-icon"></span>
-                                        Empacado al Vacío
-                                        <small class="text-muted fw-normal" style="font-size:0.72rem;">Unidades</small>
-                                    {% elif radio.data.value == 'POR_LIBRA' %}
-                                        <span class="tipo-icon"></span>
-                                        Por Libra
-                                        <small class="text-muted fw-normal" style="font-size:0.72rem;">Peso (lb)</small>
-                                    {% elif radio.data.value == 'BANDEJA' %}
-                                        <span class="tipo-icon"></span>
-                                        Bandeja
-                                        <small class="text-muted fw-normal" style="font-size:0.72rem;">Unidades</small>
-                                    {% endif %}
+                <!-- Productos -->
+                <h5 class="section-title"> Productos de la Venta</h5>
+
+                <div id="items-container">
+                    {% for item_form in item_formset %}
+                    <div class="item-row card mb-3 border-0 p-3 position-relative" style="background:#f8faff; border-left:4px solid #1e5a7d !important; border-radius:10px;">
+                        {{ item_form.id }}
+                        {% if item_formset.can_delete %}<div style="display:none;">{{ item_form.DELETE }}</div>{% endif %}
+
+                        <div class="row g-3 align-items-end">
+
+                            <!-- ✅ PASO 1: Selector de categoría -->
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">
+                                    Categoría <span class="text-danger">*</span>
                                 </label>
+                                <select class="form-select categoria-select">
+                                    <option value="">— Seleccionar categoría —</option>
+                                    <option value="PE">🐟 Pescado</option>
+                                    <option value="PO">🍗 Pollo</option>
+                                    <option value="MA">🦐 Mariscos</option>
+                                </select>
                             </div>
-                        {% endfor %}
+
+                            <!-- ✅ PASO 2: Lista desplegable de productos filtrados por categoría -->
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">
+                                    Producto <span class="text-danger">*</span>
+                                </label>
+                                <!-- Select visible con productos filtrados -->
+                                <select class="form-select producto-visible-select" disabled>
+                                    <option value="">— Primero seleccione categoría —</option>
+                                </select>
+                                <!-- Select oculto real que envía Django -->
+                                <div style="display:none;">{{ item_form.producto }}</div>
+                                {% if item_form.producto.errors %}
+                                    <div class="text-danger small mt-1">{{ item_form.producto.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Presentación -->
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Presentación</label>
+                                {{ item_form.tipo_presentacion }}
+                            </div>
+
+                            <!-- Cantidad -->
+                            <div class="col-md-1">
+                                <label class="form-label fw-semibold">Cantidad</label>
+                                {{ item_form.cantidad }}
+                                {% if item_form.cantidad.errors %}<div class="text-danger small">{{ item_form.cantidad.errors }}</div>{% endif %}
+                            </div>
+
+                            <!-- Precio heredado -->
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Precio de Venta</label>
+                                {{ item_form.precio_unitario }}
+                                <div class="form-text text-success small">✓ Auto desde producto</div>
+                                {% if item_form.precio_unitario.errors %}<div class="text-danger small">{{ item_form.precio_unitario.errors }}</div>{% endif %}
+                            </div>
+
+                            <!-- Subtotal -->
+                            <div class="col-md-1">
+                                <label class="form-label fw-semibold">Subtotal</label>
+                                <div class="form-control bg-white text-end fw-bold text-success item-subtotal small">$0.00</div>
+                            </div>
+
+                        </div>
+
+                        <!-- Botón eliminar (esquina superior derecha) -->
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm btn-remove-item position-absolute"
+                                style="top:10px; right:10px; width:30px; height:30px; padding:0; line-height:1;"
+                                title="Quitar producto">✕</button>
                     </div>
+                    {% endfor %}
                 </div>
 
-                <!-- Información del Producto -->
-                <h5 class="section-border pb-2 mb-3 mt-4">Información del Producto</h5>
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label class="form-label">{{ form.producto.label }}</label>
-                        {{ form.producto }}
-                        {% if form.producto.errors %}
-                            <div class="text-danger small">{{ form.producto.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
+                <!-- Botón agregar -->
+                <button type="button" id="btn-add-item" class="btn btn-outline-primary mb-4">
+                    + Agregar otro producto
+                </button>
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label" id="label_cantidad">
-                            Cantidad (Unidades)
-                            <span class="cantidad-badge badge-unidades" id="cantidad_badge">Unidades</span>
-                        </label>
-                        {{ form.cantidad }}
-                        <div class="form-text text-muted" id="cantidad_hint">Ingrese el número de unidades.</div>
-                        {% if form.cantidad.errors %}
-                            <div class="text-danger small">{{ form.cantidad.errors }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">{{ form.precio_unitario.label }}</label>
-                        {{ form.precio_unitario }}
-                        {% if form.precio_unitario.errors %}
-                            <div class="text-danger small">{{ form.precio_unitario.errors }}</div>
-                        {% endif %}
+                <!-- Resumen IVA -->
+                <div class="card border-0 mb-4" style="background:#f0f7ff; border-radius:10px;">
+                    <div class="card-body">
+                        <h5 class="section-title mb-3">Resumen de la Venta</h5>
+                        <div class="row justify-content-end">
+                            <div class="col-md-4">
+                                <table class="table table-borderless mb-0">
+                                    <tr><td class="fw-semibold">Subtotal:</td><td class="text-end" id="resumen-subtotal">$0.00</td></tr>
+                                    <tr><td class="text-muted">IVA (19%):</td><td class="text-end text-muted" id="resumen-iva">$0.00</td></tr>
+                                    <tr class="border-top"><td class="fw-bold fs-5">Total:</td><td class="text-end fw-bold fs-5 text-success" id="resumen-total">$0.00</td></tr>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Observaciones -->
-                <h5 class="section-border pb-2 mb-3 mt-4">Observaciones</h5>
-                <div class="mb-3">
-                    <label class="form-label">{{ form.observaciones.label }}</label>
-                    {{ form.observaciones }}
-                    {% if form.observaciones.errors %}
-                        <div class="text-danger small">{{ form.observaciones.errors }}</div>
-                    {% endif %}
-                </div>
+                <h5 class="section-title"> Observaciones</h5>
+                <div class="mb-4">{{ form.observaciones }}</div>
 
-                <!-- Botones -->
                 <div class="text-end mt-4">
-                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-success">Guardar Venta</button>
+                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-secondary me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-success btn-lg"> Guardar Venta</button>
                 </div>
             </form>
-
         </div>
     </div>
-
 </div>
+
+<style>
+:root {
+    --primary-dark: #0a3d62;
+    --primary-blue: #1e5a7d;
+}
+
+.section-title {
+    color: #0a3d62;
+    border-bottom: 2px solid #1e5a7d;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.item-row {
+    background: #f8faff;
+    border-left: 4px solid #1e5a7d !important;
+    border-radius: 10px !important;
+    padding: 16px 44px 16px 16px !important; /* ✅ espacio derecho para la X */
+    position: relative;
+    transition: box-shadow 0.2s;
+}
+
+.item-row:hover {
+    box-shadow: 0 4px 12px rgba(30, 90, 125, 0.12);
+}
+
+/* ✅ Botón X pequeño y fijo arriba a la derecha sin interferir */
+.btn-remove-item {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    width: 24px !important;
+    height: 24px !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.btn-remove-item:hover {
+    opacity: 1;
+}
+
+/* ✅ Todos los inputs y selects a la misma altura */
+.item-row .form-control,
+.item-row .form-select {
+    height: 42px;
+    font-size: 0.9rem;
+}
+
+/* ✅ Subtotal alineado con los inputs */
+.item-subtotal {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #198754;
+    background: white;
+    min-width: 90px;
+}
+
+/* ✅ Labels todos al mismo nivel */
+.item-row label.form-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    white-space: nowrap;
+}
+
+/* ✅ Texto "Auto desde producto" sin romper layout */
+.form-text.text-success {
+    font-size: 0.75rem;
+    margin-top: 3px;
+    line-height: 1.2;
+}
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    (function () {
-        const cantidadInput = document.getElementById('id_cantidad');
-        const labelCantidad = document.getElementById('label_cantidad');
-        const badgeCantidad = document.getElementById('cantidad_badge');
-        const hintCantidad = document.getElementById('cantidad_hint');
-        const radios = document.querySelectorAll('input.tipo-presentacion-option');
+const IVA = 0.19;
+const BUSCAR_URL = "{% url 'ventas:buscar_productos_api' %}";
+let itemCount = {{ item_formset.total_form_count }};
 
-        function actualizarCampos(tipoPresentacion) {
-            if (tipoPresentacion === 'POR_LIBRA') {
-                // Modo peso
-                labelCantidad.childNodes[0].textContent = 'Peso ';
-                badgeCantidad.textContent = 'Libras (lb)';
-                badgeCantidad.className = 'cantidad-badge badge-peso';
-                cantidadInput.setAttribute('step', '0.01');
-                cantidadInput.setAttribute('min', '0.01');
-                cantidadInput.setAttribute('placeholder', 'Peso en libras (ej: 1.5)');
-                hintCantidad.textContent = 'Ingrese el peso en libras. Se aceptan decimales.';
-            } else {
-                // Modo unidades (EMPACADO_VACIO o BANDEJA)
-                labelCantidad.childNodes[0].textContent = 'Cantidad ';
-                badgeCantidad.textContent = 'Unidades';
-                badgeCantidad.className = 'cantidad-badge badge-unidades';
-                cantidadInput.setAttribute('step', '1');
-                cantidadInput.setAttribute('min', '1');
-                cantidadInput.setAttribute('placeholder', 'Número de unidades');
-                hintCantidad.textContent = 'Ingrese el número de unidades enteras.';
-            }
+// ── Recalcular totales ─────────────────────────────────────────────────────
+function recalcularTotales() {
+    let subtotal = 0;
+    document.querySelectorAll('.item-row').forEach(row => {
+        if (row.style.display === 'none') return;
+        const cantidad = parseFloat(row.querySelector('.cantidad-input')?.value) || 0;
+        const precio   = parseFloat(row.querySelector('.precio-input')?.value)   || 0;
+        const itemSub  = cantidad * precio;
+        const el = row.querySelector('.item-subtotal');
+        if (el) el.textContent = '$' + itemSub.toFixed(2);
+        subtotal += itemSub;
+    });
+    const iva = subtotal * IVA;
+    document.getElementById('resumen-subtotal').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('resumen-iva').textContent      = '$' + iva.toFixed(2);
+    document.getElementById('resumen-total').textContent    = '$' + (subtotal + iva).toFixed(2);
+}
+
+// ── ✅ CAMBIO 1: Cargar productos según categoría seleccionada ─────────────
+    function initCategoriaSelect(row) {
+    const catSelect   = row.querySelector('.categoria-select');
+    const prodVisible = row.querySelector('.producto-visible-select');
+    const prodHidden  = row.querySelector('select[name$="-producto"]');
+    const precioInput = row.querySelector('.precio-input');  // ← buscar una sola vez
+
+    if (!catSelect || !prodVisible || !prodHidden) return;
+
+    // Al cambiar categoría → cargar productos de esa categoría
+    catSelect.addEventListener('change', function () {
+        const tipo = this.value;
+        prodVisible.innerHTML = '<option value="">Cargando...</option>';
+        prodVisible.disabled = true;
+        prodHidden.value = '';
+        if (precioInput) precioInput.value = '';   // limpiar precio anterior
+
+        if (!tipo) {
+            prodVisible.innerHTML = '<option value="">— Primero seleccione categoría —</option>';
+            return;
         }
 
-        // Inicializar según la selección actual
-        radios.forEach(function (radio) {
-            if (radio.checked) {
-                actualizarCampos(radio.value);
-            }
-            radio.addEventListener('change', function () {
-                actualizarCampos(this.value);
+        fetch(`${BUSCAR_URL}?tipo=${encodeURIComponent(tipo)}&q=`)
+            .then(r => r.json())
+            .then(data => {
+                prodVisible.innerHTML = '<option value="">— Seleccionar producto —</option>';
+                if (!data.productos.length) {
+                    prodVisible.innerHTML += '<option disabled>Sin productos disponibles</option>';
+                } else {
+                    data.productos.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.id;
+                        opt.textContent = p.nombre;
+                        opt.dataset.precio = p.precio;  // ← guardar precio en el option
+                        prodVisible.appendChild(opt);
+                    });
+                }
+                prodVisible.disabled = false;
             });
-        });
+    });
 
-        // Si ninguno está seleccionado, usar el primero como default
-        const checkedRadio = document.querySelector('input.tipo-presentacion-option:checked');
-        if (!checkedRadio && radios.length > 0) {
-            radios[radios.length - 1].checked = true; // BANDEJA es el default del modelo
-            actualizarCampos(radios[radios.length - 1].value);
+    // ✅ Al seleccionar producto → auto-llenar precio INMEDIATAMENTE
+    prodVisible.addEventListener('change', function () {
+        const selectedOpt = this.options[this.selectedIndex];
+
+        // Sincronizar con el select oculto de Django
+        prodHidden.value = this.value;
+
+        // Auto-llenar precio desde data-precio del option
+        if (selectedOpt && selectedOpt.dataset.precio && precioInput) {
+            precioInput.value = selectedOpt.dataset.precio;
+            // Disparar el evento input para que recalcule el subtotal
+            precioInput.dispatchEvent(new Event('input'));
         }
-    })();
+    });
+}
+
+// ── Eventos de cantidad/precio y botón eliminar ────────────────────────────
+function addEventListeners(row) {
+    row.querySelectorAll('.cantidad-input, .precio-input').forEach(input => {
+        input.addEventListener('input', recalcularTotales);
+    });
+
+    const btnRemove = row.querySelector('.btn-remove-item');
+    if (btnRemove) {
+        btnRemove.addEventListener('click', () => {
+            const delCb = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+            if (delCb) { delCb.checked = true; row.style.display = 'none'; }
+            else { row.remove(); }
+            recalcularTotales();
+        });
+    }
+
+    initCategoriaSelect(row);
+}
+
+// Inicializar filas existentes
+document.querySelectorAll('.item-row').forEach(addEventListeners);
+
+// ── ✅ CAMBIO 2: Agregar nueva fila con solo 1 fila inicial ────────────────
+document.getElementById('btn-add-item').addEventListener('click', () => {
+    const container = document.getElementById('items-container');
+    const template  = container.querySelector('.item-row');
+    const newRow    = template.cloneNode(true);
+    const prefix    = 'items';
+
+    newRow.innerHTML = newRow.innerHTML.replace(
+        new RegExp(`${prefix}-(\\d+)-`, 'g'),
+        `${prefix}-${itemCount}-`
+    );
+
+    // Limpiar todos los valores
+    newRow.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), select, textarea')
+          .forEach(el => { el.value = ''; });
+    newRow.querySelectorAll('.item-subtotal').forEach(el => { el.textContent = '$0.00'; });
+
+    // Resetear el select de productos a estado inicial
+    const prodVisible = newRow.querySelector('.producto-visible-select');
+    if (prodVisible) {
+        prodVisible.innerHTML = '<option value="">— Primero seleccione categoría —</option>';
+        prodVisible.disabled = true;
+    }
+
+    newRow.style.display = '';
+    document.querySelector(`#id_${prefix}-TOTAL_FORMS`).value = itemCount + 1;
+    itemCount++;
+
+    container.appendChild(newRow);
+    addEventListeners(newRow);
+    recalcularTotales();
+});
+
+recalcularTotales();
 </script>
-</body>
-</html>
 {% endblock %}
