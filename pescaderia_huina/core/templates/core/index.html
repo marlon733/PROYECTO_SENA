@@ -7,11 +7,11 @@
 {% block content %}
 <style>
     :root {
-        --ocean-primary: #0061ff;
-        --ocean-cyan: #60efff;
+        --ocean-primary: #0f3c84;
+        --ocean-cyan: #00f7ff;
         --ocean-dark: #001233;
         --ocean-light: #f0f7ff;
-        --ocean-gradient: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+        --ocean-gradient: linear-gradient(135deg, #0061ff 0%, #6085ff 100%);
     }
 
     body {
@@ -36,7 +36,7 @@
 
     /* Hero Responsive */
     .hero-huina {
-        background: linear-gradient(160deg, #001233 0%, #0061ff 60%, #1097eaa0 100%);
+        background: linear-gradient(160deg, #001233 0%, #0742a1 60%, #1097eaa0 100%);
         min-height: 80vh;
         /* Ajustado para mejor visibilidad */
         position: relative;
@@ -204,6 +204,12 @@
         transition: transform 0.3s;
     }
 
+    .img-dimension {
+    width: 500px;
+    height: 400px;
+    object-fit: cover; /* Mantiene proporción y recorta si es necesario */
+}
+
     /* Info Box & Map */
     .info-box {
         background: white;
@@ -223,7 +229,6 @@
         justify-content: center;
         border-radius: 12px;
     }
-
 </style>
 
 <header class="hero-huina">
@@ -354,13 +359,14 @@
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
-                <img src="{% static 'img/Alojote.jpg' %}" class="img-fluid rounded-5 shadow-lg" alt="Calidad Huina">
+                <img src="{% static 'img/Alojote.jpg' %}" class="img-fluid rounded-5 shadow-lg img-dimension"
+                    alt="Calidad Huina">
             </div>
             <div class="col-lg-6">
                 <h6 class="text-uppercase fw-bold text-primary mb-3">Garantía Huina</h6>
                 <h2 class="display-6 fw-bold mb-4">Calidad que se siente.</h2>
                 <p class="text-muted mb-4 fs-5">Mantenemos la cadena de frío intacta para que disfrutes del verdadero
-                    sabor del mar en Boyacá.</p>
+                    sabor del mar.</p>
                 <ul class="list-unstyled">
                     <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-3"></i>
                         Limpieza incluida a petición.</li>

@@ -13,6 +13,7 @@ from django.utils import timezone
 from xhtml2pdf import pisa
 from .models import Pedido, DetallePedido
 from .forms import PedidoForm, DetallePedidoForm
+from ventas.models import Venta
 from productos.models import Producto
 from proveedores.models import Proveedor
 
@@ -378,3 +379,135 @@ def cambiar_estado_pedido(request, pedido_id):
             
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+@login_required
+def inventario_pedidos(request):
+    """Vista de inventario con datos sincronizados desde pedidos y alertas funcionales."""
+    productos = Producto.objects.filter(estado=True)
+    
+    def calcular_stock_y_pedidos(queryset):
+        for p in queryset:
+            # Stock recibido: suma de pedidos REC
+            stock_recibido = DetallePedido.objects.filter(producto=p, pedido__estado='REC').aggregate(total=Sum('cantidad'))['total'] or 0
+            # Ventas completadas: suma de ventas COMPLETADAS
+            from ventas.models import Venta
+            ventas_completadas = Venta.objects.filter(producto=p, estado='COMPLETADA').aggregate(total=Sum('cantidad'))['total'] or 0
+            # Stock disponible: recibido - vendido (mínimo 0)
+            p.stock_disponible = max(0, stock_recibido - ventas_completadas)
+        return queryset
+    
+    pescados = calcular_stock_y_pedidos(productos.filter(tipo_producto='PE'))
+    mariscos = calcular_stock_y_pedidos(productos.filter(tipo_producto='MA'))
+    pollos = calcular_stock_y_pedidos(productos.filter(tipo_producto='PO'))
+    
+    # EXPORTAR A PDF
+    if request.GET.get('export') == 'pdf':
+        template = get_template('inventario_pdf.html')
+        context = {
+            'pescados': pescados,
+            'mariscos': mariscos,
+            'pollos': pollos,
+            'fecha_generacion': timezone.now(),
+        }
+        html = template.render(context)
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="Inventario_Pescaderia.pdf"'
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        if pisa_status.err:
+            return HttpResponse('Hubo un error al generar el PDF', status=500)
+        return response
+    
+    # EXPORTAR A EXCEL
+    elif request.GET.get('export') == 'excel':
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="Inventario_Pescaderia.xlsx"'
+        
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Inventario"
+        
+        # Estilos
+        borde_fino = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+        alineacion_centro = Alignment(horizontal="center", vertical="center")
+        
+        # Encabezado principal
+        ws.append(["INVENTARIO DE PRODUCTOS"])
+        ws.merge_cells('A1:D1')
+        celda_titulo = ws['A1']
+        celda_titulo.font = Font(name='Arial', size=14, bold=True, color="FFFFFF")
+        celda_titulo.fill = PatternFill(start_color="0D6EFD", fill_type="solid")
+        celda_titulo.alignment = alineacion_centro
+        ws.row_dimensions[1].height = 25
+        
+        # Subtítulo
+        ws.append([f"Generado: {timezone.now().strftime('%d/%m/%Y %H:%M')}"])
+        ws.merge_cells('A2:D2')
+        ws['A2'].font = Font(italic=True, color="6C757D")
+        
+        ws.append([])
+        
+        fila = 4
+        
+        # Función para crear sección
+        def agregar_seccion(titulo, productos_list):
+            nonlocal fila
+            
+            # Título de categoría
+            ws.append([titulo])
+            ws.merge_cells(f'A{fila}:D{fila}')
+            celda_cat = ws[f'A{fila}']
+            celda_cat.font = Font(bold=True, color="FFFFFF", size=11)
+            celda_cat.fill = PatternFill(start_color="343A40", fill_type="solid")
+            celda_cat.alignment = alineacion_centro
+            fila += 1
+            
+            # Encabezados
+            encabezados = ['Nombre', 'Proveedor', 'Stock Disponible', 'Presentación']
+            ws.append(encabezados)
+            
+            for celda in ws[fila]:
+                celda.font = Font(bold=True, color="FFFFFF")
+                celda.fill = PatternFill(start_color="6C757D", fill_type="solid")
+                celda.alignment = alineacion_centro
+                celda.border = borde_fino
+            
+            fila += 1
+            
+            # Datos
+            for p in productos_list:
+                ws.append([
+                    p.nombre,
+                    p.proveedor.nombre_contacto if p.proveedor else "N/A",
+                    p.stock_disponible,
+                    p.get_tipo_presentacion_display()
+                ])
+                
+                for celda in ws[fila]:
+                    celda.border = borde_fino
+                    celda.alignment = alineacion_centro
+                
+                fila += 1
+            
+            ws.append([])
+            fila += 1
+        
+        # Agregar secciones
+        agregar_seccion("PESCADOS", pescados)
+        agregar_seccion("MARISCOS", mariscos)
+        agregar_seccion("POLLOS", pollos)
+        
+        # Ajustar anchos de columna
+        ws.column_dimensions['A'].width = 25
+        ws.column_dimensions['B'].width = 20
+        ws.column_dimensions['C'].width = 18
+        ws.column_dimensions['D'].width = 25
+        
+        wb.save(response)
+        return response
+    
+    context = {
+        'pescados': pescados,
+        'mariscos': mariscos,
+        'pollos': pollos,
+    }
+    
+    return render(request, 'inventario_pedidos.html', context)
