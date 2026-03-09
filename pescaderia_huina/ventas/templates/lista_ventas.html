@@ -39,32 +39,35 @@
                     <label class="form-label fw-semibold">Buscar</label>
                     {{ form_busqueda.buscar }}
                 </div>
-                <div class="col-md-3 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-custom-primary flex-fill">Buscar</button>
-                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
-                </div>
-            </form>
+                <div class="col-md-2">
+                     <label class="form-label fw-semibold">Fecha inicio</label>
+                    {{ form_busqueda.fecha_inicio }}
+               </div>
+               <div class="col-md-2">
+                    <label class="form-label fw-semibold">Fecha fin</label>
+                    {{ form_busqueda.fecha_fin }}
+               </div>
+
+    <div class="col-md-2 d-flex align-items-end gap-2">
+        <button type="submit" class="btn btn-custom-primary flex-fill">Buscar</button>
+        <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
+    </div>
+</form>
         </div>
     </div>
 
     <!-- Botones exportar + Nueva Venta -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex gap-2">
-            <a href="{% url 'ventas:exportar_pdf' %}" class="btn btn-export-pdf d-flex align-items-center gap-2" title="Descargar PDF">
-                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-                    <path d="M4.603 14.087a.81.81 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.68 7.68 0 0 1 1.482-.645 19.697 19.697 0 0 0 1.062-2.227 7.269 7.269 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a10.954 10.954 0 0 0 .98 1.686 5.753 5.753 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.199-.04.386-.118.53-.155.277-.4.402-.625.416a1.45 1.45 0 0 1-.5-.07 2.16 2.16 0 0 1-.43-.194 8.37 8.37 0 0 1-.688-.545 11.28 11.28 0 0 0-1.498.2 10.835 10.835 0 0 1-1.324 1.65c-.184.18-.381.301-.568.332a.533.533 0 0 1-.18.006z"/>
-                </svg>
-                Exportar PDF
-            </a>
-            <a href="{% url 'ventas:exportar_excel' %}" class="btn btn-export-excel d-flex align-items-center gap-2" title="Descargar Excel">
-                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-                    <path d="M4.5 12.5A.5.5 0 0 1 5 12h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm1.5-4a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H6z"/>
-                </svg>
-                Exportar Excel
-            </a>
-        </div>
+             <a href="{% url 'ventas:exportar_pdf' %}?fecha_inicio={{ request.GET.fecha_inicio }}&fecha_fin={{ request.GET.fecha_fin }}&estado={{ request.GET.estado }}"
+                class="btn btn-export-pdf d-flex align-items-center gap-2">
+                📄 Exportar PDF
+          </a>
+          <a href="{% url 'ventas:exportar_excel' %}?fecha_inicio={{ request.GET.fecha_inicio }}&fecha_fin={{ request.GET.fecha_fin }}&estado={{ request.GET.estado }}"
+             class="btn btn-export-excel d-flex align-items-center gap-2">
+             📊 Exportar Excel
+          </a>
+     </div>
         <a href="{% url 'ventas:crear_venta' %}" class="btn btn-add-sale">Agregar Nueva Venta</a>
     </div>
 
