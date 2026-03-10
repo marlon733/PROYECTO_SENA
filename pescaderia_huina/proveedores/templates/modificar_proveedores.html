@@ -101,15 +101,6 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">{{ form.ciudad.label }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-buildings"></i>
-                                        </span>
-                                        {{ form.ciudad }}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
                                     <label class="form-label">{{ form.correo.label }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text">
@@ -118,11 +109,46 @@
                                         {{ form.correo }}
                                     </div>
                                 </div>
+
+                                <!-- Campos ocultos para Django -->
+                                {{ form.departamento }}
+                                {{ form.ciudad }}
+
+                                <!-- Selector de Departamento -->
                                 <div class="col-md-6">
-                                    <label class="form-label">{{ form.direccion.label }}</label>
+                                    <label class="form-label" for="select-departamento">Departamento</label>
                                     <div class="input-group">
                                         <span class="input-group-text">
                                             <i class="bi bi-map"></i>
+                                        </span>
+                                        <select id="select-departamento" class="form-select" required>
+                                            <option value="">Cargando departamentos...</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Selector de Ciudad -->
+                                <div class="col-md-6">
+                                    <label class="form-label" for="select-ciudad">Ciudad</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-buildings"></i>
+                                        </span>
+                                        <select id="select-ciudad" class="form-select" required disabled>
+                                            <option value="">Selecciona un departamento primero</option>
+                                        </select>
+                                    </div>
+                                    <div id="ciudad-loading" class="form-text text-primary d-none">
+                                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                                        Cargando ciudades...
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">{{ form.direccion.label }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-pin-map"></i>
                                         </span>
                                         {{ form.direccion }}
                                     </div>
@@ -243,6 +269,10 @@
 {% block extra_js %}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+
+        /* ============================================================
+           1. NIT / CEDULA LABEL LOGIC
+           ============================================================ */
         const tipoSelectMod = document.getElementById('id_tipo_persona');
         const nitLabelMod   = document.getElementById('label_nit_mod');
         const nitInputMod   = document.getElementById('id_nit');
@@ -261,6 +291,151 @@
             tipoSelectMod.addEventListener('change', actualizarLabelMod);
             actualizarLabelMod();
         }
+
+        /* ============================================================
+           2. DEPARTMENT & CITY DROPDOWNS — api-colombia.com
+           ============================================================ */
+        const selectDpto    = document.getElementById('select-departamento');
+        const selectCiudad  = document.getElementById('select-ciudad');
+        const hiddenDpto    = document.getElementById('id_departamento');
+        const hiddenCiudad  = document.getElementById('id_ciudad');
+        const ciudadLoading = document.getElementById('ciudad-loading');
+
+        // Valores guardados para preseleccionar al cargar la pagina
+        const SAVED_DPTO   = "{{ form.instance.departamento|default:''|escapejs }}";
+        const SAVED_CIUDAD = "{{ form.instance.ciudad|default:''|escapejs }}";
+
+        const API_BASE = 'https://api-colombia.com/api/v1';
+
+        function selectError(sel, msg) {
+            sel.innerHTML = '<option value="">' + msg + '</option>';
+        }
+
+        function makeOption(value, text, selected) {
+            const opt = document.createElement('option');
+            opt.value = value;
+            opt.textContent = text;
+            if (selected) opt.selected = true;
+            return opt;
+        }
+
+        /* ---- Carga ciudades de un departamento, preselecciona si se indica ---- */
+        function loadCities(deptId, preselectCity) {
+            selectCiudad.innerHTML = '';
+            selectCiudad.appendChild(makeOption('', '\u2014 Selecciona una ciudad \u2014', true));
+            selectCiudad.disabled = true;
+            ciudadLoading.classList.remove('d-none');
+
+            fetch(API_BASE + '/Department/' + deptId + '/cities')
+                .then(function(res) {
+                    if (!res.ok) throw new Error('Error HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(cities) {
+                    ciudadLoading.classList.add('d-none');
+                    cities.sort(function(a, b) { return a.name.localeCompare(b.name, 'es'); });
+
+                    selectCiudad.innerHTML = '';
+                    selectCiudad.appendChild(makeOption('', '\u2014 Selecciona una ciudad \u2014', false));
+
+                    cities.forEach(function(city) {
+                        const isSelected = preselectCity &&
+                            city.name.toLowerCase() === preselectCity.toLowerCase();
+                        selectCiudad.appendChild(makeOption(city.name, city.name, isSelected));
+                        if (isSelected && hiddenCiudad) hiddenCiudad.value = city.name;
+                    });
+
+                    selectCiudad.disabled = false;
+                })
+                .catch(function() {
+                    ciudadLoading.classList.add('d-none');
+                    selectError(selectCiudad, 'Error al cargar ciudades.');
+                });
+        }
+
+        /* ---- Carga departamentos y preselecciona el guardado ---- */
+        selectDpto.innerHTML = '<option value="">Cargando departamentos...</option>';
+        selectDpto.disabled  = true;
+
+        fetch(API_BASE + '/Department')
+            .then(function(res) {
+                if (!res.ok) throw new Error('Error HTTP ' + res.status);
+                return res.json();
+            })
+            .then(function(data) {
+                data.sort(function(a, b) { return a.name.localeCompare(b.name, 'es'); });
+
+                selectDpto.innerHTML = '';
+                selectDpto.appendChild(makeOption('', '\u2014 Selecciona un departamento \u2014', false));
+
+                var savedDeptId = null;
+
+                data.forEach(function(dept) {
+                    const isSelected = SAVED_DPTO &&
+                        dept.name.toLowerCase() === SAVED_DPTO.toLowerCase();
+                    const opt = makeOption(dept.id, dept.name, isSelected);
+                    opt.setAttribute('data-name', dept.name);
+                    selectDpto.appendChild(opt);
+
+                    if (isSelected) {
+                        savedDeptId = dept.id;
+                        if (hiddenDpto) hiddenDpto.value = dept.name;
+                    }
+                });
+
+                selectDpto.disabled = false;
+
+                // Si habia departamento guardado, carga y preselecciona la ciudad
+                if (savedDeptId) {
+                    loadCities(savedDeptId, SAVED_CIUDAD);
+                }
+            })
+            .catch(function() {
+                selectError(selectDpto, 'Error al cargar departamentos. Recarga la pagina.');
+            });
+
+        /* ---- Evento cambio de departamento ---- */
+        selectDpto.addEventListener('change', function() {
+            const deptId   = this.value;
+            const deptName = this.options[this.selectedIndex]
+                               ? (this.options[this.selectedIndex].getAttribute('data-name') || '')
+                               : '';
+
+            if (hiddenDpto) hiddenDpto.value = deptName;
+
+            selectCiudad.innerHTML = '';
+            selectCiudad.appendChild(makeOption('', '\u2014 Selecciona una ciudad \u2014', true));
+            selectCiudad.disabled = true;
+            if (hiddenCiudad) hiddenCiudad.value = '';
+
+            if (!deptId) return;
+
+            loadCities(deptId, null);
+        });
+
+        /* ---- Sync ciudad seleccionada → hidden input ---- */
+        selectCiudad.addEventListener('change', function() {
+            if (hiddenCiudad) hiddenCiudad.value = this.value;
+        });
+
+        /* ---- Validar antes de enviar ---- */
+        document.getElementById('form-modificar-proveedor').addEventListener('submit', function(e) {
+            if (!hiddenDpto || !hiddenDpto.value) {
+                e.preventDefault();
+                selectDpto.classList.add('is-invalid');
+                selectDpto.focus();
+                return;
+            }
+            if (!hiddenCiudad || !hiddenCiudad.value) {
+                e.preventDefault();
+                selectCiudad.classList.add('is-invalid');
+                selectCiudad.focus();
+                return;
+            }
+        });
+
+        selectDpto.addEventListener('change',   function() { this.classList.remove('is-invalid'); });
+        selectCiudad.addEventListener('change', function() { this.classList.remove('is-invalid'); });
     });
 </script>
 {% endblock %}

@@ -10,13 +10,12 @@
         border: none;
         border-radius: 24px;
         overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0, 97, 255, 0.15);
+        box-shadow: 0 20px 60px rgba(15, 57, 118, 0.15);
         height: 100%;
-        /* Para que iguale altura */
     }
 
     .detail-header {
-        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+        background: linear-gradient(135deg, #2C466B 0%, #0f3976 100%);
         padding: 2rem 1rem 3rem;
         position: relative;
         text-align: center;
@@ -62,7 +61,7 @@
     }
 
     .info-icon {
-        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+        background: linear-gradient(135deg, #2C466B 0%, #0f3976 100%);
         width: 35px;
         height: 35px;
         border-radius: 10px;
@@ -120,7 +119,7 @@
     .price-tag {
         font-size: 1.2rem;
         font-weight: 800;
-        color: #0061ff;
+        color: #0f3976;
     }
 
     .stock-indicator {
@@ -161,9 +160,19 @@
                         {% endif %}
                     </div>
                     <h3 class="fw-bold mb-1">{{ proveedor.nombre_contacto }}</h3>
-                    <div
-                        class="badge bg-white text-primary bg-opacity-25 border border-white border-opacity-50 px-3 py-1 rounded-pill mt-2">
-                        {{ proveedor.get_tipo_persona_display }}
+                    <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap">
+                        <span class="badge bg-white bg-opacity-25 border border-white border-opacity-50 px-3 py-1 rounded-pill" style="color:#fff;">
+                            {{ proveedor.get_tipo_persona_display }}
+                        </span>
+                        {% if proveedor.estado %}
+                        <span class="badge px-3 py-1 rounded-pill" style="background-color:#38bdf8; color:#0f3976;">
+                            <i class="bi bi-check-circle-fill me-1"></i>Activo
+                        </span>
+                        {% else %}
+                        <span class="badge bg-danger px-3 py-1 rounded-pill">
+                            <i class="bi bi-x-circle-fill me-1"></i>Inactivo
+                        </span>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -191,18 +200,44 @@
                     </div>
 
                     <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
+                        <div class="info-icon"><i class="bi bi-map"></i></div>
                         <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Ubicación</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.ciudad }}</span>
-                            <span class="small text-muted text-truncate" style="max-width: 200px;">{{ proveedor.direccion}}</span>
+                            <small class="text-muted d-block" style="font-size: 0.7rem;">Departamento</small>
+                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">
+                                {% if proveedor.departamento %}{{ proveedor.departamento }}{% else %}<span class="text-muted fst-italic">No registrado</span>{% endif %}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="mt-4 text-center">
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-buildings"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size: 0.7rem;">Ciudad</small>
+                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.ciudad }}</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size: 0.7rem;">Dirección</small>
+                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.direccion }}</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-calendar-check"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size: 0.7rem;">Fecha de Registro</small>
+                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.fecha_registro|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
                         <a href="{% url 'proveedores:modificar_proveedores' proveedor.id %}"
-                            class="btn btn-primary w-100 rounded-pill py-2 shadow-sm">
-                            <i class="bi bi-pencil-square me-2"></i> Editar Datos
+                            class="btn w-100 rounded-pill py-2 shadow-sm fw-semibold text-white"
+                            style="background: linear-gradient(135deg, #2C466B, #0f3976);">
+                            <i class="bi bi-pencil-square me-2"></i>Editar Datos
                         </a>
                     </div>
                 </div>
