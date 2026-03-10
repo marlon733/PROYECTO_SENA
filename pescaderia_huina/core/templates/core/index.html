@@ -210,24 +210,254 @@
     object-fit: cover; /* Mantiene proporción y recorta si es necesario */
 }
 
-    /* Info Box & Map */
+    /* === SECTION LABELS & DIVIDERS === */
+    .section-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--ocean-light);
+        color: var(--ocean-primary);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 6px 18px;
+        border-radius: 50px;
+        border: 1.5px solid rgba(0, 97, 255, 0.15);
+    }
+
+    .section-divider {
+        width: 60px;
+        height: 4px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--ocean-primary), var(--ocean-cyan));
+        margin: 1rem auto 0;
+    }
+
+    /* === CATEGORY CARDS POSITION === */
+    .category-card {
+        position: relative;
+    }
+
+    /* === STATS SECTION === */
+    .stats-section {
+        background: linear-gradient(135deg, var(--ocean-dark) 0%, #0742a1 60%, #0c75b5 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 24px;
+        padding: 2rem 1.5rem;
+        transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+    .stat-icon {
+        width: 58px;
+        height: 58px;
+        background: rgba(0, 247, 255, 0.12);
+        border: 1.5px solid rgba(0, 247, 255, 0.25);
+        color: var(--ocean-cyan);
+        font-size: 1.5rem;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.2rem;
+    }
+
+    .counter {
+        color: #fff;
+        line-height: 1;
+    }
+
+    .stat-plus {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--ocean-cyan);
+        vertical-align: super;
+        line-height: 0;
+        margin-left: 2px;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.6);
+        letter-spacing: 1.5px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+    }
+
+    /* === STEP CARDS === */
+    .step-card {
+        background: white;
+        border-radius: 24px;
+        padding: 2.5rem 1.5rem 2rem;
+        box-shadow: 0 8px 30px rgba(0, 34, 255, 0.07);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        border: 1px solid rgba(0, 97, 255, 0.07);
+    }
+
+    .step-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 45px rgba(0, 97, 255, 0.13);
+        border-color: rgba(0, 97, 255, 0.15);
+    }
+
+    .step-number {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--ocean-gradient);
+        color: white;
+        font-size: 0.72rem;
+        font-weight: 800;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 97, 255, 0.4);
+    }
+
+    /* === CONOCENOS === */
+    .conocenos-section {
+        background: linear-gradient(160deg, #f5faff 0%, #ffffff 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .conocenos-section::before {
+        content: '';
+        position: absolute;
+        right: -120px;
+        top: -120px;
+        width: 450px;
+        height: 450px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 97, 255, 0.06) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .check-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0, 34, 255, 0.06);
+        margin-bottom: 12px;
+        transition: transform 0.25s, box-shadow 0.25s;
+        border: 1px solid rgba(0, 97, 255, 0.07);
+    }
+
+    .check-item:hover {
+        transform: translateX(6px);
+        box-shadow: 0 8px 25px rgba(0, 97, 255, 0.11);
+        border-color: rgba(0, 97, 255, 0.15);
+    }
+
+    .check-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--ocean-gradient);
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+
+    /* === UBICACION === */
+    .ubicacion-section {
+        background: var(--ocean-light);
+    }
+
+    .map-wrapper {
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 34, 255, 0.1);
+        height: 420px;
+        border: 3px solid rgba(0, 97, 255, 0.1);
+        transition: box-shadow 0.3s;
+    }
+
+    .map-wrapper:hover {
+        box-shadow: 0 25px 60px rgba(0, 97, 255, 0.18);
+    }
+
+    /* === INFO BOX & MAP (OVERRIDE) === */
     .info-box {
         background: white;
         border-radius: 25px;
         padding: 2rem;
         height: 100%;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+        border-top: 4px solid var(--ocean-primary);
     }
 
     .icon-contact {
         background: var(--ocean-gradient);
         color: white;
-        width: 45px;
-        height: 45px;
+        width: 48px;
+        height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 12px;
+        border-radius: 14px;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    /* === SCROLL REVEAL === */
+    .reveal {
+        opacity: 0;
+        transform: translateY(32px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .reveal-left {
+        opacity: 0;
+        transform: translateX(-40px);
+        transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+
+    .reveal-right {
+        opacity: 0;
+        transform: translateX(40px);
+        transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+
+    .reveal-left.visible,
+    .reveal-right.visible {
+        opacity: 1;
+        transform: translate(0);
     }
 </style>
 
@@ -249,8 +479,15 @@
                     Pescados frescos, mariscos selectos y pollo de granja. <br class="d-none d-md-block"> Del origen a
                     tu hogar.
                 </p>
-                <div class="d-md-none text-center">
-                    <a href="#catalogo" class="btn btn-warning rounded-pill px-4 fw-bold">Ver Catálogo</a>
+                <div class="d-flex flex-wrap gap-3 mt-2 justify-content-center justify-content-lg-start">
+                    <a href="#catalogo" class="btn btn-warning rounded-pill px-4 py-2 fw-bold shadow-sm">
+                        <i class="bi bi-grid-fill me-2"></i>Ver Catálogo
+                    </a>
+                    <a href="https://wa.me/573228280256" target="_blank" rel="noopener noreferrer"
+                       class="btn rounded-pill px-4 py-2 fw-bold"
+                       style="background: rgba(37,211,102,0.18); color:#fff; border: 1.5px solid rgba(37,211,102,0.55);">
+                        <i class="bi bi-whatsapp me-2"></i>Pedir Ahora
+                    </a>
                 </div>
             </div>
 
@@ -272,53 +509,77 @@
 </header>
 
 <section id="catalogo" class="floating-cards-section container">
+    <div class="text-center mb-5 reveal">
+        <span class="section-label"><i class="bi bi-grid-3x3-gap-fill"></i> Profesional · Detallado · Innovador</span>
+        <h2 class="fw-bold display-5 mt-3" style="color: var(--ocean-dark);">
+            Nuestro <span style="color: var(--ocean-primary);">Catálogo</span>
+        </h2>
+        <p class="text-muted mt-2 mb-0 fs-5">Selecciona una categoría y descubre lo mejor del mar y la granja.</p>
+        <div class="section-divider"></div>
+    </div>
     <div class="row g-4 justify-content-center">
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-4 col-md-6 reveal" style="transition-delay:.1s">
             <div class="category-card p-4 p-md-5 text-center">
                 <div class="category-icon icon-pescados"><i class="bi bi-tsunami"></i></div>
                 <h3 class="fw-bold text-dark">Pescados</h3>
-                <p class="text-muted mb-4">Salmón, Tilapia, Bagre y más.</p>
-                <a href="{% url 'core:pescados' %}" class="btn btn-link fw-bold stretched-link text-decoration-none"
-                    style="color: var(--ocean-primary);">Ver Catálogo →</a>
+                <p class="text-muted mb-4">Salmón, Tilapia, Bagre y más variedad fresca.</p>
+                <a href="{% url 'core:pescados' %}" class="btn rounded-pill px-4 py-2 fw-bold text-white stretched-link"
+                   style="background: var(--ocean-gradient);">Explorar <i class="bi bi-arrow-right-short fs-5"></i></a>
             </div>
         </div>
-
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-4 col-md-6 reveal" style="transition-delay:.2s">
             <div class="category-card p-4 p-md-5 text-center">
                 <div class="category-icon icon-mariscos"><i class="bi bi-stars"></i></div>
                 <h3 class="fw-bold text-dark">Mariscos</h3>
-                <p class="text-muted mb-4">Camarones y mixturas selectas.</p>
-                <a href="{% url 'core:mariscos' %}" class="btn btn-link fw-bold stretched-link text-decoration-none"
-                    style="color: #ff7e00;">Ver Catálogo →</a>
+                <p class="text-muted mb-4">Camarones, calamar y mixturas selectas del mar.</p>
+                <a href="{% url 'core:mariscos' %}" class="btn rounded-pill px-4 py-2 fw-bold text-white stretched-link"
+                   style="background: linear-gradient(135deg,#ff9a44,#fc6076);">Explorar <i class="bi bi-arrow-right-short fs-5"></i></a>
             </div>
         </div>
-
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-4 col-md-6 reveal" style="transition-delay:.3s">
             <div class="category-card p-4 p-md-5 text-center">
                 <div class="category-icon icon-pollos"><i class="bi bi-egg-fill"></i></div>
                 <h3 class="fw-bold text-dark">Pollos</h3>
-                <p class="text-muted mb-4">Pechugas, muslos y alas de granja.</p>
-                <a href="{% url 'core:pollos' %}" class="btn btn-link fw-bold stretched-link text-decoration-none"
-                    style="color: #e6b800;">Ver Catálogo →</a>
+                <p class="text-muted mb-4">Pechugas, muslos y alas de granja fresca.</p>
+                <a href="{% url 'core:pollos' %}" class="btn rounded-pill px-4 py-2 fw-bold text-white stretched-link"
+                   style="background: linear-gradient(135deg,#ffcf1b,#ff881b);">Explorar <i class="bi bi-arrow-right-short fs-5"></i></a>
             </div>
         </div>
     </div>
 </section>
 
-<section class="py-5 bg-white border-bottom border-light">
-    <div class="container">
-        <div class="row text-center align-items-center g-4">
-            <div class="col-md-4">
-                <h2 class="fw-bold display-5 mb-0" style="color: var(--ocean-primary);">10+</h2>
-                <p class="text-muted text-uppercase small fw-bold">Años de experiencia</p>
+<section class="stats-section py-5">
+    <div class="container py-3">
+        <div class="row text-center g-4 justify-content-center">
+            <div class="col-lg-3 col-md-4 col-6 reveal" style="transition-delay:.05s">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-calendar-check-fill"></i></div>
+                    <div class="d-flex align-items-baseline justify-content-center">
+                        <h2 class="fw-bold display-4 mb-0 counter" data-target="10">0</h2>
+                        <span class="stat-plus">+</span>
+                    </div>
+                    <p class="stat-label mb-0 mt-2">Años de Experiencia</p>
+                </div>
             </div>
-            <div class="col-md-4 border-md-start border-md-end border-light">
-                <h2 class="fw-bold display-5 mb-0" style="color: var(--ocean-primary);">100%</h2>
-                <p class="text-muted text-uppercase small fw-bold">Frescura Garantizada</p>
+            <div class="col-lg-3 col-md-4 col-6 reveal" style="transition-delay:.15s">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-droplet-fill"></i></div>
+                    <div class="d-flex align-items-baseline justify-content-center">
+                        <h2 class="fw-bold display-4 mb-0 counter" data-target="100">0</h2>
+                        <span class="stat-plus">%</span>
+                    </div>
+                    <p class="stat-label mb-0 mt-2">Frescura Garantizada</p>
+                </div>
             </div>
-            <div class="col-md-4">
-                <h2 class="fw-bold display-5 mb-0" style="color: var(--ocean-primary);">500+</h2>
-                <p class="text-muted text-uppercase small fw-bold">Clientes Felices</p>
+            <div class="col-lg-3 col-md-4 col-6 reveal" style="transition-delay:.25s">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                    <div class="d-flex align-items-baseline justify-content-center">
+                        <h2 class="fw-bold display-4 mb-0 counter" data-target="500">0</h2>
+                        <span class="stat-plus">+</span>
+                    </div>
+                    <p class="stat-label mb-0 mt-2">Clientes Felices</p>
+                </div>
             </div>
         </div>
     </div>
@@ -326,91 +587,132 @@
 
 <section class="py-5" style="background-color: var(--ocean-light);">
     <div class="container py-4">
-        <div class="text-center mb-5 px-3">
-            <h6 class="text-uppercase text-primary fw-bold">Fácil y Rápido</h6>
-            <h2 class="fw-bold display-6" style="color: var(--ocean-dark);">Lleva el mar a tu casa en 3 pasos</h2>
+        <div class="text-center mb-5 reveal">
+            <span class="section-label"><i class="bi bi-lightning-charge-fill"></i> Fácil y Rápido</span>
+            <h2 class="fw-bold display-6 mt-3" style="color: var(--ocean-dark);">Lleva el mar a tu casa <span style="color: var(--ocean-primary);">en 3 simples pasos</span></h2>
+            <div class="section-divider"></div>
         </div>
-
-        <div class="row text-center g-4 px-md-5">
-            <div class="col-md-4 step-item position-relative">
-                <div class="step-line">
+        <div class="row text-center g-4 px-md-3">
+            <div class="col-md-4 reveal" style="transition-delay:.1s">
+                <div class="step-card position-relative">
+                    <span class="step-number">1</span>
                     <div class="step-circle mx-auto"><i class="bi bi-cursor-fill"></i></div>
+                    <h4 class="fw-bold mt-3" style="color:var(--ocean-dark)">Elige</h4>
+                    <p class="text-muted mb-0">Explora nuestro catálogo digital y encuentra tu producto ideal.</p>
                 </div>
-                <h4 class="fw-bold mt-3">1. Elige</h4>
-                <p class="text-muted px-lg-4">Explora nuestro catálogo digital.</p>
             </div>
-            <div class="col-md-4 step-item position-relative">
-                <div class="step-line">
+            <div class="col-md-4 reveal" style="transition-delay:.2s">
+                <div class="step-card position-relative">
+                    <span class="step-number">2</span>
                     <div class="step-circle mx-auto"><i class="bi bi-whatsapp"></i></div>
+                    <h4 class="fw-bold mt-3" style="color:var(--ocean-dark)">Pide</h4>
+                    <p class="text-muted mb-0">Habla con nosotros por WhatsApp y cuéntanos tu pedido.</p>
                 </div>
-                <h4 class="fw-bold mt-3">2. Pide</h4>
-                <p class="text-muted px-lg-4">Habla con nosotros por WhatsApp.</p>
             </div>
-            <div class="col-md-4 step-item position-relative">
-                <div class="step-circle mx-auto"><i class="bi bi-box-seam-fill"></i></div>
-                <h4 class="fw-bold mt-3">3. Recibe</h4>
-                <p class="text-muted px-lg-4">Directo a tu hogar con cadena de frío.</p>
+            <div class="col-md-4 reveal" style="transition-delay:.3s">
+                <div class="step-card position-relative">
+                    <span class="step-number">3</span>
+                    <div class="step-circle mx-auto"><i class="bi bi-box-seam-fill"></i></div>
+                    <h4 class="fw-bold mt-3" style="color:var(--ocean-dark)">Recibe</h4>
+                    <p class="text-muted mb-0">Directo a tu hogar con cadena de frío, fresco y a tiempo.</p>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="py-5 bg-white">
-    <div class="container">
+<section id="conocenos" class="py-5 conocenos-section">
+    <div class="container py-2">
         <div class="row align-items-center g-5">
-            <div class="col-lg-6">
-                <img src="{% static 'img/Alojote.jpg' %}" class="img-fluid rounded-5 shadow-lg img-dimension"
-                    alt="Calidad Huina">
+            <div class="col-lg-6 reveal-left">
+                <div class="position-relative">
+                    <img src="{% static 'img/Alojote.jpg' %}" class="img-fluid rounded-5 shadow-lg"
+                        alt="Calidad Huina" style="width:100%; max-height:430px; object-fit:cover;">
+                    <div class="position-absolute bottom-0 start-0 m-3 px-4 py-2 rounded-pill text-white fw-bold small"
+                        style="background: var(--ocean-gradient); backdrop-filter: blur(8px);">
+                        <i class="bi bi-shield-check me-1"></i> Cadena de Frío Certificada
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-6">
-                <h6 class="text-uppercase fw-bold text-primary mb-3">Garantía Huina</h6>
-                <h2 class="display-6 fw-bold mb-4">Calidad que se siente.</h2>
-                <p class="text-muted mb-4 fs-5">Mantenemos la cadena de frío intacta para que disfrutes del verdadero
-                    sabor del mar.</p>
-                <ul class="list-unstyled">
-                    <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-3"></i>
-                        Limpieza incluida a petición.</li>
-                    <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-3"></i>
-                        Pesaje exacto y honesto.</li>
-                    <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-3"></i>
-                        Empaque sellado al vacío.</li>
-                </ul>
+            <div class="col-lg-6 reveal-right">
+                <span class="section-label"><i class="bi bi-award-fill"></i> Garantía Huina</span>
+                <h2 class="display-6 fw-bold my-3" style="color: var(--ocean-dark);">Calidad que <span style="color: var(--ocean-primary);">se siente.</span></h2>
+                <p class="text-muted mb-4 fs-5">Mantenemos la cadena de frío intacta para que disfrutes del verdadero sabor del mar.</p>
+                <div class="check-item">
+                    <div class="check-icon"><i class="bi bi-scissors"></i></div>
+                    <div>
+                        <strong>Limpieza incluida a petición</strong>
+                        <p class="text-muted small mb-0">Tu producto listo para cocinar, sin esfuerzo adicional.</p>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon"><i class="bi bi-bar-chart-fill"></i></div>
+                    <div>
+                        <strong>Pesaje exacto y honesto</strong>
+                        <p class="text-muted small mb-0">Siempre recibes exactamente lo que pagaste, sin sorpresas.</p>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-icon"><i class="bi bi-box-seam-fill"></i></div>
+                    <div>
+                        <strong>Empaque sellado al vacío</strong>
+                        <p class="text-muted small mb-0">Máxima frescura desde el origen hasta tu puerta.</p>
+                    </div>
+                </div>
+                <a href="https://wa.me/573228280256" target="_blank" rel="noopener noreferrer"
+                   class="btn rounded-pill px-4 py-2 fw-bold mt-3 text-white"
+                   style="background: var(--ocean-gradient);">
+                    <i class="bi bi-whatsapp me-2"></i>Pedir ahora
+                </a>
             </div>
         </div>
     </div>
 </section>
 
-<section class="container py-5">
-    <div class="row g-4">
-        <div class="col-lg-7">
-            <div class="rounded-5 overflow-hidden shadow-sm bg-light" style="height: 400px;">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.298282361131!2d-72.9234!3d5.7164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwNDInNTkuMCJOIDcywrA1NSczMi4wIlc!5e0!3m2!1ses!2sco!4v1620000000000"
-                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-            </div>
+<section id="ubicacion" class="ubicacion-section py-5">
+    <div class="container py-2">
+        <div class="text-center mb-5 reveal">
+            <span class="section-label"><i class="bi bi-geo-alt-fill"></i> Encúntranos</span>
+            <h2 class="fw-bold display-6 mt-3" style="color: var(--ocean-dark);">&#xBF;Dónde <span style="color: var(--ocean-primary);">encontrarnos?</span></h2>
+            <div class="section-divider"></div>
         </div>
-        <div class="col-lg-5">
-            <div class="info-box">
-                <h3 class="fw-bold mb-4">Visítanos</h3>
-                <div class="d-flex mb-4">
-                    <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-geo-alt-fill"></i></div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Sede Principal</h6>
-                        <p class="text-muted mb-0 small">Carrera 27 #2G - 33, Barrio Magdalena, Sogamoso</p>
-                    </div>
+        <div class="row g-4 align-items-stretch">
+            <div class="col-lg-7 reveal-left">
+                <div class="map-wrapper">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.298282361131!2d-72.9234!3d5.7164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwNDInNTkuMCJOIDcywrA1NSczMi4wIlc!5e0!3m2!1ses!2sco!4v1620000000000"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
-                <div class="d-flex mb-4">
-                    <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-clock-fill"></i></div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Horario</h6>
-                        <p class="text-muted mb-0 small">Lun - Sáb: 7:00 AM - 6:00 PM / Dom: 8:00 AM - 1:00 PM</p>
+            </div>
+            <div class="col-lg-5 reveal-right">
+                <div class="info-box">
+                    <h3 class="fw-bold mb-4"><i class="bi bi-shop me-2" style="color:var(--ocean-primary)"></i>Visítanos</h3>
+                    <div class="d-flex mb-4 align-items-start">
+                        <div class="icon-contact me-3"><i class="bi bi-geo-alt-fill"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Sede Principal</h6>
+                            <p class="text-muted mb-0 small">Carrera 27 #2G - 33, Barrio Magdalena, Sogamoso</p>
+                        </div>
                     </div>
-                </div>
-                <div class="d-flex">
-                    <div class="icon-contact me-3 flex-shrink-0"><i class="bi bi-whatsapp"></i></div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Domicilios</h6>
-                        <p class="text-muted mb-1">+57 322 828 0256</p>
+                    <div class="d-flex mb-4 align-items-start">
+                        <div class="icon-contact me-3"><i class="bi bi-clock-fill"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Horario</h6>
+                            <p class="text-muted mb-0 small">Lun - Sáb: 7:00 AM - 6:00 PM</p>
+                            <p class="text-muted mb-0 small">Dom: 8:00 AM - 1:00 PM</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start">
+                        <div class="icon-contact me-3"><i class="bi bi-whatsapp"></i></div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Domicilios</h6>
+                            <p class="text-muted mb-2">+57 322 828 0256</p>
+                            <a href="https://wa.me/573228280256" target="_blank" rel="noopener noreferrer"
+                               class="btn btn-sm rounded-pill px-3 fw-bold text-white"
+                               style="background: var(--ocean-gradient);">
+                                <i class="bi bi-whatsapp me-1"></i> Pedir domicilio
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -418,5 +720,38 @@
     </div>
 </section>
 
+<script>
+    // === Scroll Reveal ===
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
+
+    // === Counter Animation ===
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            const target = +el.dataset.target;
+            let start = null;
+            const duration = 1800;
+            const step = (ts) => {
+                if (!start) start = ts;
+                const progress = Math.min((ts - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.floor(eased * target);
+                if (progress < 1) requestAnimationFrame(step);
+                else el.textContent = target;
+            };
+            requestAnimationFrame(step);
+            counterObserver.unobserve(el);
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+</script>
 
 {% endblock %}

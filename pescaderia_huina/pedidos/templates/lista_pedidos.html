@@ -1,22 +1,11 @@
 {% extends 'core/panel_admin_base.html' %}
-
-{% block content %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-
 {% load static %}
 
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+{% endblock %}
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<style>
-    .btn-success-action { color: #198754 !important; }
-    .btn-success-action:hover { background-color: #198754 !important; color: #ffffff !important; transform: translateY(-2px); }
-    
-    .btn-danger-action { color: #dc3545 !important; }
-    .btn-danger-action:hover { background-color: #dc3545 !important; color: #ffffff !important; transform: translateY(-2px); }
-</style>
-
+{% block content %}
 <div class="container">
     <div class="page-header d-flex justify-content-between align-items-center">
         <div>
@@ -204,6 +193,10 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
