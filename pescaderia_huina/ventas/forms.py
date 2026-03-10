@@ -1,115 +1,123 @@
 from django import forms
-from .models import Venta
+from django.forms import inlineformset_factory
+from .models import Venta, VentaItem
 from productos.models import Producto
 
 
-TIPOS_VENTA_CHOICES = [
-    ('EMPACADO_VACIO', 'Empacado al Vacío'),
-    ('POR_LIBRA', 'Por Libra'),
-    ('BANDEJA', 'Bandeja'),
-]
-
 class VentaForm(forms.ModelForm):
-    
+    """Formulario principal de venta (solo datos del cliente y observaciones)"""
+
     class Meta:
         model = Venta
-        fields = [
-            'nombre_cliente',
-            'documento_cliente',
-            'producto',
-            'tipo_presentacion',
-            'cantidad',
-            'precio_unitario',
-            'observaciones'
-        ]
+        fields = ['nombre_cliente', 'documento_cliente', 'observaciones']
         widgets = {
             'nombre_cliente': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese el nombre del cliente'
+                'placeholder': 'Ingrese el nombre del cliente (opcional)'
             }),
             'documento_cliente': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese el documento del cliente'
-            }),
-            'producto': forms.Select(attrs={
-                'class': 'form-select'
-            }),
-             'tipo_presentacion': forms.RadioSelect(attrs={
-                'class': 'tipo-presentacion-radio',
-            }),
-            'cantidad': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'step': '0.01',
-                'min': '0.01',
-                'placeholder': 'Cantidad'
-            }),
-            'precio_unitario': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'step': '0.01',
-                'min': '0.01',
-                'placeholder': 'Precio unitario'
+                'placeholder': 'Documento del cliente (opcional)'
             }),
             'observaciones': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': 'Observaciones opcionales sobre la venta...'
+                'placeholder': 'Observaciones opcionales...'
             })
         }
         labels = {
             'nombre_cliente': 'Nombre del Cliente',
             'documento_cliente': 'Documento de Identidad',
-            'producto': 'Producto',
-            'tipo_presentacion': 'Tipo de Presentación',
-            'cantidad': 'Cantidad',
-            'precio_unitario': 'Precio Unitario',
             'observaciones': 'Observaciones'
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['producto'].queryset = Producto.objects.filter(
-            estado=True, 
-        )
+        # Cliente completamente opcional
+        self.fields['nombre_cliente'].required = False
+        self.fields['documento_cliente'].required = False
 
-    # Validaciones personalizadas
     def clean_documento_cliente(self):
-        """Validar que el documento contenga solo números"""
         documento = self.cleaned_data.get('documento_cliente')
-        if not documento.isdigit():
+        if documento and not documento.isdigit():
             raise forms.ValidationError("El documento debe contener solo números.")
         return documento
 
-    
+
+class VentaItemForm(forms.ModelForm):
+
+    class Meta:
+        model = VentaItem
+        fields = ['producto', 'tipo_presentacion', 'cantidad', 'precio_unitario']
+        widgets = {
+            'producto': forms.Select(attrs={
+                'class': 'form-select producto-select',
+            }),
+            'tipo_presentacion': forms.Select(attrs={
+                'class': 'form-select tipo-presentacion-select'
+            }),
+            'cantidad': forms.NumberInput(attrs={
+                'class': 'form-control cantidad-input',
+                'step': '0.01',
+                'min': '0.01',
+                'placeholder': 'Cantidad'
+            }),
+            #  precio_unitario se hereda del producto via JS, pero editable
+            'precio_unitario': forms.NumberInput(attrs={
+                'class': 'form-control precio-input',
+                'step': '0.01',
+                'min': '0.01',
+                'placeholder': 'Precio unitario'
+            }),
+        }
+        labels = {
+            'producto': 'Producto',
+            'tipo_presentacion': 'Presentación',
+            'cantidad': 'Cantidad',
+            'precio_unitario': 'Precio de Venta',  # ✅ REQ 2: Renombrado
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtrar solo productos activos
+        self.fields['producto'].queryset = Producto.objects.filter(estado=True).select_related('proveedor')
+        self.fields['producto'].empty_label = "-- Seleccionar producto --"
+
     def clean(self):
         cleaned_data = super().clean()
-        producto = cleaned_data.get('producto')
         cantidad = cleaned_data.get('cantidad')
         tipo_presentacion = cleaned_data.get('tipo_presentacion')
-                
-         # Empacado al Vacío y Bandeja deben ser unidades enteras
+
         if cantidad and tipo_presentacion in ('EMPACADO_VACIO', 'BANDEJA'):
+            from decimal import Decimal
             if cantidad != int(cantidad):
                 raise forms.ValidationError(
-                    'Para Empacado al Vacío y Bandeja, la cantidad debe ser un número entero de unidades.'
+                    'Para Empacado al Vacío y Bandeja, la cantidad debe ser un número entero.'
                 )
-        
         return cleaned_data
 
 
+# múltiples productos
+VentaItemFormSet = inlineformset_factory(
+    Venta,
+    VentaItem,
+    form=VentaItemForm,
+    extra=0,
+    min_num=1,
+    validate_min=True,
+    can_delete=True,
+)
+
+
 class CancelarVentaForm(forms.Form):
-    """Formulario para cancelar una venta"""
     motivo = forms.CharField(
-        label='Motivo de Cancelación',
+        label='Motivo de Cancelación (opcional)',
         widget=forms.Textarea(attrs={
             'class': 'form-control',
             'rows': 4,
-            'placeholder': 'Escriba el motivo de la cancelación (mínimo 10 caracteres)...'
+            'placeholder': 'Escriba el motivo de la cancelación (opcional)...'
         }),
-        min_length=10,
-        error_messages={
-            'required': 'Debe proporcionar un motivo para cancelar la venta',
-            'min_length': 'El motivo debe tener al menos 10 caracteres'
-        }
+        required=False, 
     )
 
 
@@ -117,7 +125,11 @@ class BusquedaVentaForm(forms.Form):
     estado = forms.ChoiceField(
         required=False,
         label='Estado',
-        choices=[('', 'Todos')] + Venta.ESTADOS,
+        choices=[
+            ('', 'Todos'),
+            ('COMPLETADA', 'Completada'),
+            ('CANCELADA', 'Cancelada'),
+        ],
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     buscar = forms.CharField(
@@ -125,12 +137,13 @@ class BusquedaVentaForm(forms.Form):
         label='Buscar',
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Buscar por nombre, documento o producto...'
+            'placeholder': 'Buscar por nombre de cliente, documento o producto...'
         })
     )
+    # campos de fecha
     fecha_inicio = forms.DateField(
         required=False,
-        label='Desde',
+        label='Fecha inicio',
         widget=forms.DateInput(attrs={
             'class': 'form-control',
             'type': 'date'
@@ -138,7 +151,7 @@ class BusquedaVentaForm(forms.Form):
     )
     fecha_fin = forms.DateField(
         required=False,
-        label='Hasta',
+        label='Fecha fin',
         widget=forms.DateInput(attrs={
             'class': 'form-control',
             'type': 'date'

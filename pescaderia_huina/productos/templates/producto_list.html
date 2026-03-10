@@ -12,7 +12,7 @@
                 Directorio de Productos
             </h2>
             <p class="text-muted mb-0">
-                Catálogo general de referencias y stock actual
+                Catálogo general de referencias actual
             </p>
             <small class="text-muted">
                 Mostrando {{ productos|length }} producto(s)
@@ -54,7 +54,6 @@
                             <th class="border-0 py-3">Proveedor</th>
                             <th class="border-0 py-3">Presentación</th>
                             <th class="border-0 py-3">Precio Venta</th>
-                            <th class="border-0 py-3 text-center">Stock</th>
                             <th class="border-0 py-3 text-center">Estado</th>
                             <th class="border-0 text-center pe-4 py-3">Acciones</th>
                         </tr>
@@ -90,17 +89,7 @@
                                     $ {{ producto.precio|intcomma }}
                                 </td>
 
-                                <td class="text-center py-3">
-                                    {% if producto.stock > 0 %}
-                                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                                            {{ producto.stock|floatformat:0 }} Unids.
-                                        </span>
-                                    {% else %}
-                                        <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">
-                                            Sin Stock
-                                        </span>
-                                    {% endif %}
-                                </td>
+                
 
                                 <td class="text-center py-3">
                                     {% if producto.estado %}
