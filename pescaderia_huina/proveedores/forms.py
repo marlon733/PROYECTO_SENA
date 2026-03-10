@@ -5,7 +5,7 @@ class ProveedorForm(forms.ModelForm):
     class Meta:
         model = Proveedor
         # Añadimos 'tipo_persona' al inicio de la lista
-        fields = ['tipo_persona', 'nit', 'nombre_contacto', 'correo', 'telefono', 'direccion', 'ciudad', 'estado']
+        fields = ['tipo_persona', 'nit', 'nombre_contacto', 'correo', 'telefono', 'direccion', 'departamento', 'ciudad', 'estado']
         
         # Aplicamos estilos de Bootstrap 5 a cada campo
         widgets = {
@@ -33,10 +33,8 @@ class ProveedorForm(forms.ModelForm):
                 'class': 'form-control', 
                 'placeholder': 'Calle/Carrera...'
             }),
-            'ciudad': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Ciudad de origen'
-            }),
+            'departamento': forms.HiddenInput(),
+            'ciudad': forms.HiddenInput(),
             'estado': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),

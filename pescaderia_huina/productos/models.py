@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum, Q
 # Asegúrate de que la importación apunte correctamente a tu app de proveedores
 from proveedores.models import Proveedor 
 
@@ -54,7 +55,42 @@ class Producto(models.Model):
         verbose_name = "Producto"
         verbose_name_plural = "Productos"
 
+    @property
+    def cantidad_total_calculado(self):
+        """
+        Calcula la cantidad total de este producto en todos los pedidos pendientes.
+        """
+        from pedidos.models import DetallePedido, Pedido
+        
+        total = DetallePedido.objects.filter(
+            producto=self,
+            pedido__estado='PEN'  # Solo pedidos pendientes
+        ).aggregate(total=Sum('cantidad'))['total']
+        
+        return total or 0
+
     def __str__(self):
         # Validación de seguridad: si borraron el proveedor, muestra texto alternativo
         nombre_proveedor = self.proveedor.nombre_contacto if self.proveedor else "Sin Proveedor"
         return f"{self.nombre} ({nombre_proveedor})"
+    
+    @property
+    def stock(self):
+        """
+        Stock = cantidad recibida en pedidos (estado REC)
+                − cantidad vendida en ventas no canceladas
+        """
+        from django.db.models import Sum
+
+        # ✅ Total recibido en pedidos con estado 'REC'
+        recibido = self.detallepedido_set.filter(
+            pedido__estado='REC'
+        ).aggregate(total=Sum('cantidad'))['total'] or 0
+
+        # ✅ Total vendido en ventas no canceladas
+        vendido = self.ventaitem_set.filter(
+            venta__estado__in=['COMPLETADA', 'PENDIENTE']
+        ).aggregate(total=Sum('cantidad'))['total'] or 0
+
+        return recibido - vendido
+    

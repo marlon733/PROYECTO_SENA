@@ -39,8 +39,9 @@ class Proveedor(models.Model):
     )
 
     direccion = models.CharField(max_length=255, verbose_name="Dirección")
+    departamento = models.CharField(max_length=100, verbose_name="Departamento", blank=True, default='')
     ciudad = models.CharField(max_length=100, verbose_name="Ciudad")
-    
+
     estado = models.BooleanField(default=True, verbose_name="Activo")
     fecha_registro = models.DateTimeField(auto_now_add=True)
 

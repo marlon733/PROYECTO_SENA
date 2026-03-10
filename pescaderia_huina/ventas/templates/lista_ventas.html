@@ -1,314 +1,218 @@
 {% extends "core/panel_admin_base.html" %}
+{% load static %}
 {% block title %}Ventas{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+{% endblock %}
+
 {% block content %}
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Ventas</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<div class="container">
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-dark: #0a3d62;
-            --primary-blue: #1e5a7d;
-            --accent-blue: #2980b9;
-            --light-gray: #f8f9fa;
-        }
-        
-        body {
-            background-color: var(--light-gray);
-        }
-        
-        .stats-card {
-            border: none;
-            border-radius: 10px;
-            transition: transform 0.2s;
-            background: white;
-        }
-        
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
-        
-        .card-header-custom {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
-            border: none;
-            border-radius: 10px 10px 0 0 !important;
-        }
-        
-        .filter-card {
-            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-            border: none;
-            border-radius: 10px 10px 0 0 !important;
-        }
-        
-        .table-header {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
-        }
-        
-        .btn-custom-primary {
-            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--primary-blue) 100%);
-            border: none;
-            color: white;
-            transition: all 0.3s;
-        }
-        
-        .btn-custom-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(41, 128, 185, 0.3);
-            color: white;
-        }
-        
-        .action-btn {
-            margin: 0 2px;
-            transition: all 0.2s;
-        }
-        
-        .action-btn:hover {
-            transform: scale(1.05);
-        }
-        
-        .btn-add-sale {
-            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
-            border: none;
-            color: white;
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(39, 174, 96, 0.2);
-        }
-        
-        .btn-add-sale:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(39, 174, 96, 0.3);
-            color: white;
-        }
-
-        .btn-export {
-            border-radius: 0.5rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 0.8rem;
-           font-size: 0.9rem;
-        }
-        .btn-export.pdf { color: #dc3545; border-color: #dc3545; }
-        .btn-export.pdf:hover { background-color: #dc3545; color: white; }
-
-    </style>
-</head>
-<body class="bg-light">
-
-<div class="container my-5">
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="page-title mb-2">Lista de Ventas</h2>
+            <p class="text-muted mb-0 fs-5">Gestiona las ventas y registros de clientes.</p>
+        </div>
+        <a href="{% url 'ventas:crear_venta' %}"
+           class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill px-4 py-2"
+           style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+            <i class="bi bi-plus-lg me-2"></i>Nueva Venta
+        </a>
+    </div>
 
     <!-- Estadísticas -->
     <div class="row mb-4">
         <div class="col-md-6 mb-3">
-            <div class="card stats-card shadow-sm">
+            <div class="card card-modern">
                 <div class="card-body text-center py-4">
                     <h6 class="text-muted mb-3">Total Ventas Completadas</h6>
-                    <h2 class="mb-0 fw-bold text-primary">{{ total_ventas }}</h2>
+                    <h2 class="mb-0 fw-bold" style="color: var(--primary-blue);">{{ total_ventas }}</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-6 mb-3">
-            <div class="card stats-card shadow-sm">
+            <div class="card card-modern">
                 <div class="card-body text-center py-4">
                     <h6 class="text-muted mb-3">Ingresos Totales</h6>
-                    <h2 class="mb-0 fw-bold text-success">{{ total_ingresos|floatformat:2 }}</h2>
+                    <h2 class="mb-0 fw-bold text-success">${{ total_ingresos|floatformat:2 }}</h2>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Filtros de búsqueda -->
-    <div class="card shadow mb-3" style="border: none; border-radius: 10px;">
-        <div class="card-header filter-card text-white">
-             <h5 class="mb-0">Filtros de Búsqueda</h5>
-        </div>
-        <div class="card-body">
-             <form method="get" class="row g-3">
-                  <div class="col-md-4">
-                       <label class="form-label fw-semibold">Estado</label>
-                       {{ form_busqueda.estado }}
-                  </div>
-                  <div class="col-md-5">
-                       <label class="form-label fw-semibold">Buscar</label>
-                       {{ form_busqueda.buscar }}
-                  </div>
-                  <div class="col-md-3 d-flex align-items-end gap-2">
-                       <button type="submit" class="btn btn-custom-primary flex-fill">Buscar</button>
-                       <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
-                  </div>
-                  <div class="col-md-4">
-                      <label class="form-label fw-semibold">Desde</label>
-                       {{ form_busqueda.fecha_inicio }}
-                  </div>
-                  <div class="col-md-4">
-                       <label class="form-label fw-semibold">Hasta</label>
-                       {{ form_busqueda.fecha_fin }}
-                  </div>
-               </form>
+    <!-- Filtros -->
+    <div class="card card-modern mb-4">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="filter-label">Estado</label>
+                    {{ form_busqueda.estado }}
+                </div>
+                <div class="col-md-4">
+                    <label class="filter-label">Buscar</label>
+                    {{ form_busqueda.buscar }}
+                </div>
+                <div class="col-md-2">
+                    <label class="filter-label">Fecha inicio</label>
+                    {{ form_busqueda.fecha_inicio }}
+                </div>
+                <div class="col-md-2">
+                    <label class="filter-label">Fecha fin</label>
+                    {{ form_busqueda.fecha_fin }}
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100"
+                            style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
 
-               <hr class="my-3">
+            <hr class="my-3 border-light">
 
-               <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted small">
-                          {% if request.GET.estado or request.GET.buscar or request.GET.fecha_inicio or request.GET.fecha_fin %}
-                             <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1">
-                                 Mostrando resultados filtrados
-                             </span>
-                       {% else %}
-                            Mostrando todos los registros
-                       {% endif %}
-            </span>
-            <div class="d-flex align-items-center gap-2">
-                <span class="text-muted small fw-bold text-uppercase me-2">Exportar:</span>
-                <a href="?export=pdf{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.buscar %}&buscar={{ request.GET.buscar }}{% endif %}{% if request.GET.fecha_inicio %}&fecha_inicio={{ request.GET.fecha_inicio }}{% endif %}{% if request.GET.fecha_fin %}&fecha_fin={{ request.GET.fecha_fin }}{% endif %}"
-                   class="btn btn-outline-danger btn-export pdf text-decoration-none">
-                    <i class="bi bi-file-earmark-pdf-fill"></i> PDF
-                </a>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Registros de ventas</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small fw-bold text-uppercase me-1">Exportar:</span>
+                    <a href="{% url 'ventas:exportar_pdf' %}?fecha_inicio={{ request.GET.fecha_inicio }}&fecha_fin={{ request.GET.fecha_fin }}&estado={{ request.GET.estado }}"
+                       class="btn btn-export pdf text-decoration-none">
+                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                    </a>
+                    <a href="{% url 'ventas:exportar_excel' %}?fecha_inicio={{ request.GET.fecha_inicio }}&fecha_fin={{ request.GET.fecha_fin }}&estado={{ request.GET.estado }}"
+                       class="btn btn-export excel text-decoration-none">
+                        <i class="bi bi-file-earmark-excel-fill"></i> Excel
+                    </a>
+                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-light border shadow-sm text-secondary btn-sm">
+                        <i class="bi bi-eraser-fill me-1"></i> Limpiar
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
-    
-    <!-- Botón Agregar Nueva Venta -->
-    <div class="text-end mb-4">
-        <a href="{% url 'ventas:crear_venta' %}" class="btn btn-add-sale">
-        Agregar Nueva Venta
-        </a>
-   </div>
 
-    <!-- Mensajes -->
     {% if messages %}
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         {% endfor %}
     {% endif %}
 
-    <!-- Tabla de Ventas -->
-    <div class="card shadow" style="border: none; border-radius: 10px;">
-        <div class="card-header card-header-custom text-white">
-            <h4 class="mb-0"> Lista de Ventas</h4>
-        </div>
-
-        <div class="card-body p-0">
-
+    <!-- Tabla -->
+    <div class="card card-modern">
+        <div class="card-body p-0 overflow-hidden rounded-4">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-header text-white">
+                <table class="table table-professional align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th class="text-center" style="width: 60px;"></th>
-                            <th style="min-width: 150px;">Cliente</th>
-                            <th style="min-width: 120px;">Documento</th>
-                            <th style="min-width: 150px;">Producto</th>
-                            <th style="width: 100px;" class="text-center">Presentación</th>
-                            <th class="text-center" style="width: 100px;">Cantidad</th>
-                            <th class="text-end" style="width: 120px;">Total</th>
-                            <th class="text-center" style="width: 140px;">Fecha</th>
-                            <th class="text-center" style="width: 110px;">Estado</th>
-                            <th class="text-center" style="min-width: 280px;">Acciones</th>
+                            <th class="ps-4" style="width:50px;">#</th>
+                            <th>Cliente</th>
+                            <th>Documento</th>
+                            <th>Productos</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center pe-4">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                     {% if lista_ventas %}
-                            {% for venta in lista_ventas %}
-                            <tr>
-                                <td class="text-center fw-semibold">{{ venta.id }}</td>
-                                <td>{{ venta.nombre_cliente }}</td>
-                                <td>{{ venta.documento_cliente }}</td>
-                                <td>{{ venta.producto.nombre }}</td>
-                                <td class="text-center">
-                                    {% if venta.tipo_presentacion == 'EMPACADO_VACIO' %}
-                                        <span class="badge bg-info text-dark">Empacado al Vacío</span>
-                                    {% elif venta.tipo_presentacion == 'POR_LIBRA' %}
-                                        <span class="badge bg-warning text-dark">Por Libra</span>
+                        {% for venta in lista_ventas %}
+                        <tr>
+                            <td class="ps-4">
+                                <span class="id-cell fw-bold">{{ venta.id }}</span>
+                            </td>
+                            <td class="fw-bold">{{ venta.nombre_cliente|default:"Anónimo" }}</td>
+                            <td class="text-muted fw-semibold">{{ venta.documento_cliente|default:"N/A" }}</td>
+                            <td>
+                                {% for item in venta.items.all %}
+                                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 me-1 mb-1">
+                                        {{ item.producto.nombre }}
+                                    </span>
+                                {% empty %}
+                                    {% if venta.producto %}
+                                        <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">{{ venta.producto.nombre }}</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">Bandeja</span>
+                                        <span class="text-muted small">Sin productos</span>
                                     {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    {{ venta.cantidad }}
-                                    {% if venta.tipo_presentacion == 'POR_LIBRA' %} lb{% else %} und{% endif %}
-                                </td>
-                                <td class="text-end fw-semibold">${{ venta.total|floatformat:2 }}</td>
-                                <td class="text-center">{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td>
-                                <td class="text-center">
-                                    {% if venta.estado == 'COMPLETADA' %}
-                                        <span class="badge bg-success">Completada</span>
-                                    {% elif venta.estado == 'CANCELADA' %}
-                                        <span class="badge bg-danger">Cancelada</span>
-                                    {% else %}
-                                        <span class="badge bg-warning text-dark">Pendiente</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                        <a href="{% url 'ventas:detalle_venta' venta.id %}" 
-                                           class="btn btn-outline-info btn-sm action-btn" 
-                                           title="Ver detalles">
-                                            Ver
-                                        </a>
-                                        {% if venta.estado != 'CANCELADA' %}
-                                            <a href="{% url 'ventas:editar_venta' venta.id %}" 
-                                               class="btn btn-outline-warning btn-sm action-btn" 
-                                               title="Editar">
-                                                Editar
-                                            </a>
-                                            <a href="{% url 'ventas:cancelar_venta' venta.id %}" 
-                                               class="btn btn-outline-danger btn-sm action-btn" 
-                                               title="Cancelar"
-                                               onclick="return confirm('¿Está seguro de cancelar esta venta?')">
-                                                 Cancelar
-                                            </a>
-                                        {% else %}
-                                            <button class="btn btn-outline-secondary btn-sm action-btn" 
-                                                    disabled 
-                                                    title="No disponible">
-                                                     Editar
-                                            </button>
-                                            <button class="btn btn-outline-secondary btn-sm action-btn" 
-                                                    disabled 
-                                                    title="No disponible">
-                                                     Cancelar
-                                            </button>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                         {% else %}
-                            <tr>
-                                <td colspan="10" class="text-center py-5 text-muted">
-                                    <div class="py-3">
-                                        <i class="fs-1">📋</i>
-                                        <p class="mt-3 mb-0 fs-5">No hay ventas registradas</p>
-                                        <p class="text-muted small">Haz clic en "Agregar Nueva Venta" para comenzar</p>
-                                    </div>
-                                </td>
-                            </tr>
-                     {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="text-end total-value fw-bold">
+                                ${{ venta.total|floatformat:2|default:"0.00" }}
+                            </td>
+                            <td class="text-center text-muted fw-semibold small">
+                                {{ venta.fecha_venta|date:"d/m/Y" }}<br>
+                                <span class="text-muted">{{ venta.fecha_venta|date:"H:i" }}</span>
+                            </td>
+                            <td class="text-center">
+                                {% if venta.estado == 'COMPLETADA' %}
+                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Completada
+                                    </span>
+                                {% elif venta.estado == 'CANCELADA' %}
+                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-x-circle-fill me-1"></i> Cancelada
+                                    </span>
+                                {% else %}
+                                    <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-clock-fill me-1"></i> Pendiente
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center pe-4 text-nowrap">
+                                <a href="{% url 'ventas:detalle_venta' venta.id %}"
+                                   class="btn-icon-action"
+                                   data-bs-toggle="tooltip" title="Ver Detalle">
+                                    <i class="bi bi-eye-fill fs-5"></i>
+                                </a>
+                                {% if venta.estado != 'CANCELADA' %}
+                                    <a href="{% url 'ventas:editar_venta' venta.id %}"
+                                       class="btn-icon-action"
+                                       data-bs-toggle="tooltip" title="Editar">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </a>
+                                    <a href="{% url 'ventas:cancelar_venta' venta.id %}"
+                                       class="btn-icon-action delete"
+                                       data-bs-toggle="tooltip" title="Cancelar venta">
+                                        <i class="bi bi-x-circle-fill fs-5"></i>
+                                    </a>
+                                {% else %}
+                                    <button class="btn-icon-action" disabled data-bs-toggle="tooltip" title="Editar">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </button>
+                                    <button class="btn-icon-action" disabled data-bs-toggle="tooltip" title="Cancelar venta">
+                                        <i class="bi bi-x-circle-fill fs-5"></i>
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5 my-5">
+                                <div class="opacity-50 mb-3">
+                                    <i class="bi bi-cart text-primary" style="font-size: 5rem;"></i>
+                                </div>
+                                <h4 class="fw-bold text-dark">No hay ventas registradas</h4>
+                                <p class="text-muted">Haz clic en "Nueva Venta" para comenzar.</p>
+                            </td>
+                        </tr>
+                    {% endif %}
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
+    });
+</script>
 {% endblock %}
