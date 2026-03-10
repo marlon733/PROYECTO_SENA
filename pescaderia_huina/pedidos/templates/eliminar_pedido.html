@@ -1,11 +1,11 @@
 {% extends 'core/panel_admin_base.html' %}
-
-{% block content %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-
 {% load static %}
 
-<link rel="stylesheet" href="{% static 'css/eliminar_pedido.css' %}">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+{% endblock %}
+
+{% block content %}
 
 <div class="container py-5">
     <div class="row justify-content-center">

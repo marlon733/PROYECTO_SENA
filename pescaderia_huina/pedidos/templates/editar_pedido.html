@@ -1,11 +1,11 @@
 {% extends 'core/panel_admin_base.html' %}
-
-{% block content %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-
 {% load static %}
 
-<link rel="stylesheet" href="{% static 'css/editar_pedido.css' %}">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+{% endblock %}
+
+{% block content %}
 
 <div class="container py-4">
     <div class="page-header d-flex justify-content-between align-items-center mb-4">
@@ -106,17 +106,17 @@
             <hr class="my-5" style="border-color: #e7f1ff; opacity: 1;">
 
             <div class="d-flex justify-content-between align-items-center">
-                <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-light px-4 rounded-pill fw-bold shadow-sm" style="color: var(--text-muted); border: 1px solid #dce9f9;">
+                <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-secondary-form rounded-pill px-4 fw-bold shadow-sm">
                     <i class="bi bi-arrow-left me-2"></i> Cancelar
                 </a>
-                <button type="submit" class="btn btn-lg px-5 fw-bold rounded-pill shadow" style="background-color: var(--warning-color); color: #000; border: none;">
+                <button type="submit" class="btn btn-primary-form btn-lg px-5 fw-bold rounded-pill shadow">
                     <i class="bi bi-check-circle me-2"></i> Guardar Cambios
                 </button>
             </div>
         </form>
     </div>
 
-    <div class="alert d-flex align-items-center shadow-sm rounded-4" role="alert" style="background-color: #e7f1ff; border: 1px solid #b6d4fe; color: var(--primary-blue);">
+    <div class="alert-info-blue d-flex align-items-center shadow-sm rounded-4 p-3" role="alert">
         <i class="bi bi-info-circle-fill me-3 fs-3"></i>
         <div>
             Al marcar el pedido como <strong>"Recibido"</strong> desde el directorio, asegúrese de que el stock en el inventario de productos haya sido actualizado correctamente.
@@ -124,6 +124,9 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         

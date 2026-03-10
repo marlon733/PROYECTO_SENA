@@ -1,12 +1,13 @@
 {% extends 'core/panel_admin_base.html' %}
+{% load static %}
 
 {% block title %}Registrar Pedido{% endblock %}
 
-{% block content %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+{% endblock %}
 
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/crear_pedido.css' %}">
+{% block content %}
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -105,18 +106,18 @@
 
                         <div class="row justify-content-end mb-4">
                             <div class="col-md-6 col-lg-5">
-                                <div class="gran-total-box p-4 rounded-4 bg-white shadow-sm border border-2 border-primary border-opacity-10 d-flex flex-column align-items-end justify-content-center">
-                                    <span class="gran-total-label text-muted fw-bold text-uppercase mb-1 small">Total General</span>
-                                    <span class="gran-total-value fs-2 fw-bolder text-primary" id="gran-total-display">$ 0</span>
+                                <div class="gran-total-box p-4 d-flex flex-column align-items-end justify-content-center">
+                                    <span class="gran-total-label mb-1">Total General</span>
+                                    <span class="gran-total-value" id="gran-total-display">$ 0</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
-                            <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-light px-4 rounded-3 border hover-scale">
-                                Cancelar
+                        <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                            <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-secondary-form rounded-pill px-4 fw-bold shadow-sm">
+                                <i class="bi bi-arrow-left me-2"></i> Cancelar
                             </a>
-                            <button type="submit" class="btn btn-primary-custom px-5 rounded-3 text-white shadow fw-bold">
+                            <button type="submit" class="btn btn-primary-form btn-lg px-5 rounded-pill shadow fw-bold">
                                 <i class="bi bi-save2 me-2"></i>Guardar Pedido
                             </button>
                         </div>
@@ -166,16 +167,10 @@
     </div>
 </div>
 
-<style>
-/* Estilos extraídos de tu diseño base */
-.header-blue { background: linear-gradient(135deg, #2C466B, #1f3554); }
-.btn-primary-custom { background: linear-gradient(135deg, #2C466B, #1f3554); border: none; }
-.btn-primary-custom:hover { background: linear-gradient(135deg, #1f3554, #16263d); transform: translateY(-2px); }
-.hover-scale { transition: transform 0.2s; }
-.hover-scale:hover { transform: scale(1.02); }
-.form-control:focus, .form-select:focus { box-shadow: none; border-color: #2C466B; }
-</style>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
