@@ -1,162 +1,203 @@
-{% extends 'core/panel_admin_base.html' %}
+﻿{% extends 'core/panel_admin_base.html' %}
 {% load static %}
 
 {% block title %}Lista de Proveedores{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
 <style>
-    /* Estilos Específicos para la vista de lista */
-    .card-header-ocean {
-        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
-        border: none;
-        position: relative;
-        overflow: hidden;
+    .filter-btn-group .btn {
+        border-radius: 0.5rem !important;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 7px 14px;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+        background: #fff;
+        transition: all 0.2s;
     }
-
-    /* Decoración de ondas sutil en el header */
-    .card-header-ocean::before {
-        content: '';
-        position: absolute;
-        top: -50%; left: -50%; width: 200%; height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-        transform: rotate(30deg);
-        pointer-events: none;
+    .filter-btn-group .btn.active,
+    .filter-btn-group .btn:hover {
+        border-color: var(--primary-blue);
+        color: var(--primary-blue);
+        background: rgba(15, 57, 118, 0.07);
     }
-
-    /* Efecto Hover en Filas */
-    .table tbody tr {
-        transition: all 0.2s ease-in-out;
-    }
-
-    .table tbody tr:hover {
-        background-color: #f0f7ff; /* Azul muy pálido al pasar el mouse */
-        transform: scale(1.002); /* Efecto micro-zoom sutil */
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        z-index: 10;
-        position: relative;
-    }
-
-    /* Botones de Acción Circulares */
-    .action-btn {
-        width: 35px; height: 35px;
-        display: inline-flex; align-items: center; justify-content: center;
-        border-radius: 50%;
-        transition: 0.2s;
-        margin: 0 2px;
-    }
-
-    .action-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    .filter-btn-group .btn.active {
+        box-shadow: 0 0 0 3px rgba(15, 57, 118, 0.12);
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-        
-        <div class="card-header card-header-ocean text-white py-4 px-4">
-            <div class="d-flex justify-content-between align-items-center position-relative z-2">
-                <div class="d-flex align-items-center">
-                    <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <i class="bi bi-people-fill fs-3"></i>
-                    </div>
-                    <div>
-                        <h3 class="mb-1 fw-bold">Proveedores</h3>
-                        <p class="mb-0 opacity-75 small">Gestión de contactos y aliados estratégicos</p>
+<div class="container">
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="page-title mb-2">Directorio de Proveedores</h2>
+            <p class="text-muted mb-0 fs-5">Gestiona los contactos y aliados estratégicos.</p>
+        </div>
+        <a href="{% url 'proveedores:agregar_proveedores' %}"
+           class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill px-4 py-2"
+           style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+            <i class="bi bi-plus-lg me-2"></i>Nuevo Proveedor
+        </a>
+    </div>
+
+    <div class="card card-modern mb-4">
+        <div class="card-body p-4">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-5">
+                    <label class="filter-label">Buscar coincidencias</label>
+                    <div class="search-input-group input-group shadow-sm">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control"
+                               placeholder="Nombre, NIT, ciudad o teléfono...">
+                        <a href="#" id="clearSearch" class="btn-clear-search d-none" title="Limpiar texto">
+                            <i class="bi bi-x-circle-fill fs-5"></i>
+                        </a>
                     </div>
                 </div>
-                <a href="{% url 'proveedores:agregar_proveedores' %}" 
-                   class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm hover-scale">
-                    <i class="bi bi-plus-lg me-2"></i> Nuevo Proveedor
-                </a>
+
+                <div class="col-md-4">
+                    <label class="filter-label">Tipo de persona</label>
+                    <div class="filter-btn-group d-flex gap-1" id="filterTipo">
+                        <button class="btn active" data-value="">Todos</button>
+                        <button class="btn" data-value="natural">
+                            <i class="bi bi-person me-1"></i>Natural
+                        </button>
+                        <button class="btn" data-value="juridica">
+                            <i class="bi bi-building me-1"></i>Juridica
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="filter-label">Estado</label>
+                    <div class="filter-btn-group d-flex gap-1" id="filterEstado">
+                        <button class="btn active" data-value="">Todos</button>
+                        <button class="btn" data-value="activo">
+                            <span class="text-success">&#9679;</span> Activo
+                        </button>
+                        <button class="btn" data-value="inactivo">
+                            <span class="text-danger">&#9679;</span> Inactivo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-3 border-light">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">
+                    <span id="filterStatus">Mostrando todos los registros</span>
+                </span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small fw-bold text-uppercase me-1">Exportar:</span>
+                    <a href="{% url 'proveedores:export_excel' %}" class="btn btn-export excel text-decoration-none">
+                        <i class="bi bi-file-earmark-excel-fill"></i> Excel
+                    </a>
+                    
+                    <button id="clearFilters" class="btn btn-light border shadow-sm text-danger btn-sm d-none" title="Limpiar todos los filtros">
+                        <i class="bi bi-eraser-fill me-1"></i> Limpiar filtros
+                    </button>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="card-body p-0">
+    <div class="card card-modern">
+        <div class="card-body p-0 overflow-hidden rounded-4">
             <div class="table-responsive">
-                <table class="table align-middle mb-0 border-0">
-                    <thead class="bg-light text-secondary text-uppercase small fw-bold" style="letter-spacing: 0.5px;">
+                <table class="table table-professional align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th class="py-3 ps-4 border-0">Tipo</th>
-                            <th class="py-3 border-0">Identificación</th>
-                            <th class="py-3 border-0">Nombre / Contacto</th>
-                            <th class="py-3 border-0">Teléfono</th>
-                            <th class="py-3 border-0">Ciudad</th>
-                            <th class="py-3 border-0">Estado</th>
-                            <th class="py-3 pe-4 text-center border-0">Acciones</th>
+                            <th class="ps-5">Tipo</th>
+                            <th>Identificacion</th>
+                            <th>Nombre / Contacto</th>
+                            <th>Telefono</th>
+                            <th>Ciudad</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center pe-4">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="border-top-0">
+                    <tbody>
                         {% for p in proveedores %}
-                        <tr>
-                            <td class="ps-4">
+                        <tr data-tipo="{{ p.tipo_persona }}"
+                            data-estado="{% if p.estado %}activo{% else %}inactivo{% endif %}"
+                            data-search="{{ p.nit|lower }} {{ p.nombre_contacto|lower }} {{ p.ciudad|lower }} {{ p.telefono|lower }}">
+
+                            <td class="ps-5">
                                 {% if p.tipo_persona == 'natural' %}
-                                    <span class="badge rounded-pill bg-info bg-opacity-10 text-info fw-bold px-3 py-2">
-                                        <i class="bi bi-person me-1"></i> Natural
+                                    <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-person-fill me-1"></i> Natural
                                     </span>
                                 {% else %}
-                                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-bold px-3 py-2">
-                                        <i class="bi bi-building me-1"></i> Jurídica
+                                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-building-fill me-1"></i> Juridica
                                     </span>
                                 {% endif %}
                             </td>
+
                             <td>
-                                <span class="fw-bold text-dark">{{ p.nit }}</span>
+                                <span class="id-cell fw-bold">{{ p.nit }}</span>
                             </td>
+
                             <td>
                                 <div class="d-flex flex-column">
-                                    <span class="fw-semibold text-dark">{{ p.nombre_contacto }}</span>
+                                    <span class="proveedor-name">{{ p.nombre_contacto }}</span>
                                     {% if p.tipo_persona == 'juridica' %}
-                                        <small class="text-muted" style="font-size: 0.75rem;">Representante Legal</small>
+                                        <span><small class="badge rounded-pill nit-badge">Representante Legal</small></span>
                                     {% endif %}
                                 </div>
                             </td>
-                            <td class="text-muted">{{ p.telefono }}</td>
-                            <td class="text-muted">{{ p.ciudad }}</td>
-                            <td>
+
+                            <td class="text-muted fw-semibold">
+                                <i class="bi bi-telephone me-1 text-primary"></i>{{ p.telefono }}
+                            </td>
+
+                            <td class="text-muted fw-semibold">
+                                <i class="bi bi-geo-alt me-1 text-primary"></i>{{ p.ciudad }}
+                            </td>
+
+                            <td class="text-center">
                                 {% if p.estado %}
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">
-                                        ● Activo
+                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Activo
                                     </span>
                                 {% else %}
-                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">
-                                        ● Inactivo
+                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-x-circle-fill me-1"></i> Inactivo
                                     </span>
                                 {% endif %}
                             </td>
-                            <td class="text-center pe-4">
-                                <div class="d-flex justify-content-center">
-                                    <a href="{% url 'proveedores:detalle_proveedores' p.id %}" 
-                                       class="btn btn-outline-info action-btn border-0 bg-info bg-opacity-10 text-info" 
-                                       data-bs-toggle="tooltip" title="Ver Detalle">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </a>
 
-                                    <a href="{% url 'proveedores:modificar_proveedores' p.id %}" 
-                                       class="btn btn-outline-warning action-btn border-0 bg-warning bg-opacity-10 text-warning" 
-                                       data-bs-toggle="tooltip" title="Editar">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </a>
-
-                                    <a href="{% url 'proveedores:eliminar_proveedores' p.id %}" 
-                                       class="btn btn-outline-danger action-btn border-0 bg-danger bg-opacity-10 text-danger" 
-                                       data-bs-toggle="tooltip" title="Eliminar"
-                                       onclick="return confirm('¿Estás seguro de eliminar a este proveedor?');">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </a>
-                                </div>
+                            <td class="text-center pe-4 text-nowrap">
+                                <a href="{% url 'proveedores:detalle_proveedores' p.id %}"
+                                   class="btn-icon-action"
+                                   data-bs-toggle="tooltip" title="Ver Detalle">
+                                    <i class="bi bi-eye-fill fs-5"></i>
+                                </a>
+                                <a href="{% url 'proveedores:modificar_proveedores' p.id %}"
+                                   class="btn-icon-action"
+                                   data-bs-toggle="tooltip" title="Editar">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </a>
+                                <a href="{% url 'proveedores:eliminar_proveedores' p.id %}"
+                                   class="btn-icon-action delete"
+                                   data-bs-toggle="tooltip" title="Eliminar">
+                                    <i class="bi bi-trash fs-5"></i>
+                                </a>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center py-5">
-                                <div class="d-flex flex-column align-items-center opacity-50">
-                                    <i class="bi bi-folder-x display-1 mb-3 text-muted"></i>
-                                    <h5 class="fw-bold text-muted">No se encontraron proveedores</h5>
-                                    <p class="small">Comienza registrando uno nuevo en el botón superior.</p>
+                            <td colspan="7" class="text-center py-5 my-5">
+                                <div class="opacity-50 mb-3">
+                                    <i class="bi bi-people text-primary" style="font-size: 5rem;"></i>
                                 </div>
+                                <h4 class="fw-bold text-dark">No hay proveedores registrados</h4>
+                                <p class="text-muted">Comienza registrando un nuevo proveedor.</p>
                             </td>
                         </tr>
                         {% endfor %}
@@ -164,24 +205,98 @@
                 </table>
             </div>
         </div>
-        
-        <div class="card-footer bg-white border-0 py-3 px-4">
-            <div class="d-flex justify-content-between align-items-center text-muted small">
-                <span>Mostrando <strong>{{ proveedores|length }}</strong> registros</span>
-                </div>
-        </div>
     </div>
-</div>
 
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Inicializar tooltips de Bootstrap si existen elementos con data-bs-toggle="tooltip"
+    document.addEventListener("DOMContentLoaded", function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
+        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
+
+        const searchInput  = document.getElementById('searchInput');
+        const clearSearch  = document.getElementById('clearSearch');
+        const clearFilters = document.getElementById('clearFilters');
+        const filterStatus = document.getElementById('filterStatus');
+        const filterTipo   = document.getElementById('filterTipo');
+        const filterEstado = document.getElementById('filterEstado');
+        const rows         = document.querySelectorAll('tbody tr[data-tipo]');
+        const totalRows    = rows.length;
+
+        let activeTipo   = '';
+        let activeEstado = '';
+
+        function applyFilters() {
+            const query = searchInput.value.toLowerCase().trim();
+            let visible = 0;
+
+            rows.forEach(function (row) {
+                const matchSearch = !query || row.dataset.search.includes(query);
+                const matchTipo   = !activeTipo   || row.dataset.tipo   === activeTipo;
+                const matchEstado = !activeEstado || row.dataset.estado === activeEstado;
+                const show = matchSearch && matchTipo && matchEstado;
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            const hasFilters = query || activeTipo || activeEstado;
+            if (hasFilters) {
+                filterStatus.innerHTML = '<span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1"><i class="bi bi-funnel-fill me-1"></i> Mostrando ' + visible + ' de ' + totalRows + ' registros</span>';
+            } else {
+                filterStatus.textContent = 'Mostrando todos los registros';
+            }
+
+            clearFilters.classList.toggle('d-none', !hasFilters);
+            clearSearch.classList.toggle('d-none', !query);
+
+            let noResultsRow = document.getElementById('noResultsRow');
+            if (visible === 0 && totalRows > 0) {
+                if (!noResultsRow) {
+                    noResultsRow = document.createElement('tr');
+                    noResultsRow.id = 'noResultsRow';
+                    noResultsRow.innerHTML = '<td colspan="7" class="text-center py-5 my-5"><div class="opacity-50 mb-3"><i class="bi bi-search text-primary" style="font-size: 4rem;"></i></div><h4 class="fw-bold text-dark">No se encontraron resultados</h4><p class="text-muted">Intenta con otro nombre o cambia los filtros.</p></td>';
+                    document.querySelector('tbody').appendChild(noResultsRow);
+                }
+                noResultsRow.style.display = '';
+            } else if (noResultsRow) {
+                noResultsRow.style.display = 'none';
+            }
+        }
+
+        searchInput.addEventListener('input', applyFilters);
+
+        clearSearch.addEventListener('click', function (e) {
+            e.preventDefault();
+            searchInput.value = '';
+            applyFilters();
+        });
+
+        filterTipo.querySelectorAll('.btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                filterTipo.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                activeTipo = this.dataset.value;
+                applyFilters();
+            });
+        });
+
+        filterEstado.querySelectorAll('.btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                filterEstado.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                activeEstado = this.dataset.value;
+                applyFilters();
+            });
+        });
+
+        clearFilters.addEventListener('click', function () {
+            searchInput.value = '';
+            activeTipo   = '';
+            activeEstado = '';
+            filterTipo.querySelector('[data-value=""]').click();
+            filterEstado.querySelector('[data-value=""]').click();
         });
     });
 </script>

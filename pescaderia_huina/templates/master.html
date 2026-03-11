@@ -31,6 +31,10 @@
             --accent-gray: var(--ocean-light);
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--ocean-light);
@@ -46,8 +50,8 @@
         /* --- Navbar Moderno --- */
         .navbar-custom {
             /* El mismo gradiente vibrante del index */
-            background: linear-gradient(90deg, #001233 0%, #0061ff 50%, #60efff 100%);
-            box-shadow: 0 4px 20px rgba(0, 97, 255, 0.25);
+            background: linear-gradient(90deg, #001233 0%, #0742a1 50%, #1526e6b0 100%);
+            box-shadow: 0 4px 20px rgba(9, 96, 235, 0.921);
             padding-top: 0.8rem; 
             padding-bottom: 0.8rem;
             transition: all 0.3s ease;
@@ -56,7 +60,7 @@
 
         /* Logo y Marca */
         .navbar-brand img {
-            height: 50px;
+            height: 100px;
             width: auto;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
             transition: transform 0.3s;
@@ -66,7 +70,7 @@
         }
 
         .brand-text {
-            font-size: 1.4rem;
+            font-size: 1.9rem;
             font-weight: 800; /* Más grueso para impacto */
             letter-spacing: 1px;
             color: #fff;
@@ -226,8 +230,8 @@
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="{% url 'core:index' %}">
+                    <span class="brand-text">PESCADERÍA </span>
                     <img src="{% static 'img/LGO.png' %}" alt="logo" class="d-inline-block me-3">
-                    <span class="brand-text">PESCADERÍA HUINA</span>
                 </a>
                 
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -239,10 +243,17 @@
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" 
                                href="{% url 'core:index' %}">Inicio</a>
-                        
-                      
-                        
-                        <li class="nav-item d-none d-lg-block mx-2 text-white-50">|</li>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:index' %}#catalogo">Catálogo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:index' %}#conocenos">Conócenos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:index' %}#ubicacion">Ubicación</a>
+                    </li>
+                    <li class="nav-item d-none d-lg-block mx-2 text-white-50">|</li>
 
                         {% if user.is_authenticated %}
                             {% if user.is_staff %}  
@@ -343,6 +354,6 @@
             </div>
         </div>
     </footer>
-<script src="https://cdn.jsdelivr.net/npm/sienna-accessibility@latest/dist/sienna-accessibility.umd.js" defer></script>
+<script src="{% static 'js/accesibilidad.js' %}" defer></script>
 </body>
 </html>

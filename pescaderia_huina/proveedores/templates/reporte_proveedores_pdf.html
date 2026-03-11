@@ -1,0 +1,605 @@
+﻿{% load humanize %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Reporte de Proveedores - Pescaderia Huina</title>
+    <style>
+        /* ===== PAGINA ===== */
+        @page {
+            size: letter portrait;
+            margin: 0cm 0cm 1.8cm 0cm;
+
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 0pt;
+                right: 0pt;
+                bottom: 0pt;
+                height: 1.2cm;
+            }
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+            background-color: #ffffff;
+        }
+
+        /* ===== UTILIDADES ===== */
+        .tc {
+            text-align: center;
+        }
+
+        .tr {
+            text-align: right;
+        }
+
+        .tl {
+            text-align: left;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .upper {
+            text-transform: uppercase;
+        }
+
+        /* ===== HEADER BAND ===== */
+        .header-band {
+            background-color: #0f3976;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header-band-inner {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .header-band-inner td {
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+
+        .accent-bar {
+            width: 10px;
+            background-color: #38bdf8;
+        }
+
+        /* LOGO BOX */
+        .logo-box {
+            background-color: #1e4d9e;
+            width: 90px;
+            text-align: center;
+            padding: 22px 10px;
+            vertical-align: middle;
+        }
+
+        .logo-letter {
+            font-size: 42px;
+            font-weight: bold;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .logo-sub {
+            font-size: 8px;
+            color: #93c5fd;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        /* COMPANY INFO */
+        .company-block {
+            padding: 24px 20px;
+            vertical-align: middle;
+        }
+
+        .company-name-txt {
+            font-size: 26px;
+            font-weight: bold;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .company-name-sub {
+            font-size: 10px;
+            color: #93c5fd;
+            margin: 4px 0 0 0;
+            letter-spacing: 0.5px;
+        }
+
+        /* REPORT META */
+        .report-meta-block {
+            text-align: right;
+            padding: 20px 24px;
+            vertical-align: middle;
+            background-color: #0a2d6b;
+        }
+
+        .report-type-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #93c5fd;
+            margin: 0 0 6px 0;
+        }
+
+        .report-type-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0 0 10px 0;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        .report-meta-row {
+            font-size: 9.5px;
+            color: #cbd5e1;
+            margin: 2px 0;
+        }
+
+        .report-meta-val {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        /* ===== CONTENT WRAPPER ===== */
+        .content-wrap {
+            padding: 22px 28px 10px 28px;
+        }
+
+        /* ===== DIVIDER ===== */
+        .divider {
+            width: 100%;
+            height: 3px;
+            background-color: #38bdf8;
+            margin: 0;
+            padding: 0;
+            border: none;
+            font-size: 0;
+            line-height: 0;
+        }
+
+        /* ===== SECTION TITLE ===== */
+        .section-title-wrap {
+            margin: 18px 0 10px 0;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #0f3976;
+            border-left: 4px solid #38bdf8;
+            padding-left: 8px;
+            line-height: 1;
+        }
+
+        /* ===== KPI CARDS ===== */
+        .kpi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .kpi-table td {
+            padding: 4px 6px;
+            border: none;
+            vertical-align: top;
+        }
+
+        .kpi-card {
+            border-radius: 6px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+
+        .kpi-card-blue {
+            background-color: #dbeafe;
+            border-top: 3px solid #0f3976;
+        }
+
+        .kpi-card-green {
+            background-color: #dcfce7;
+            border-top: 3px solid #16a34a;
+        }
+
+        .kpi-card-red {
+            background-color: #fee2e2;
+            border-top: 3px solid #dc2626;
+        }
+
+        .kpi-card-slate {
+            background-color: #f1f5f9;
+            border-top: 3px solid #475569;
+        }
+
+        .kpi-num {
+            font-size: 28px;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .kpi-num-blue {
+            color: #0f3976;
+        }
+
+        .kpi-num-green {
+            color: #15803d;
+        }
+
+        .kpi-num-red {
+            color: #b91c1c;
+        }
+
+        .kpi-num-slate {
+            color: #334155;
+        }
+
+        .kpi-label {
+            font-size: 8.5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            color: #64748b;
+        }
+
+        /* ===== DATA TABLE ===== */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        /* Column Header */
+        .data-table thead tr {
+            background-color: #0f3976;
+        }
+
+        .data-table thead th {
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 11px 12px;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .data-table thead th.first-col {
+            border-left: 4px solid #38bdf8;
+        }
+
+        /* Rows */
+        .data-table tbody tr.row-odd {
+            background-color: #ffffff;
+        }
+
+        .data-table tbody tr.row-even {
+            background-color: #f0f7ff;
+        }
+
+        .data-table tbody td {
+            padding: 11px 12px;
+            font-size: 11px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+            color: #1e293b;
+        }
+
+        .data-table tbody td.idx-cell {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: bold;
+            border-left: 4px solid transparent;
+        }
+
+        .data-table tbody tr.row-odd td.idx-cell {
+            border-left-color: #e2e8f0;
+        }
+
+        .data-table tbody tr.row-even td.idx-cell {
+            border-left-color: #bfdbfe;
+        }
+
+        .data-table tbody td.nit-cell {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 10.5px;
+            font-weight: bold;
+            color: #0f3976;
+        }
+
+        .data-table tbody td.name-cell {
+            font-weight: bold;
+            font-size: 11.5px;
+        }
+
+        .data-table tbody td.muted-cell {
+            color: #475569;
+            font-size: 10.5px;
+        }
+
+        /* Footer row */
+        .data-table tfoot tr {
+            background-color: #0f3976;
+        }
+
+        .data-table tfoot td {
+            padding: 10px 12px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline;
+            font-size: 9.5px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .badge-natural {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge-juridica {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-activo {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-inactivo {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-row td {
+            text-align: center;
+            padding: 40px 0;
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        /* ===== FOOTER ===== */
+        #footer_content {
+            background-color: #0f3976;
+            padding: 0;
+        }
+
+        .footer-inner {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .footer-inner td {
+            border: none;
+            padding: 7px 20px;
+            font-size: 8.5px;
+            color: #93c5fd;
+            vertical-align: middle;
+        }
+
+        .footer-inner td.footer-brand {
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-inner td.footer-page {
+            text-align: right;
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================
+     FOOTER (xhtml2pdf requiere que sea antes del contenido)
+     ============================================================ -->
+    <div id="footer_content">
+        <table class="footer-inner">
+            <tr>
+                <td class="footer-brand">
+                    PESCADERIA HUINA &nbsp;|&nbsp; Reporte Oficial de Proveedores
+                </td>
+                <td class="footer-page">
+                    Generado: {{ fecha_generacion|date:"d/m/Y H:i" }}
+                    &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+                    Pagina <pdf:pagenumber> de <pdf:pagecount>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ============================================================
+     HEADER BAND
+     ============================================================ -->
+    <table class="header-band-inner" style="width:100%; border-collapse:collapse; background-color:#0f3976;">
+        <tr>
+            <!-- Accent bar -->
+            <td style="width:10px; background-color:#38bdf8; padding:0;">&nbsp;</td>
+
+            <!-- Logo box -->
+            <td
+                style="width:100px; background-color:#1e4d9e; text-align:center; padding:22px 10px; vertical-align:middle;">
+                <div class="logo-letter">H</div>
+                <div class="logo-sub">Huina</div>
+            </td>
+
+            <!-- Company text -->
+            <td style="padding:24px 20px; vertical-align:middle;">
+                <p class="company-name-txt">Pescaderia Huina</p>
+                <p class="company-name-sub">Tradicion y calidad del mar &nbsp;&bull;&nbsp; Sistema de Gestion Interno
+                </p>
+            </td>
+
+            <!-- Report meta -->
+            <td style="text-align:right; padding:20px 28px; vertical-align:middle; background-color:#0a2d6b;">
+                <p class="report-type-label">Documento Oficial</p>
+                <p class="report-type-title">Directorio de<br>Proveedores</p>
+                <p class="report-meta-row">Fecha de emision: <span class="report-meta-val">{{
+                        fecha_generacion|date:"d/m/Y" }}</span></p>
+                <p class="report-meta-row">Total registros: <span class="report-meta-val">{{ total_proveedores }}</span>
+                </p>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Accent divider under header -->
+    <table style="width:100%; border-collapse:collapse; margin:0; padding:0;">
+        <tr>
+            <td style="background-color:#38bdf8; height:5px; padding:0; font-size:0; line-height:0;">&nbsp;</td>
+        </tr>
+    </table>
+
+    <!-- ============================================================
+     CONTENT
+     ============================================================ -->
+    <div class="content-wrap">
+
+        <!-- ---- SECCION: KPIs ---- -->
+        <div class="section-title-wrap">
+            <div class="section-title">Resumen Ejecutivo</div>
+        </div>
+
+        <table class="kpi-table">
+            <tr>
+                <td style="width:25%;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td class="kpi-card kpi-card-blue">
+                                <div class="kpi-num kpi-num-blue">{{ total_proveedores }}</div>
+                                <div class="kpi-label">Total Proveedores</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="width:25%;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td class="kpi-card kpi-card-green">
+                                <div class="kpi-num kpi-num-green">{{ total_activos }}</div>
+                                <div class="kpi-label">Activos</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="width:25%;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td class="kpi-card kpi-card-red">
+                                <div class="kpi-num kpi-num-red">{{ total_inactivos }}</div>
+                                <div class="kpi-label">Inactivos</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="width:25%;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td class="kpi-card kpi-card-slate">
+                                <div class="kpi-num kpi-num-slate">{{ total_juridicas }}</div>
+                                <div class="kpi-label">Personas Juridicas</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <!-- ---- SECCION: TABLA ---- -->
+        <div class="section-title-wrap">
+            <div class="section-title">Listado Completo de Proveedores</div>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th class="tc first-col" style="width:4%;">#</th>
+                    <th style="width:10%;">Tipo</th>
+                    <th style="width:15%;">NIT / Cedula</th>
+                    <th style="width:26%;">Nombre / Contacto</th>
+                    <th style="width:14%;">Telefono</th>
+                    <th style="width:17%;">Ciudad</th>
+                    <th class="tc" style="width:8%;">Estado</th>
+                    <th class="tc" style="width:6%;">Registro</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in proveedores %}
+                {% if forloop.counter|divisibleby:2 %}
+                <tr class="row-even">
+                    {% else %}
+                <tr class="row-odd">
+                    {% endif %}
+                    <td class="tc idx-cell">{{ forloop.counter }}</td>
+                    <td>
+                        {% if p.tipo_persona == 'natural' %}
+                        <span class="badge badge-natural">Natural</span>
+                        {% else %}
+                        <span class="badge badge-juridica">Juridica</span>
+                        {% endif %}
+                    </td>
+                    <td class="nit-cell">{{ p.nit }}</td>
+                    <td class="name-cell">{{ p.nombre_contacto }}</td>
+                    <td class="muted-cell">{{ p.telefono }}</td>
+                    <td class="muted-cell">{{ p.ciudad }}</td>
+                    <td class="tc">
+                        {% if p.estado %}
+                        <span class="badge badge-activo">Activo</span>
+                        {% else %}
+                        <span class="badge badge-inactivo">Inactivo</span>
+                        {% endif %}
+                    </td>
+                    <td class="tc muted-cell" style="font-size:9.5px;">{{ p.fecha_registro|date:"d/m/Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr class="empty-row">
+                    <td colspan="8">No hay proveedores registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6" class="tr">Total de registros exportados:</td>
+                    <td class="tc" colspan="2">{{ total_proveedores }}</td>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div><!-- /content-wrap -->
+
+</body>
+
+</html>

@@ -1,9 +1,10 @@
 from django.db import models
-# Importamos el modelo de la otra app para "traer los IDs"
+from django.db.models import Sum, Q
+# Asegúrate de que la importación apunte correctamente a tu app de proveedores
 from proveedores.models import Proveedor 
 
 class Producto(models.Model):
-    # --- Opciones de Selección ---
+    # --- Opciones ---
     TIPO_PRODUCTO = [
         ('MA', 'Mariscos'),
         ('PE', 'Pescado'),
@@ -16,14 +17,14 @@ class Producto(models.Model):
         ('LIB', 'A granel (Libras)'),
     ]
 
-    # --- La Conexión Clave (Lo que pediste) ---
-    # Esto crea un campo desplegable en tu formulario donde
-    # seleccionas al proveedor por su nombre, pero guarda su ID internamente.
+    # --- RELACIÓN CON PROVEEDOR (Protegida) ---
     proveedor = models.ForeignKey(
         Proveedor, 
-        on_delete=models.CASCADE, # Si eliminas al proveedor, se borran sus productos
-        related_name='productos', # Permite buscar "proveedor.productos.all"
-        verbose_name="Seleccionar Proveedor"
+        on_delete=models.SET_NULL, # <--- CLAVE: Si borras el proveedor, el producto queda huerfano pero existe
+        null=True,                 # Permite guardar sin proveedor
+        blank=True,                
+        related_name='productos', 
+        verbose_name="Proveedor Asignado"
     )
     
     # --- Datos del Producto ---
@@ -46,12 +47,7 @@ class Producto(models.Model):
     )
     
     # Stock inicia en 0. Se llenará luego con el módulo de Compras/Pedidos.
-    stock = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2, 
-        default=0, 
-        verbose_name="Stock Actual"
-    )
+
 
     estado = models.BooleanField(default=True, verbose_name="Activo")
 
@@ -59,5 +55,42 @@ class Producto(models.Model):
         verbose_name = "Producto"
         verbose_name_plural = "Productos"
 
-    def _str_(self):
-        return f"{self.nombre} - {self.proveedor.nombre_contacto}"
+    @property
+    def cantidad_total_calculado(self):
+        """
+        Calcula la cantidad total de este producto en todos los pedidos pendientes.
+        """
+        from pedidos.models import DetallePedido, Pedido
+        
+        total = DetallePedido.objects.filter(
+            producto=self,
+            pedido__estado='PEN'  # Solo pedidos pendientes
+        ).aggregate(total=Sum('cantidad'))['total']
+        
+        return total or 0
+
+    def __str__(self):
+        # Validación de seguridad: si borraron el proveedor, muestra texto alternativo
+        nombre_proveedor = self.proveedor.nombre_contacto if self.proveedor else "Sin Proveedor"
+        return f"{self.nombre} ({nombre_proveedor})"
+    
+    @property
+    def stock(self):
+        """
+        Stock = cantidad recibida en pedidos (estado REC)
+                − cantidad vendida en ventas no canceladas
+        """
+        from django.db.models import Sum
+
+        # ✅ Total recibido en pedidos con estado 'REC'
+        recibido = self.detallepedido_set.filter(
+            pedido__estado='REC'
+        ).aggregate(total=Sum('cantidad'))['total'] or 0
+
+        # ✅ Total vendido en ventas no canceladas
+        vendido = self.ventaitem_set.filter(
+            venta__estado__in=['COMPLETADA', 'PENDIENTE']
+        ).aggregate(total=Sum('cantidad'))['total'] or 0
+
+        return recibido - vendido
+    

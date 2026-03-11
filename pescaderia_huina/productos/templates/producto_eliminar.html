@@ -5,76 +5,60 @@
 {% block content %}
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-5">
 
-            <div class="card shadow-lg border-0">
-                <!-- Header con el color de tu navbar -->
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
                 <div class="card-header text-white text-center py-4" 
-                     style="background-color: #1e3a5f;">
-                    <h4 class="mb-0 fw-bold">Eliminar Producto</h4>
+                     style="background: linear-gradient(135deg, #dc2626, #991b1b);">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Eliminar Producto</h4>
                 </div>
 
                 <div class="card-body text-center p-5">
 
-                    <!-- Icono de pescado muerto -->
                     <div class="mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-                            <!-- Cuerpo del pescado -->
-                            <ellipse cx="50" cy="50" rx="30" ry="15" fill="#94a3b8" opacity="0.4"/>
-                            <!-- Cola -->
-                            <path d="M 20 50 L 10 40 L 10 60 Z" fill="#94a3b8" opacity="0.4"/>
-                            <!-- Aleta superior -->
-                            <path d="M 45 35 L 40 25 L 50 35 Z" fill="#94a3b8" opacity="0.4"/>
-                            <!-- Aleta inferior -->
-                            <path d="M 45 65 L 40 75 L 50 65 Z" fill="#94a3b8" opacity="0.4"/>
-                            <!-- Ojo (X) -->
-                            <line x1="62" y1="45" x2="68" y2="51" stroke="#dc2626" stroke-width="2"/>
-                            <line x1="68" y1="45" x2="62" y2="51" stroke="#dc2626" stroke-width="2"/>
-                            <!-- Boca triste -->
-                            <path d="M 72 52 Q 75 50 78 52" stroke="#475569" stroke-width="1.5" fill="none"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 100 100">
+                            <ellipse cx="50" cy="50" rx="35" ry="18" fill="#cbd5e1" opacity="0.5"/>
+                            <path d="M 15 50 L 5 35 L 5 65 Z" fill="#cbd5e1" opacity="0.5"/>
+                            <path d="M 45 32 L 40 20 L 55 32 Z" fill="#cbd5e1" opacity="0.5"/>
+                            <line x1="65" y1="45" x2="75" y2="55" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+                            <line x1="75" y1="45" x2="65" y2="55" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M 75 60 Q 78 58 81 60" stroke="#64748b" stroke-width="2" fill="none"/>
                         </svg>
                     </div>
 
-                    <p class="fs-5 mb-3 text-secondary">
-                        ¿Estás seguro de que deseas eliminar el producto?
+                    <h5 class="fw-bold text-dark mb-2">¿Estás seguro?</h5>
+                    <p class="text-muted mb-4">
+                        Vas a eliminar el siguiente producto del catálogo:
                     </p>
 
-                    <!-- Card del producto -->
-                    <div class="card border-danger mb-3" 
-                         style="background-color: #fee2e2;">
+                    <div class="card border border-danger border-opacity-25 mb-4 shadow-sm" 
+                         style="background-color: #fef2f2;">
                         <div class="card-body py-3">
-                            <p class="fw-bold fs-4 text-danger mb-0">
-                                {{ producto.nombre }}
-                            </p>
+                            <h3 class="fw-bold text-danger mb-1">{{ producto.nombre }}</h3>
+                            <small class="text-muted">{{ producto.get_tipo_presentacion_display }}</small>
                         </div>
                     </div>
 
-                    <p class="text-muted small mb-4">
-                        Esta acción no se puede deshacer
-                    </p>
+                    <div class="alert alert-warning d-flex align-items-center small text-start mb-4" role="alert">
+                        <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                        <div>
+                            Esta acción es irreversible. El producto dejará de estar disponible para nuevos pedidos.
+                        </div>
+                    </div>
 
                     <form method="post">
                         {% csrf_token %}
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-danger btn-lg">
-                                Sí, eliminar producto
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-danger btn-lg rounded-pill shadow-sm fw-bold">
+                                Sí, eliminar permanentemente
                             </button>
                             <a href="{% url 'productos:productos_list' %}" 
-                               class="btn btn-outline-secondary btn-lg">
-                                Cancelar
+                               class="btn btn-outline-secondary btn-lg rounded-pill fw-medium border-0">
+                                Cancelar operación
                             </a>
                         </div>
                     </form>
 
-                </div>
-
-                <!-- Footer con el color azul de tu página -->
-                <div class="card-footer text-center py-3" 
-                     style="background-color: #1e3a5f; border-top: none;">
-                    <small class="text-white">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Sistema de gestión - Pescadería Huina
-                    </small>
                 </div>
             </div>
 

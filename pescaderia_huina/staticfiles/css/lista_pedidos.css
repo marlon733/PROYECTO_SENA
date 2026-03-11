@@ -1,124 +1,130 @@
+:root {
+    --primary-blue: #0f3976; 
+    --dark-blue: #0f3976;    
+    --light-blue-bg: #f0f7ff; 
+    --header-blue-bg: #e7f1ff; 
+    --text-dark: #2c3e50;     
+    --text-muted: #6c757d;    
+    --white: #ffffff;
+}
 
-    :root {
-        --primary-blue: #0f3976; 
-        --dark-blue: #0f3976;    
-        --light-blue-bg: #f0f7ff; 
-        --header-blue-bg: #e7f1ff; 
-        --text-dark: #2c3e50;     
-        --text-muted: #6c757d;    
-        --white: #ffffff;
-    }
+/*--- Botones de Acción de Estado ---*/
+.btn-success-action { color: #198754 !important; }
+.btn-success-action:hover { background-color: #198754 !important; color: #ffffff !important; transform: translateY(-2px); }
 
-    body {
-        background-color: var(--light-blue-bg);
-        color: var(--text-dark);
-        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    }
+.btn-danger-action { color: #dc3545 !important; }
+.btn-danger-action:hover { background-color: #dc3545 !important; color: #ffffff !important; transform: translateY(-2px); }
 
-    .page-header { padding: 2rem 0; }
-    .page-title { font-size: 2rem; font-weight: 800; color: var(--dark-blue); letter-spacing: -0.5px; }
+body {
+    background-color: var(--light-blue-bg);
+    color: var(--text-dark);
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
 
-    .card-modern {
-        border: none;
-        border-radius: 1rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        background-color: var(--white);
-    }
+.page-header { padding: 2rem 0; }
+.page-title { font-size: 2rem; font-weight: 800; color: var(--dark-blue); letter-spacing: -0.5px; }
 
-    /*--- Search & Filter Section Estilizada ---*/
-    .filter-label {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        margin-bottom: 0.3rem;
-        letter-spacing: 0.5px;
-    }
-    
-    .search-input-group .input-group-text {
-        background-color: var(--white);
-        border: 1px solid #dee2e6;
-        border-right: none;
-        color: var(--primary-blue);
-    }
-    .search-input-group .form-control { border-left: none; }
-    .form-control:focus { box-shadow: 0 0 0 0.25rem rgba(15, 57, 118, 0.1); border-color: var(--primary-blue); }
+.card-modern {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    background-color: var(--white);
+}
 
-    .btn-clear-search {
-        background-color: var(--white);
-        border: 1px solid #dee2e6;
-        border-left: none;
-        border-right: none;
-        color: #dc3545;
-        display: flex;
-        align-items: center;
-        padding: 0 0.5rem;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-    .btn-clear-search:hover { color: #b02a37; }
+/*--- Search & Filter Section Estilizada ---*/
+.filter-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.5px;
+}
 
-    .btn-export {
-        border-radius: 0.5rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.4rem 0.8rem;
-        font-size: 0.9rem;
-    }
-    .btn-export.pdf { color: #dc3545; border-color: #dc3545; }
-    .btn-export.pdf:hover { background-color: #dc3545; color: white; }
-    .btn-export.excel { color: #198754; border-color: #198754; }
-    .btn-export.excel:hover { background-color: #198754; color: white; }
+.search-input-group .input-group-text {
+    background-color: var(--white);
+    border: 1px solid #dee2e6;
+    border-right: none;
+    color: var(--primary-blue);
+}
+.search-input-group .form-control { border-left: none; }
+.form-control:focus { box-shadow: 0 0 0 0.25rem rgba(15, 57, 118, 0.1); border-color: var(--primary-blue); }
 
-    /*--- Professional Table ---*/
-    .table-professional { margin-bottom: 0; }
-    .table-professional thead th {
-        background-color: var(--header-blue-bg);
-        color: var(--dark-blue);
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        border-bottom: none;
-        padding-top: 1rem; padding-bottom: 1rem;
-    }
-    .table-professional tbody tr { transition: all 0.2s ease; border-bottom: 1px solid #f0f0f0; }
-    .table-professional tbody tr:hover { background-color: var(--light-blue-bg); transform: scale(1.005); }
-    .table-professional td { padding: 1.2rem 1rem; vertical-align: middle; }
+.btn-clear-search {
+    background-color: var(--white);
+    border: 1px solid #dee2e6;
+    border-left: none;
+    border-right: none;
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.btn-clear-search:hover { color: #b02a37; }
 
-    /*--- Data Styling ---*/
-    .id-cell { font-family: 'Courier New', monospace; color: var(--primary-blue); }
-    .proveedor-name { font-weight: 700; color: var(--text-dark); font-size: 1.05rem; }
-    .nit-badge { background-color: var(--header-blue-bg); color: var(--dark-blue); font-weight: 600; font-size: 0.75rem; padding: 0.25em 0.6em; }
-    
-    .product-badge-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .product-badge {
-        background-color: var(--light-blue-bg);
-        color: var(--dark-blue);
-        border: 1px solid #dce9f9;
-        border-radius: 2rem;
-        padding: 0.35rem 0.75rem;
-        font-size: 0.85rem; font-weight: 500;
-        display: inline-flex; align-items: center;
-    }
-    .product-qty {
-        background-color: var(--white);
-        color: var(--primary-blue);
-        font-weight: 700; border-radius: 50%;
-        width: 24px; height: 24px;
-        display: flex; align-items: center; justify-content: center;
-        margin-left: 0.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .total-value { font-size: 1.1rem; color: var(--primary-blue); }
+.btn-export {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+}
+.btn-export.pdf { color: #dc3545; border-color: #dc3545; }
+.btn-export.pdf:hover { background-color: #dc3545; color: white; }
+.btn-export.excel { color: #198754; border-color: #198754; }
+.btn-export.excel:hover { background-color: #198754; color: white; }
 
-    /* Action Icon Buttons */
-    .btn-icon-action {
-        width: 36px; height: 36px; border-radius: 50%;
-        display: inline-flex; align-items: center; justify-content: center;
-        background-color: var(--light-blue-bg); color: var(--primary-blue);
-        transition: all 0.2s; border: none; margin: 0 2px;
-    }
-    .btn-icon-action:hover { background-color: var(--primary-blue); color: var(--white); transform: translateY(-2px); }
-    .btn-icon-action.delete:hover { background-color: #dc3545; }
+/*--- Professional Table ---*/
+.table-professional { margin-bottom: 0; }
+.table-professional thead th {
+    background-color: var(--header-blue-bg);
+    color: var(--dark-blue);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-bottom: none;
+    padding-top: 1rem; padding-bottom: 1rem;
+}
+.table-professional tbody tr { transition: all 0.2s ease; border-bottom: 1px solid #f0f0f0; }
+.table-professional tbody tr:hover { background-color: var(--light-blue-bg); transform: scale(1.005); }
+.table-professional td { padding: 1.2rem 1rem; vertical-align: middle; }
+
+/*--- Data Styling ---*/
+.id-cell { font-family: 'Courier New', monospace; color: var(--primary-blue); }
+.proveedor-name { font-weight: 700; color: var(--text-dark); font-size: 1.05rem; }
+.nit-badge { background-color: var(--header-blue-bg); color: var(--dark-blue); font-weight: 600; font-size: 0.75rem; padding: 0.25em 0.6em; }
+
+.product-badge-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.product-badge {
+    background-color: var(--light-blue-bg);
+    color: var(--dark-blue);
+    border: 1px solid #dce9f9;
+    border-radius: 2rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem; font-weight: 500;
+    display: inline-flex; align-items: center;
+}
+.product-qty {
+    background-color: var(--white);
+    color: var(--primary-blue);
+    font-weight: 700; border-radius: 50%;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    margin-left: 0.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.total-value { font-size: 1.1rem; color: var(--primary-blue); }
+
+/* Action Icon Buttons */
+.btn-icon-action {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background-color: var(--light-blue-bg); color: var(--primary-blue);
+    transition: all 0.2s; border: none; margin: 0 2px;
+}
+.btn-icon-action:hover { background-color: var(--primary-blue); color: var(--white); transform: translateY(-2px); }
+.btn-icon-action.delete:hover { background-color: #dc3545; }

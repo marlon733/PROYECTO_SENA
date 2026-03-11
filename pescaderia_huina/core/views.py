@@ -21,6 +21,36 @@ def page_not_found_404(request, exception=None):
 @login_required
 def PanelAdmin_base(request):
     return render(request, 'core/panel_admin_base.html')
+from productos.models import Producto
+
+from .forms import BusquedaProductoForm
+
+@login_required
+def pagina_inventario(request):
+    # procesar formulario de búsqueda/filtrado
+    form = BusquedaProductoForm(request.GET or None)
+
+    productos = Producto.objects.all()
+    if form.is_valid():
+        buscar = form.cleaned_data.get('buscar')
+        tipo = form.cleaned_data.get('tipo_producto')
+        if buscar:
+            productos = productos.filter(nombre__icontains=buscar)
+        if tipo:
+            productos = productos.filter(tipo_producto=tipo)
+
+    pescados = productos.filter(tipo_producto='PE')
+    mariscos = productos.filter(tipo_producto='MA')
+    pollos   = productos.filter(tipo_producto='PO')
+
+    context = {
+        'pescados': pescados,
+        'mariscos': mariscos,
+        'pollos': pollos,
+        'form_busqueda': form,
+    }
+
+    return render(request, 'core/inventario.html', context)
 
 def dashboard_view(request):
     """
@@ -29,7 +59,6 @@ def dashboard_view(request):
     # Estadísticas generales
     total_usuarios = User.objects.count()
     usuarios_activos = User.objects.filter(is_active=True).count()
-    usuarios_staff = User.objects.filter(is_staff=True).count()
     nuevos_usuarios_mes = User.objects.filter(
         date_joined__month=request.user.date_joined.month
     ).count()
@@ -41,7 +70,6 @@ def dashboard_view(request):
         'titulo': 'Panel de Administración',
         'total_usuarios': total_usuarios,
         'usuarios_activos': usuarios_activos,
-        'usuarios_staff': usuarios_staff,
         'nuevos_usuarios_mes': nuevos_usuarios_mes,
         'ultimos_usuarios': ultimos_usuarios,
     }

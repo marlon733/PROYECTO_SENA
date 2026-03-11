@@ -4,215 +4,316 @@
 {% block title %}Colección de Pescados | Pescadería Huina{% endblock %}
 
 {% block content %}
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:wght@700&display=swap"
-    rel="stylesheet">
-
 <style>
-    /* --- Ámbito Local de Estilos --- */
+    :root {
+        --ocean-primary: #0f3c84;
+        --ocean-cyan: #00f7ff;
+        --ocean-dark: #001233;
+        --ocean-light: #f0f7ff;
+        --ocean-gradient: linear-gradient(135deg, #0061ff 0%, #6085ff 100%);
+        --ocean-accent: #ffc107;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        overflow-x: hidden;
+        background-color: var(--ocean-light);
+    }
+
+    /* === CONTENEDOR === */
     .catalog-wrapper-elegant {
-        /* Paleta de Colores Premium */
-        --premium-navy: #1a2c42;
-        /* Azul marino profundo y serio */
-        --premium-gold: #c5a47e;
-        /* Tono dorado/bronce para acentos */
-        --text-dark: #333333;
-        /* Gris oscuro para texto principal */
-        --text-light: #777777;
-        /* Gris suave para descripciones */
-        --bg-light: #f9fbfd;
-        /* Fondo apenas grisáceo */
-        --white: #ffffff;
-
-        font-family: 'Montserrat', sans-serif;
-        /* Fuente base */
-        background-color: var(--bg-light);
-        padding: 4rem 1rem;
+        font-family: 'Poppins', sans-serif;
+        background: var(--ocean-light);
+        padding: 0;
     }
 
-    /* Tipografía para Títulos */
-    h2.elegant-title,
-    h3.card-title {
-        font-family: 'Playfair Display', serif;
-        /* Fuente de lujo */
-        color: var(--premium-navy);
-    }
-
-    /* --- Encabezado de Sección --- */
-    .section-header-elegant {
-        text-align: center;
-        max-width: 700px;
-        margin: 0 auto 4rem auto;
+    /* === HERO / HEADER === */
+    .catalog-hero {
         position: relative;
+        overflow: hidden;
+        color: #fff;
+        padding: 5.5rem 1rem 4.5rem;
+        background: linear-gradient(160deg, var(--ocean-dark) 0%, #0742a1 60%, rgba(16, 151, 234, 0.65) 100%);
     }
 
-    .section-header-elegant h2 {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        letter-spacing: -0.5px;
-    }
-
-    /* Pequeña línea decorativa debajo del título */
-    .section-header-elegant::after {
+    .catalog-hero::before {
         content: '';
-        display: block;
-        width: 80px;
-        height: 3px;
-        background-color: var(--premium-gold);
-        margin: 1.5rem auto 0;
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+        opacity: 0.9;
     }
 
-    .section-subtitle {
-        font-size: 1.1rem;
-        color: var(--text-light);
-        font-weight: 300;
+    .catalog-hero .hero-inner {
+        position: relative;
+        z-index: 2;
+        max-width: 980px;
+        margin: 0 auto;
+        text-align: center;
     }
 
-    /* --- Grid System --- */
+    .section-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 7px 16px;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+    }
+
+    .catalog-title {
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-top: 1rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.05;
+        font-size: clamp(2.1rem, 4.2vw, 3.2rem);
+    }
+
+    .catalog-title span {
+        color: var(--ocean-cyan);
+    }
+
+    .catalog-subtitle {
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 1.15rem;
+        margin: 0 auto;
+        max-width: 760px;
+    }
+
+    .hero-divider {
+        width: 64px;
+        height: 4px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--ocean-accent), var(--ocean-cyan));
+        margin: 1.4rem auto 0;
+    }
+
+    /* === SECCIÓN / GRID === */
+    .catalog-section {
+        position: relative;
+        margin-top: -44px;
+        padding: 0 1rem 4rem;
+        z-index: 3;
+    }
+
     .products-grid-elegant {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.6rem;
         max-width: 1200px;
         margin: 0 auto;
     }
 
-    /* --- Diseño de Tarjeta Profesional --- */
+    @media (min-width: 992px) {
+        .products-grid-elegant {
+            gap: 2rem;
+        }
+    }
+
+    /* === TARJETAS === */
     .product-card-elegant {
-        background: var(--white);
-        border-radius: 8px;
-        /* Bordes menos redondeados para ser más formal */
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
         overflow: hidden;
-        /* Sombra muy sutil y difuminada */
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-        transition: all 0.4s ease;
-        border: 1px solid rgba(0, 0, 0, 0.03);
+        box-shadow: 0 18px 45px rgba(0, 34, 255, 0.08);
+        border: 1px solid rgba(0, 97, 255, 0.08);
+        transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
         display: flex;
         flex-direction: column;
+        backdrop-filter: blur(10px);
+    }
+
+    .product-card-elegant::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(800px 300px at 20% 0%, rgba(0, 247, 255, 0.12), transparent 55%);
+        opacity: 0;
+        transition: opacity 0.35s ease;
     }
 
     .product-card-elegant:hover {
-        transform: translateY(-7px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        border-color: var(--premium-gold);
-        /* Borde dorado al pasar el mouse */
+        transform: translateY(-10px);
+        box-shadow: 0 28px 70px rgba(0, 34, 255, 0.14);
+        border-color: rgba(0, 247, 255, 0.22);
+    }
+
+    .product-card-elegant:hover::after {
+        opacity: 1;
     }
 
     .card-img-container {
-        height: 240px;
-        /* Un poco más altas */
         width: 100%;
+        aspect-ratio: 4 / 3;
         overflow: hidden;
         position: relative;
+        background: linear-gradient(180deg, rgba(0, 18, 51, 0.0) 0%, rgba(0, 18, 51, 0.25) 100%);
     }
 
     .card-img-container img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        /* Zoom muy suave */
+        transform: scale(1.02);
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s ease;
+        filter: saturate(1.04) contrast(1.02);
     }
 
     .product-card-elegant:hover .card-img-container img {
-        transform: scale(1.06);
+        transform: scale(1.08);
+        filter: saturate(1.08) contrast(1.05);
     }
 
-    /* Etiqueta Premium */
+    .img-sheen {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.0) 0%, rgba(255, 255, 255, 0.18) 35%, rgba(255, 255, 255, 0.0) 70%);
+        transform: translateX(-120%);
+        transition: transform 0.85s ease;
+        pointer-events: none;
+        mix-blend-mode: overlay;
+    }
+
+    .product-card-elegant:hover .img-sheen {
+        transform: translateX(120%);
+    }
+
     .badge-gold {
         position: absolute;
-        top: 20px;
-        left: 20px;
-        /* A la izquierda se ve más elegante */
-        background: linear-gradient(45deg, var(--premium-navy), #2a405b);
-        color: var(--premium-gold);
-        padding: 6px 14px;
-        font-size: 0.7rem;
-        font-weight: 600;
+        top: 16px;
+        left: 16px;
+        background: rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        padding: 7px 12px;
+        font-size: 0.72rem;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        border-radius: 2px;
-        /* Rectangular */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        letter-spacing: 1.6px;
+        border-radius: 999px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
     }
 
     .card-body-elegant {
-        padding: 2rem;
-        /* Más espacio interno */
+        padding: 1.5rem 1.5rem 1.25rem;
         flex-grow: 1;
         display: flex;
         flex-direction: column;
-        text-align: center;
-        /* Texto centrado para mayor elegancia */
+        text-align: left;
+        position: relative;
+        z-index: 2;
+    }
+
+    .origin-tag-subtle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: rgba(0, 18, 51, 0.75);
+        text-transform: uppercase;
+        letter-spacing: 1.6px;
+        margin-bottom: 0.5rem;
+    }
+
+    .origin-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--ocean-accent);
+        box-shadow: 0 0 0 6px rgba(255, 193, 7, 0.14);
+        flex-shrink: 0;
     }
 
     .card-title {
-        font-size: 1.5rem;
-        margin-bottom: 0.75rem;
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: -0.2px;
+        color: var(--ocean-dark);
+        margin-bottom: 0.6rem;
     }
 
     .card-desc {
-        color: var(--text-light);
-        font-size: 0.9rem;
+        color: rgba(0, 18, 51, 0.62);
+        font-size: 0.95rem;
         line-height: 1.7;
-        margin-bottom: 1.5rem;
-        font-weight: 300;
+        margin-bottom: 1.25rem;
         flex-grow: 1;
     }
 
     .card-footer-elegant {
         margin-top: auto;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding-top: 1.05rem;
+        border-top: 1px solid rgba(0, 97, 255, 0.08);
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
     }
 
     .price-elegant {
-        color: var(--premium-gold);
-        font-family: 'Playfair Display', serif;
-        font-size: 1.8rem;
-        font-weight: 700;
+        color: var(--ocean-primary);
+        font-size: 1.55rem;
+        font-weight: 900;
         line-height: 1;
+        letter-spacing: -0.3px;
     }
 
     .price-unit-elegant {
         font-size: 0.85rem;
-        color: var(--text-light);
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 400;
+        color: rgba(0, 18, 51, 0.55);
+        font-weight: 600;
+        text-align: right;
     }
 
-    .origin-tag-subtle {
-        font-size: 0.75rem;
-        color: var(--premium-navy);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 500;
-        opacity: 0.7;
-        margin-bottom: 5px;
+    /* Accesibilidad: reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+        .product-card-elegant,
+        .card-img-container img,
+        .img-sheen {
+            transition: none !important;
+        }
     }
 </style>
 
 <div class="catalog-wrapper-elegant">
 
-    <div class="section-header-elegant">
-        <h2 class="elegant-title">Nuestra Selección de Pescados</h2>
-        <p class="section-subtitle">Frescura inigualable, del agua a su mesa con la garantía Huina.</p>
-    </div>
+    <section class="catalog-hero">
+        <div class="hero-inner">
+            <span class="section-label">
+                <span class="bg-warning p-1 rounded-circle" style="box-shadow:0 0 0 6px rgba(255,193,7,0.14);"></span>
+                Catálogo · Pescados
+            </span>
+            <h2 class="catalog-title">Nuestra Selección de <span>Pescados</span></h2>
+            <p class="catalog-subtitle">Frescura inigualable, del agua a su mesa con la garantía Huina.</p>
+            <div class="hero-divider"></div>
+        </div>
+    </section>
 
-    <div class="products-grid-elegant">
+    <section class="catalog-section">
+        <div class="products-grid-elegant">
 
         <article class="product-card-elegant">
             <div class="card-img-container">
                 <span class="badge-gold">Premium</span>
                 <img src="{% static 'img/Atun.jpg' %}" alt="Atún fresco medallón">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Mar</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Mar</span>
                 <h3 class="card-title">Atún (Medallones)</h3>
                 <p class="card-desc">Cortes seleccionados de carne firme y color intenso. Empacado al vacío para
                     preservar su textura y propiedades nutricionales. Ideal para sellar en casa.</p>
@@ -226,9 +327,10 @@
         <article class="product-card-elegant">
             <div class="card-img-container">
                 <img src="{% static 'img/Pargo.jpg' %}" alt="Pargo Rojo fresco">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Mar</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Mar</span>
                 <h3 class="card-title">Pargo Rojo</h3>
                 <p class="card-desc">Pescado de mar reconocido por su sabor exquisito y carne blanca. Disponible entero
                     o en postas, siempre fresco y listo para su preparación al horno o frito.</p>
@@ -242,9 +344,10 @@
         <article class="product-card-elegant">
             <div class="card-img-container">
                 <img src="{% static 'img/Veranera.jpg' %}" alt="Pescado Veranera">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Mar</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Mar</span>
                 <h3 class="card-title">Veranera</h3>
                 <p class="card-desc">Una excelente opción de mar con carne suave y versátil. Se entrega cuidadosamente
                     limpio, ideal para quienes buscan frescura y calidad en su mesa diaria.</p>
@@ -259,9 +362,10 @@
             <div class="card-img-container">
                 <span class="badge-gold">Tradicional</span>
                 <img src="{% static 'img/Bagre.png' %}" alt="Bagre en rodajas">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Río</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Río</span>
                 <h3 class="card-title">Bagre</h3>
                 <p class="card-desc">El clásico del río presentado en rodajas limpias. Carne sustanciosa y fresca,
                     empacada cuidadosamente para garantizar la higiene en sus caldos y guisos caseros.</p>
@@ -274,10 +378,11 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/Bocachico.jpeg' %}" alt="Bocachico fresco de río">
+                <img src="{% static 'img/Bocachico.png' %}" alt="Bocachico fresco de río">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Río</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Río</span>
                 <h3 class="card-title">Bocachico</h3>
                 <p class="card-desc">Sabor auténtico de nuestras cuencas. Seleccionado por su tamaño y frescura,
                     disponible por unidades o por libras, garantizando un producto 100% natural.</p>
@@ -290,10 +395,11 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/Cachama.jpg' %}" alt="Cachama de río">
+                <img src="{% static 'img/Cachama.png' %}" alt="Cachama de río">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Río</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Río</span>
                 <h3 class="card-title">Cachama</h3>
                 <p class="card-desc">Pescado de río de carne firme y excelente sabor. Perfecta para asar en casa, se
                     entrega escamada y limpia, manteniendo la cadena de frío en todo momento.</p>
@@ -306,10 +412,11 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/Pez_Capaz.jpg' %}" alt="Pescado Capaz">
+                <img src="{% static 'img/Capaz.png' %}" alt="Pescado Capaz">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Río</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Río</span>
                 <h3 class="card-title">Capaz</h3>
                 <p class="card-desc">Tradición y frescura en un solo producto. Carne delicada y limpia, ideal para
                     preparaciones al vapor o en viuda, conservando el sabor genuino del río.</p>
@@ -322,10 +429,11 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/Contramuslo.jpg' %}" alt="Capaz">
+                <img src="{% static 'img/mojarra_roja.png' %}" alt="Mojarra Roja fresca">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Río / Cultivo</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Río / Cultivo</span>
                 <h3 class="card-title">Mojarra Roja</h3>
                 <p class="card-desc">Seleccionada bajo estrictos estándares de calidad. Carne blanca y jugosa, perfecta
                     para una fritura crocante. Disponible por peso exacto según su necesidad.</p>
@@ -338,10 +446,11 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/sss.png' %}" alt="Trucha fresca">
+                <img src="{% static 'img/trucha.png' %}" alt="Trucha fresca">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Río / Agua Dulce</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Río / Agua Dulce</span>
                 <h3 class="card-title">Trucha</h3>
                 <p class="card-desc">Trucha fresca de alta calidad. Se destaca por su textura fina y sabor suave. Ideal
                     para una alimentación saludable y ligera en el hogar.</p>
@@ -354,10 +463,11 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/Tilapia.jpg' %}" alt="Tilapia fresca">
+                <img src="{% static 'img/Tilapia.png' %}" alt="Tilapia fresca">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Río / Cultivo</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Río / Cultivo</span>
                 <h3 class="card-title">Tilapia Entera</h3>
                 <p class="card-desc">Producto fresco y versátil, ideal para el consumo diario por su excelente balance
                     nutricional y facilidad de preparación en cualquier receta casera.</p>
@@ -371,10 +481,11 @@
         <article class="product-card-elegant">
             <div class="card-img-container">
                 <span class="badge-gold">Al Vacío</span>
-                <img src="{% static 'img/Lomos_Mojarra.jpg' %}" alt="Lomos de Mojarra sin espinas">
+                <img src="{% static 'img/Lomos_Mojarra.png' %}" alt="Lomos de Mojarra sin espinas">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Río / Cultivo</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Río / Cultivo</span>
                 <h3 class="card-title">Lomos de Mojarra</h3>
                 <p class="card-desc">Cortes premium completamente limpios, sin espinas ni piel. Empacados al vacío de
                     forma individual para garantizar máxima higiene y facilidad al cocinar.</p>
@@ -385,6 +496,7 @@
             </div>
         </article>
 
-    </div>
+        </div>
+    </section>
 </div>
 {% endblock %}
