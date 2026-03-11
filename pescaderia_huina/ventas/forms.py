@@ -127,7 +127,7 @@ class BusquedaVentaForm(forms.Form):
         label='Estado',
         choices=[
             ('', 'Todos'),
-            ('COMPLETADA', 'Completada'),  
+            ('COMPLETADA', 'Completada'),
             ('CANCELADA', 'Cancelada'),
         ],
         widget=forms.Select(attrs={'class': 'form-select'})
@@ -138,5 +138,22 @@ class BusquedaVentaForm(forms.Form):
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Buscar por nombre de cliente, documento o producto...'
+        })
+    )
+    # campos de fecha
+    fecha_inicio = forms.DateField(
+        required=False,
+        label='Fecha inicio',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
+    fecha_fin = forms.DateField(
+        required=False,
+        label='Fecha fin',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
         })
     )

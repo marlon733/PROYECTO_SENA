@@ -1,0 +1,193 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Reporte de Ventas - Pescadería Huina</title>
+    <style>
+        @page {
+            size: letter landscape;
+            margin: 1.5cm;
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 1.5cm; right: 1.5cm; bottom: 1cm; height: 1cm;
+            }
+        }
+
+        body {
+            font-family: 'Calibri', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 10px;
+            color: #000000;
+            line-height: 1.3;
+        }
+
+        .text-right  { text-align: right; }
+        .text-center { text-align: center; }
+        .text-left   { text-align: left; }
+        .text-bold   { font-weight: bold; }
+
+        /* Cabecera */
+        .report-title    { font-size: 20px; font-weight: bold; color: #0a3d62; margin: 0; text-transform: uppercase; }
+        .report-subtitle { font-size: 11px; color: #555555; }
+
+        /* Stats */
+        .stats-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+        .stats-table th {
+            background-color: #0a3d62;
+            color: #ffffff;
+            font-size: 10px;
+            padding: 6px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .stats-table td { padding: 8px; text-align: center; background-color: #e8f4f8; font-weight: bold; font-size: 14px; border: 1px solid #dee2e6; }
+        .stats-table td.verde  { color: #198754; }
+        .stats-table td.azul   { color: #0a3d62; }
+        .stats-table td.rojo   { color: #dc2626; }
+
+        /* Tabla principal */
+        .excel-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .excel-table th {
+            background-color: #0a3d62;
+            color: #ffffff;
+            font-size: 9px;
+            padding: 5px 6px;
+            text-transform: uppercase;
+            font-weight: bold;
+            border: 1px solid #BFBFBF;
+        }
+        .excel-table td {
+            border: 1px solid #BFBFBF;
+            padding: 5px 6px;
+            vertical-align: middle;
+            font-size: 9px;
+        }
+
+        /* Filas alternadas */
+        .fila-par       { background-color: #f8fffe; }
+        .fila-impar     { background-color: #ffffff; }
+        .fila-cancelada { background-color: #fde8e8; }
+
+        /* Estado */
+        .estado-completada { font-weight: bold; color: #198754; text-transform: uppercase; }
+        .estado-cancelada  { font-weight: bold; color: #dc2626; text-transform: uppercase; }
+        .estado-pendiente  { font-weight: bold; color: #f59e0b; text-transform: uppercase; }
+
+        /* Periodo */
+        .periodo-box {
+            background-color: #f0f7ff;
+            border: 1px solid #c7dff7;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+            font-size: 9px;
+            color: #555;
+        }
+
+        hr { border: none; border-top: 2px solid #0a3d62; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+
+    <div id="footer_content">
+        <table style="width:100%; border-top:1px solid #BFBFBF; padding-top:5px;">
+            <tr>
+                <td style="font-size:8px; color:#555; text-align:left;">Reporte Oficial | Sistema de Gestión Pescadería Huina</td>
+                <td style="font-size:8px; color:#555; text-align:right;">Página <pdf:pagenumber> de <pdf:pagecount></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Encabezado -->
+    <table style="width:100%; margin-bottom:10px;">
+        <tr>
+            <td style="width:60%;">
+                <div class="report-title">PESCADERÍA HUINA</div>
+                <div class="report-subtitle">Reporte de Ventas — Generado el {% now "d/m/Y H:i" %}</div>
+            </td>
+            <td style="width:40%; text-align:right; vertical-align:bottom;">
+                {% if fecha_inicio or fecha_fin %}
+                <div class="periodo-box" style="text-align:right;">
+                    📅 Período:
+                    {% if fecha_inicio %}desde {{ fecha_inicio }}{% endif %}
+                    {% if fecha_fin %}hasta {{ fecha_fin }}{% endif %}
+                    {% if estado_filtro %} | Estado: {{ estado_filtro }}{% endif %}
+                </div>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <!-- Estadísticas -->
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>Ventas Completadas</th>
+                <th>Ingresos Totales</th>
+                <th>Ventas Canceladas</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="azul">{{ total_completadas }}</td>
+                <td class="verde">${{ total_ingresos|floatformat:2|intcomma }}</td>
+                <td class="rojo">{{ total_canceladas }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Tabla de ventas -->
+    <table class="excel-table">
+        <thead>
+            <tr>
+                <th style="width:4%;">#</th>
+                <th style="width:12%;">Cliente</th>
+                <th style="width:10%;">Documento</th>
+                <th style="width:30%;">Productos</th>
+                <th style="width:10%;" class="text-right">Subtotal</th>
+                <th style="width:10%;" class="text-right">IVA (19%)</th>
+                <th style="width:10%;" class="text-right">Total</th>
+                <th style="width:9%;" class="text-center">Fecha</th>
+                <th style="width:8%;" class="text-center">Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+            <tr class="{% if venta.estado == 'CANCELADA' %}fila-cancelada{% elif forloop.counter|divisibleby:2 %}fila-par{% else %}fila-impar{% endif %}">
+                <td class="text-center">{{ venta.id }}</td>
+                <td>{{ venta.nombre_cliente|default:"Anónimo" }}</td>
+                <td class="text-center">{{ venta.documento_cliente|default:"N/A" }}</td>
+                <td>
+                    {% for item in venta.items.all %}
+                        {{ item.producto.nombre }} x{{ item.cantidad|floatformat:"-1" }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        {% if venta.producto %}{{ venta.producto.nombre }}{% else %}N/A{% endif %}
+                    {% endfor %}
+                </td>
+                <td class="text-right">${{ venta.subtotal|default:0|floatformat:2|intcomma }}</td>
+                <td class="text-right">${{ venta.iva_monto|default:0|floatformat:2|intcomma }}</td>
+                <td class="text-right">${{ venta.total|default:0|floatformat:2|intcomma }}</td>
+                <td class="text-center">{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td>
+                <td class="text-center">
+                    {% if venta.estado == 'COMPLETADA' %}
+                        <span class="estado-completada">Completada</span>
+                    {% elif venta.estado == 'CANCELADA' %}
+                        <span class="estado-cancelada">Cancelada</span>
+                    {% else %}
+                        <span class="estado-pendiente">Pendiente</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center" style="padding:20px; color:#555; font-style:italic;">
+                    No hay ventas registradas para el período seleccionado.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

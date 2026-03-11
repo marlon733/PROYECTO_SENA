@@ -1,120 +1,311 @@
 {% extends "core/panel_admin_base.html" %}
-{% block title %}Detalle Venta {{ venta.id }}{% endblock %}
+{% load static %}
+{% block title %}Detalle Venta #{{ venta.id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-blue: #0f3976;
+        --dark-blue:    #2C466B;
+        --light-blue-bg: #f0f7ff;
+        --header-blue-bg: #e7f1ff;
+        --text-dark:  #2c3e50;
+        --text-muted: #6c757d;
+    }
+
+    .card-detail {
+        border: none;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(15, 57, 118, 0.13);
+        height: 100%;
+    }
+
+    .detail-header {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-blue) 100%);
+        padding: 2rem 1.5rem 3rem;
+        position: relative;
+        text-align: center;
+        color: white;
+    }
+    .detail-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 40px;
+        background: white;
+        border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+    }
+
+    .sale-icon {
+        width: 80px; height: 80px;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(5px);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1rem;
+        border: 2px solid rgba(255,255,255,0.4);
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    .info-item {
+        background-color: #f8fbff;
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        display: flex; align-items: center;
+        margin-bottom: 0.75rem;
+        border: 1px solid #eef2f6;
+        transition: box-shadow 0.2s;
+    }
+    .info-item:hover { box-shadow: 0 4px 12px rgba(15,57,118,0.08); }
+
+    .info-icon {
+        background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-blue) 100%);
+        width: 35px; height: 35px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 1rem;
+        margin-right: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    /* Tabla de productos */
+    .table-products thead th {
+        background-color: var(--header-blue-bg);
+        color: var(--primary-blue);
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        border-bottom: none;
+        padding: 0.9rem 0.75rem;
+    }
+    .table-products tbody tr {
+        transition: background 0.15s;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .table-products tbody tr:hover { background-color: var(--light-blue-bg); }
+    .table-products td { padding: 0.9rem 0.75rem; vertical-align: middle; }
+
+    /* Totales */
+    .totals-box {
+        background: var(--light-blue-bg);
+        border-radius: 14px;
+        border: 1px solid var(--header-blue-bg);
+        padding: 1.25rem 1.5rem;
+    }
+    .totals-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.4rem 0;
+        border-bottom: 1px solid #dde8f5;
+        font-size: 0.95rem;
+    }
+    .totals-row:last-child { border-bottom: none; }
+    .totals-row.total-final {
+        padding-top: 0.75rem;
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--primary-blue);
+    }
+    .totals-row.total-final span:last-child { color: #198754; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container-fluid px-4 py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold" style="color: var(--text-dark);">Ventas</h4>
+        <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            <i class="bi bi-arrow-left me-1"></i> Volver
+        </a>
+    </div>
 
     {% if messages %}{% for message in messages %}
-    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
         {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     {% endfor %}{% endif %}
 
-    <div class="card shadow" style="border:none; border-radius:10px;">
-        <div class="card-header text-white" style="background:#0a3d62; border-radius:10px 10px 0 0;">
-            <h4 class="mb-0">Detalle de Venta {{ venta.id }}</h4>
-        </div>
-        <div class="card-body p-4">
-            <div class="row">
+    <div class="row g-4">
 
-                <!-- Cliente -->
-                <div class="col-md-5">
-                    <h5 class="border-bottom pb-2 mb-3" style="color:#0a3d62;">Información del Cliente</h5>
-                    <table class="table table-borderless">
-                        <tr><th class="text-muted" width="40%">Nombre:</th><td class="fw-semibold">{{ venta.nombre_cliente|default:"Cliente anónimo" }}</td></tr>
-                        <tr><th class="text-muted">Documento:</th><td>{{ venta.documento_cliente|default:"No especificado" }}</td></tr>
-                        <tr>
-                            <th class="text-muted">Estado:</th>
-                            <td>
-                                {% if venta.estado == 'COMPLETADA' %}<span class="badge bg-success fs-6">✓ Completada</span>
-                                {% elif venta.estado == 'CANCELADA' %}<span class="badge bg-danger fs-6">✗ Cancelada</span>
-                                {% else %}<span class="badge bg-warning text-dark fs-6">Pendiente</span>{% endif %}
-                            </td>
-                        </tr>
-                        <tr><th class="text-muted">Fecha:</th><td>{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td></tr>
-                        {% if venta.observaciones %}
-                        <tr><th class="text-muted">Observaciones:</th><td class="fst-italic">{{ venta.observaciones }}</td></tr>
+        <!-- ── Columna izquierda: datos del cliente ── -->
+        <div class="col-lg-4">
+            <div class="card card-detail">
+                <div class="detail-header">
+                    <div class="sale-icon"><i class="bi bi-receipt-cutoff"></i></div>
+                    <h3 class="fw-bold mb-1">Venta #{{ venta.id }}</h3>
+                    <p class="mb-2 opacity-75 small">{{ venta.fecha_venta|date:"d/m/Y H:i" }}</p>
+                    <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap">
+                        {% if venta.estado == 'COMPLETADA' %}
+                            <span class="badge px-3 py-1 rounded-pill" style="background-color:#38bdf8; color:#0f3976;">
+                                <i class="bi bi-check-circle-fill me-1"></i>Completada
+                            </span>
+                        {% elif venta.estado == 'CANCELADA' %}
+                            <span class="badge bg-danger px-3 py-1 rounded-pill">
+                                <i class="bi bi-x-circle-fill me-1"></i>Cancelada
+                            </span>
+                        {% else %}
+                            <span class="badge px-3 py-1 rounded-pill" style="background-color:#fbbf24; color:#78350f;">
+                                <i class="bi bi-clock-fill me-1"></i>Pendiente
+                            </span>
                         {% endif %}
-                    </table>
+                    </div>
                 </div>
 
-                <!-- Productos e IVA -->
-                <div class="col-md-7">
-                    <h5 class="border-bottom pb-2 mb-3" style="color:#0a3d62;">Productos y Totales</h5>
-                    <table class="table table-sm table-bordered align-middle">
-                        <thead style="background:#0a3d62; color:white;">
-                            <tr>
-                                <th>Producto</th>
-                                <th class="text-center">Presentación</th>
-                                <th class="text-center">Cantidad</th>
-                                <th class="text-end">Precio Venta</th>
-                                <th class="text-end">Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in venta.items.all %}
-                            <tr>
-                                <td class="fw-semibold">{{ item.producto.nombre }}</td>
-                                <td class="text-center">
-                                    {% if item.tipo_presentacion == 'POR_LIBRA' %}<span class="badge bg-warning text-dark">Por Libra</span>
-                                    {% elif item.tipo_presentacion == 'EMPACADO_VACIO' %}<span class="badge bg-info text-dark">Empacado al Vacío</span>
-                                    {% else %}<span class="badge bg-secondary">Bandeja</span>{% endif %}
-                                </td>
-                                <td class="text-center">{{ item.cantidad }}{% if item.tipo_presentacion == 'POR_LIBRA' %} lb{% else %} und{% endif %}</td>
-                                <td class="text-end">${{ item.precio_unitario|floatformat:2 }}</td>
-                                <td class="text-end fw-semibold text-success">${{ item.subtotal|floatformat:2 }}</td>
-                            </tr>
-                            {% empty %}
-                            {% if venta.producto %}
-                            <tr>
-                                <td class="fw-semibold">{{ venta.producto.nombre }}</td>
-                                <td class="text-center">{{ venta.tipo_presentacion }}</td>
-                                <td class="text-center">{{ venta.cantidad }}</td>
-                                <td class="text-end">${{ venta.precio_unitario|floatformat:2 }}</td>
-                                <td class="text-end fw-semibold text-success">${{ venta.total|floatformat:2 }}</td>
-                            </tr>
-                            {% endif %}
-                            {% endfor %}
-                        </tbody>
-                        <tfoot>
-                            <tr class="table-light">
-                                <td colspan="4" class="text-end fw-semibold text-muted">Subtotal:</td>
-                                <td class="text-end">${{ venta.subtotal|floatformat:2|default:"0.00" }}</td>
-                            </tr>
-                            <tr class="table-light">
-                                <td colspan="4" class="text-end text-muted">IVA (19%):</td>
-                                <td class="text-end text-muted">${{ venta.iva_monto|floatformat:2|default:"0.00" }}</td>
-                            </tr>
-                            <tr style="background:#e8f4f8;">
-                                <td colspan="4" class="text-end fw-bold fs-5" style="color:#0a3d62;">Total:</td>
-                                <td class="text-end fw-bold fs-5 text-success">${{ venta.total|floatformat:2|default:"0.00" }}</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                <div class="card-body px-4 pb-4 pt-2">
+                    <h6 class="fw-bold text-uppercase mb-3" style="font-size:0.72rem; letter-spacing:1px; color: var(--text-muted);">
+                        Información del Cliente
+                    </h6>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-person-fill"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size:0.7rem;">Nombre</small>
+                            <span class="fw-bold text-dark" style="font-size:0.9rem;">{{ venta.nombre_cliente|default:"Cliente anónimo" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-card-text"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size:0.7rem;">Documento</small>
+                            <span class="fw-bold text-dark" style="font-size:0.9rem;">{{ venta.documento_cliente|default:"No especificado" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-calendar-event"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size:0.7rem;">Fecha de venta</small>
+                            <span class="fw-bold text-dark" style="font-size:0.9rem;">{{ venta.fecha_venta|date:"d/m/Y H:i" }}</span>
+                        </div>
+                    </div>
+
+                    {% if venta.observaciones %}
+                    <div class="info-item">
+                        <div class="info-icon"><i class="bi bi-chat-left-text"></i></div>
+                        <div class="lh-1">
+                            <small class="text-muted d-block" style="font-size:0.7rem;">Observaciones</small>
+                            <span class="text-dark fst-italic" style="font-size:0.9rem;">{{ venta.observaciones }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if venta.estado != 'CANCELADA' %}
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'ventas:cancelar_venta' venta.id %}"
+                           class="btn btn-sm btn-outline-danger rounded-pill px-4">
+                            <i class="bi bi-x-circle me-1"></i> Cancelar Venta
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Columna derecha: productos y totales ── -->
+        <div class="col-lg-8 d-flex flex-column gap-4">
+
+            <!-- Tabla productos -->
+            <div class="card card-detail" style="border-radius: 20px;">
+                <div class="card-body p-0 overflow-hidden" style="border-radius: 20px;">
+                    <div class="px-4 pt-4 pb-2">
+                        <h6 class="fw-bold" style="color: var(--primary-blue);">
+                            <i class="bi bi-basket2-fill me-2"></i>Productos
+                        </h6>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-products align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Presentación</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio Venta</th>
+                                    <th class="text-end pe-4">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in venta.items.all %}
+                                <tr>
+                                    <td class="fw-bold ps-4">{{ item.producto.nombre }}</td>
+                                    <td class="text-center">
+                                        {% if item.tipo_presentacion == 'POR_LIBRA' %}
+                                            <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 fw-bold">Por Libra</span>
+                                        {% elif item.tipo_presentacion == 'EMPACADO_VACIO' %}
+                                            <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle px-3 py-1 fw-bold">Empacado al Vacío</span>
+                                        {% else %}
+                                            <span class="badge rounded-pill bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-1 fw-bold">Bandeja</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center fw-semibold">
+                                        {{ item.cantidad }}{% if item.tipo_presentacion == 'POR_LIBRA' %} lb{% else %} und{% endif %}
+                                    </td>
+                                    <td class="text-end text-muted">${{ item.precio_unitario|floatformat:2 }}</td>
+                                    <td class="text-end fw-bold text-success pe-4">${{ item.subtotal|floatformat:2 }}</td>
+                                </tr>
+                                {% empty %}
+                                {% if venta.producto %}
+                                <tr>
+                                    <td class="fw-bold ps-4">{{ venta.producto.nombre }}</td>
+                                    <td class="text-center">{{ venta.tipo_presentacion }}</td>
+                                    <td class="text-center fw-semibold">{{ venta.cantidad }}</td>
+                                    <td class="text-end text-muted">${{ venta.precio_unitario|floatformat:2 }}</td>
+                                    <td class="text-end fw-bold text-success pe-4">${{ venta.total|floatformat:2 }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <i class="bi bi-basket text-primary" style="font-size:3rem;"></i>
+                                        <p class="mt-2 mb-0">Sin productos registrados</p>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
+            <!-- Totales -->
+            <div class="card card-detail p-4" style="border-radius: 20px;">
+                <h6 class="fw-bold mb-3" style="color: var(--primary-blue);">
+                    <i class="bi bi-calculator-fill me-2"></i>Resumen de Cobro
+                </h6>
+                <div class="totals-box">
+                    <div class="totals-row">
+                        <span class="text-muted">Subtotal</span>
+                        <span class="fw-semibold">${{ venta.subtotal|floatformat:2|default:"0.00" }}</span>
+                    </div>
+                    <div class="totals-row">
+                        <span class="text-muted">IVA (19%)</span>
+                        <span class="fw-semibold text-muted">${{ venta.iva_monto|floatformat:2|default:"0.00" }}</span>
+                    </div>
+                    <div class="totals-row total-final">
+                        <span>Total</span>
+                        <span>${{ venta.total|floatformat:2|default:"0.00" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerta cancelación -->
             {% if venta.estado == 'CANCELADA' %}
-            <div class="row mt-3">
-                <div class="col-12">
-                    <div class="alert alert-danger">
-                        <h5 class="alert-heading">Venta Cancelada</h5>
-                        <p class="mb-1"><strong>Fecha:</strong> {{ venta.fecha_cancelacion|date:"d/m/Y H:i" }}</p>
-                        <p class="mb-0"><strong>Motivo:</strong> {{ venta.motivo_cancelacion|default:"Sin motivo especificado" }}</p>
+            <div class="alert alert-danger rounded-4 border-0 shadow-sm" style="background:#fff5f5;">
+                <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-3 text-danger mt-1"></i>
+                    <div>
+                        <h5 class="alert-heading fw-bold mb-1">Venta Cancelada</h5>
+                        <p class="mb-1 small"><strong>Fecha:</strong> {{ venta.fecha_cancelacion|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-0 small"><strong>Motivo:</strong> {{ venta.motivo_cancelacion|default:"Sin motivo especificado" }}</p>
                     </div>
                 </div>
             </div>
             {% endif %}
 
-            <div class="text-end mt-4">
-                <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-secondary me-2">← Volver</a>
-                {% if venta.estado != 'CANCELADA' %}
-                    <a href="{% url 'ventas:cancelar_venta' venta.id %}" class="btn btn-danger">✕ Cancelar Venta</a>
-                {% endif %}
-            </div>
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

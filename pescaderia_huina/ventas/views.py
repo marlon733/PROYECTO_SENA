@@ -45,6 +45,8 @@ def ventas(request):
     if form_busqueda.is_valid():
         estado = form_busqueda.cleaned_data.get('estado')
         buscar = form_busqueda.cleaned_data.get('buscar')
+        fecha_inicio = form_busqueda.cleaned_data.get('fecha_inicio')
+        fecha_fin = form_busqueda.cleaned_data.get('fecha_fin')
         if estado:
             lista_ventas = lista_ventas.filter(estado=estado)
         if buscar:
@@ -53,6 +55,10 @@ def ventas(request):
                 Q(documento_cliente__icontains=buscar) |
                 Q(items__producto__nombre__icontains=buscar)
             ).distinct()
+        if fecha_inicio:
+             lista_ventas = lista_ventas.filter(fecha_venta__date__gte=fecha_inicio)
+        if fecha_fin:
+             lista_ventas = lista_ventas.filter(fecha_venta__date__lte=fecha_fin)
 
     total_ventas = Venta.objects.filter(estado='COMPLETADA').count()
     total_ingresos = Venta.objects.filter(estado='COMPLETADA').aggregate(total=Sum('total'))['total'] or 0
@@ -248,6 +254,18 @@ def exportar_excel(request):
 
     # Datos
     ventas_qs = Venta.objects.prefetch_related('items__producto').all()
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin    = request.GET.get('fecha_fin')
+    estado       = request.GET.get('estado')
+
+    ventas_qs = Venta.objects.prefetch_related('items__producto').all()
+    if fecha_inicio:
+        ventas_qs = ventas_qs.filter(fecha_venta__date__gte=fecha_inicio)
+    if fecha_fin:
+        ventas_qs = ventas_qs.filter(fecha_venta__date__lte=fecha_fin)
+    if estado:
+        ventas_qs = ventas_qs.filter(estado=estado)
+
     for row_num, venta in enumerate(ventas_qs, 4):
         items = venta.items.all()
         productos_str = '\n'.join(
@@ -305,126 +323,41 @@ def exportar_excel(request):
 
 @login_required
 def exportar_pdf(request):
-    from reportlab.lib.pagesizes import landscape, A4
-    from reportlab.lib import colors
-    from reportlab.lib.units import cm
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, HRFlowable
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT
-    from io import BytesIO
-    import datetime
+    from xhtml2pdf import pisa
+    from django.template.loader import get_template
+    from django.db.models import Sum
 
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=landscape(A4),
-        rightMargin=1.5*cm, leftMargin=1.5*cm, topMargin=1.5*cm, bottomMargin=1.5*cm)
+    fecha_inicio  = request.GET.get('fecha_inicio') or None
+    fecha_fin     = request.GET.get('fecha_fin')    or None
+    estado_filtro = request.GET.get('estado')       or None
 
-    styles = getSampleStyleSheet()
-    AZUL = colors.HexColor('#0a3d62')
-    VERDE = colors.HexColor('#198754')
-    ROJO = colors.HexColor('#dc2626')
-    GRIS = colors.HexColor('#6c757d')
-    ROJO_CLARO = colors.HexColor('#fde8e8')
-
-    titulo_style = ParagraphStyle('titulo', parent=styles['Title'], fontSize=18,
-        textColor=AZUL, spaceAfter=2, alignment=TA_CENTER, fontName='Helvetica-Bold')
-    subtitulo_style = ParagraphStyle('subtitulo', parent=styles['Normal'], fontSize=9,
-        textColor=GRIS, alignment=TA_CENTER, spaceAfter=14)
-    prod_style = ParagraphStyle('prod', fontSize=7, leading=10, alignment=TA_LEFT)
-
-    story = []
-    story.append(Paragraph("Pescadería Huina", titulo_style))
-    story.append(Paragraph(
-        f"Reporte de Ventas — Generado el {datetime.datetime.now().strftime('%d/%m/%Y a las %H:%M')}",
-        subtitulo_style
-    ))
-    story.append(HRFlowable(width="100%", thickness=2, color=AZUL, spaceAfter=14))
-
-    total_completadas = Venta.objects.filter(estado='COMPLETADA').count()
-    total_ingresos = Venta.objects.filter(estado='COMPLETADA').aggregate(t=Sum('total'))['t'] or Decimal('0')
-    total_canceladas = Venta.objects.filter(estado='CANCELADA').count()
-
-    stats_data = [
-        ['Ventas Completadas', 'Ingresos Totales', 'Ventas Canceladas'],
-        [str(total_completadas), f"${total_ingresos:,.2f}", str(total_canceladas)],
-    ]
-    stats_table = Table(stats_data, colWidths=[7*cm, 8*cm, 7*cm])
-    stats_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), AZUL),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 9),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('BACKGROUND', (0, 1), (-1, 1), colors.HexColor('#e8f4f8')),
-        ('FONTNAME', (0, 1), (-1, 1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 1), (-1, 1), 14),
-        ('TEXTCOLOR', (0, 1), (0, 1), AZUL),
-        ('TEXTCOLOR', (1, 1), (1, 1), VERDE),
-        ('TEXTCOLOR', (2, 1), (2, 1), ROJO),
-        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#dee2e6')),
-        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#dee2e6')),
-        ('TOPPADDING', (0, 0), (-1, -1), 7),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 7),
-    ]))
-    story.append(stats_table)
-    story.append(Spacer(1, 16))
-
-    headers = ['Cliente', 'Documento', 'Productos', 'Subtotal', 'IVA (19%)', 'Total', 'Fecha', 'Estado']
-    col_widths = [1*cm, 4.2*cm, 2.8*cm, 7.5*cm, 2.4*cm, 2.4*cm, 2.4*cm, 3.0*cm, 2.3*cm]
-
-    data = [headers]
     ventas_qs = Venta.objects.prefetch_related('items__producto').all()
-    for venta in ventas_qs:
-        items = venta.items.all()
-        prods_text = '\n'.join(f"{item.producto.nombre} x{item.cantidad}" for item in items) \
-            if items.exists() else (str(venta.producto.nombre) if venta.producto else 'N/A')
-        data.append([
-            str(venta.id),
-            venta.nombre_cliente or 'Anónimo',
-            venta.documento_cliente or 'N/A',
-            Paragraph(prods_text, prod_style),
-            f"${(venta.subtotal or Decimal('0')):,.2f}",
-            f"${(venta.iva_monto or Decimal('0')):,.2f}",
-            f"${(venta.total or Decimal('0')):,.2f}",
-            venta.fecha_venta.strftime('%d/%m/%Y\n%H:%M'),
-            venta.estado,
-        ])
+    if fecha_inicio:
+        ventas_qs = ventas_qs.filter(fecha_venta__date__gte=fecha_inicio)
+    if fecha_fin:
+        ventas_qs = ventas_qs.filter(fecha_venta__date__lte=fecha_fin)
+    if estado_filtro:
+        ventas_qs = ventas_qs.filter(estado=estado_filtro)
 
-    tabla = Table(data, colWidths=col_widths, repeatRows=1)
-    row_styles = [
-        ('BACKGROUND', (0, 0), (-1, 0), AZUL),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 8),
-        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 7),
-        ('ALIGN', (0, 1), (2, -1), 'CENTER'),
-        ('ALIGN', (4, 1), (6, -1), 'RIGHT'),
-        ('ALIGN', (7, 1), (8, -1), 'CENTER'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#dee2e6')),
-        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.HexColor('#dee2e6')),
-        ('TOPPADDING', (0, 0), (-1, -1), 5),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-    ]
-    for i, row in enumerate(data[1:], 1):
-        estado_val = row[8] if isinstance(row[8], str) else ''
-        if estado_val == 'CANCELADA':
-            row_styles.append(('BACKGROUND', (0, i), (-1, i), ROJO_CLARO))
-            row_styles.append(('TEXTCOLOR', (8, i), (8, i), ROJO))
-            row_styles.append(('FONTNAME', (8, i), (8, i), 'Helvetica-Bold'))
-        elif estado_val == 'COMPLETADA':
-            bg = colors.HexColor('#f8fffe') if i % 2 == 0 else colors.white
-            row_styles.append(('BACKGROUND', (0, i), (-1, i), bg))
-            row_styles.append(('TEXTCOLOR', (8, i), (8, i), VERDE))
-            row_styles.append(('FONTNAME', (8, i), (8, i), 'Helvetica-Bold'))
+    qs_stats = Venta.objects.filter(estado='COMPLETADA')
+    if fecha_inicio:
+        qs_stats = qs_stats.filter(fecha_venta__date__gte=fecha_inicio)
+    if fecha_fin:
+        qs_stats = qs_stats.filter(fecha_venta__date__lte=fecha_fin)
 
-    tabla.setStyle(TableStyle(row_styles))
-    story.append(tabla)
-    doc.build(story)
-    buffer.seek(0)
+    context = {
+        'ventas':             ventas_qs,
+        'total_completadas':  qs_stats.count(),
+        'total_ingresos':     qs_stats.aggregate(t=Sum('total'))['t'] or Decimal('0'),
+        'total_canceladas':   Venta.objects.filter(estado='CANCELADA').count(),
+        'fecha_inicio':       fecha_inicio,
+        'fecha_fin':          fecha_fin,
+        'estado_filtro':      estado_filtro,
+    }
 
-    response = HttpResponse(buffer, content_type='application/pdf')
+    template  = get_template('reporte_ventas_pdf.html')
+    html      = template.render(context)
+    response  = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="ventas_pescaderia_huina.pdf"'
+    pisa.CreatePDF(html, dest=response)
     return response

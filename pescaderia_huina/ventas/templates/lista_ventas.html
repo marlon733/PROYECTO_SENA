@@ -1,21 +1,38 @@
 {% extends "core/panel_admin_base.html" %}
+{% load static %}
 {% block title %}Ventas{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
+<div class="container">
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="page-title mb-2">Lista de Ventas</h2>
+            <p class="text-muted mb-0 fs-5">Gestiona las ventas y registros de clientes.</p>
+        </div>
+        <a href="{% url 'ventas:crear_venta' %}"
+           class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill px-4 py-2"
+           style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+            <i class="bi bi-plus-lg me-2"></i>Nueva Venta
+        </a>
+    </div>
 
     <!-- Estadísticas -->
     <div class="row mb-4">
         <div class="col-md-6 mb-3">
-            <div class="card stats-card shadow-sm">
+            <div class="card card-modern">
                 <div class="card-body text-center py-4">
                     <h6 class="text-muted mb-3">Total Ventas Completadas</h6>
-                    <h2 class="mb-0 fw-bold text-primary">{{ total_ventas }}</h2>
+                    <h2 class="mb-0 fw-bold" style="color: var(--primary-blue);">{{ total_ventas }}</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-6 mb-3">
-            <div class="card stats-card shadow-sm">
+            <div class="card card-modern">
                 <div class="card-body text-center py-4">
                     <h6 class="text-muted mb-3">Ingresos Totales</h6>
                     <h2 class="mb-0 fw-bold text-success">${{ total_ingresos|floatformat:2 }}</h2>
@@ -25,47 +42,53 @@
     </div>
 
     <!-- Filtros -->
-    <div class="card shadow mb-3" style="border:none; border-radius:10px;">
-        <div class="card-header filter-card text-white">
-            <h5 class="mb-0"> Filtros de Búsqueda</h5>
-        </div>
-        <div class="card-body">
-            <form method="get" class="row g-3">
+    <div class="card card-modern mb-4">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold">Estado</label>
+                    <label class="filter-label">Estado</label>
                     {{ form_busqueda.estado }}
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Buscar</label>
+                <div class="col-md-4">
+                    <label class="filter-label">Buscar</label>
                     {{ form_busqueda.buscar }}
                 </div>
-                <div class="col-md-3 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-custom-primary flex-fill">Buscar</button>
-                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-outline-secondary flex-fill">Limpiar</a>
+                <div class="col-md-2">
+                    <label class="filter-label">Fecha inicio</label>
+                    {{ form_busqueda.fecha_inicio }}
+                </div>
+                <div class="col-md-2">
+                    <label class="filter-label">Fecha fin</label>
+                    {{ form_busqueda.fecha_fin }}
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100"
+                            style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+                        <i class="bi bi-search"></i>
+                    </button>
                 </div>
             </form>
-        </div>
-    </div>
 
-    <!-- Botones exportar + Nueva Venta -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex gap-2">
-            <a href="{% url 'ventas:exportar_pdf' %}" class="btn btn-export-pdf d-flex align-items-center gap-2" title="Descargar PDF">
-                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-                    <path d="M4.603 14.087a.81.81 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.68 7.68 0 0 1 1.482-.645 19.697 19.697 0 0 0 1.062-2.227 7.269 7.269 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a10.954 10.954 0 0 0 .98 1.686 5.753 5.753 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.199-.04.386-.118.53-.155.277-.4.402-.625.416a1.45 1.45 0 0 1-.5-.07 2.16 2.16 0 0 1-.43-.194 8.37 8.37 0 0 1-.688-.545 11.28 11.28 0 0 0-1.498.2 10.835 10.835 0 0 1-1.324 1.65c-.184.18-.381.301-.568.332a.533.533 0 0 1-.18.006z"/>
-                </svg>
-                Exportar PDF
-            </a>
-            <a href="{% url 'ventas:exportar_excel' %}" class="btn btn-export-excel d-flex align-items-center gap-2" title="Descargar Excel">
-                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-                    <path d="M4.5 12.5A.5.5 0 0 1 5 12h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm1.5-4a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H6z"/>
-                </svg>
-                Exportar Excel
-            </a>
+            <hr class="my-3 border-light">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Registros de ventas</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small fw-bold text-uppercase me-1">Exportar:</span>
+                    <a href="{% url 'ventas:exportar_pdf' %}?fecha_inicio={{ request.GET.fecha_inicio }}&fecha_fin={{ request.GET.fecha_fin }}&estado={{ request.GET.estado }}"
+                       class="btn btn-export pdf text-decoration-none">
+                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                    </a>
+                    <a href="{% url 'ventas:exportar_excel' %}?fecha_inicio={{ request.GET.fecha_inicio }}&fecha_fin={{ request.GET.fecha_fin }}&estado={{ request.GET.estado }}"
+                       class="btn btn-export excel text-decoration-none">
+                        <i class="bi bi-file-earmark-excel-fill"></i> Excel
+                    </a>
+                    <a href="{% url 'ventas:lista_ventas' %}" class="btn btn-light border shadow-sm text-secondary btn-sm">
+                        <i class="bi bi-eraser-fill me-1"></i> Limpiar
+                    </a>
+                </div>
+            </div>
         </div>
-        <a href="{% url 'ventas:crear_venta' %}" class="btn btn-add-sale">Agregar Nueva Venta</a>
     </div>
 
     {% if messages %}
@@ -77,81 +100,102 @@
     {% endif %}
 
     <!-- Tabla -->
-    <div class="card shadow" style="border:none; border-radius:10px;">
-        <div class="card-header card-header-custom text-white">
-            <h4 class="mb-0">Lista de Ventas</h4>
-        </div>
-        <div class="card-body p-0">
+    <div class="card card-modern">
+        <div class="card-body p-0 overflow-hidden rounded-4">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-header text-white">
+                <table class="table table-professional align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th class="text-center" style="width:50px;">#</th>
-                            <th style="min-width:120px;">Cliente</th>
-                            <th style="min-width:110px;">Documento</th>
-                            <th style="min-width:200px;">Productos</th>
-                            <th class="text-end" style="width:130px;">Total</th>
-                            <th class="text-center" style="width:130px;">Fecha</th>
-                            <th class="text-center" style="width:110px;">Estado</th>
-                            <th class="text-center" style="min-width:220px;">Acciones</th>
+                            <th class="ps-4" style="width:50px;">#</th>
+                            <th>Cliente</th>
+                            <th>Documento</th>
+                            <th>Productos</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center pe-4">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                     {% if lista_ventas %}
                         {% for venta in lista_ventas %}
                         <tr>
-                            <td class="text-center fw-semibold">{{ venta.id }}</td>
-                            <td>{{ venta.nombre_cliente|default:"Anónimo" }}</td>
-                            <td>{{ venta.documento_cliente|default:"N/A" }}</td>
+                            <td class="ps-4">
+                                <span class="id-cell fw-bold">{{ venta.id }}</span>
+                            </td>
+                            <td class="fw-bold">{{ venta.nombre_cliente|default:"Anónimo" }}</td>
+                            <td class="text-muted fw-semibold">{{ venta.documento_cliente|default:"N/A" }}</td>
                             <td>
                                 {% for item in venta.items.all %}
-                                    <span class="badge bg-light text-dark border mb-1">
+                                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 me-1 mb-1">
                                         {{ item.producto.nombre }}
                                     </span>
                                 {% empty %}
                                     {% if venta.producto %}
-                                        <span class="badge bg-light text-dark border">{{ venta.producto.nombre }}</span>
+                                        <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">{{ venta.producto.nombre }}</span>
                                     {% else %}
                                         <span class="text-muted small">Sin productos</span>
                                     {% endif %}
                                 {% endfor %}
                             </td>
-                            <td class="text-end fw-bold text-success fs-6">
+                            <td class="text-end total-value fw-bold">
                                 ${{ venta.total|floatformat:2|default:"0.00" }}
                             </td>
-                            <td class="text-center small">
+                            <td class="text-center text-muted fw-semibold small">
                                 {{ venta.fecha_venta|date:"d/m/Y" }}<br>
                                 <span class="text-muted">{{ venta.fecha_venta|date:"H:i" }}</span>
                             </td>
                             <td class="text-center">
                                 {% if venta.estado == 'COMPLETADA' %}
-                                    <span class="badge bg-success">Completada</span>
+                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Completada
+                                    </span>
                                 {% elif venta.estado == 'CANCELADA' %}
-                                    <span class="badge bg-danger">Cancelada</span>
+                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-x-circle-fill me-1"></i> Cancelada
+                                    </span>
                                 {% else %}
-                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                    <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 fw-bold">
+                                        <i class="bi bi-clock-fill me-1"></i> Pendiente
+                                    </span>
                                 {% endif %}
                             </td>
-                            <td class="text-center">
-                                <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                    <a href="{% url 'ventas:detalle_venta' venta.id %}" class="btn btn-outline-info btn-sm action-btn">Ver</a>
-                                    {% if venta.estado != 'CANCELADA' %}
-                                        <a href="{% url 'ventas:editar_venta' venta.id %}" class="btn btn-outline-warning btn-sm action-btn">Editar</a>
-                                        <a href="{% url 'ventas:cancelar_venta' venta.id %}" class="btn btn-outline-danger btn-sm action-btn">Cancelar</a>
-                                    {% else %}
-                                        <button class="btn btn-outline-secondary btn-sm action-btn" disabled>Editar</button>
-                                        <button class="btn btn-outline-secondary btn-sm action-btn" disabled>Cancelar</button>
-                                    {% endif %}
-                                </div>
+                            <td class="text-center pe-4 text-nowrap">
+                                <a href="{% url 'ventas:detalle_venta' venta.id %}"
+                                   class="btn-icon-action"
+                                   data-bs-toggle="tooltip" title="Ver Detalle">
+                                    <i class="bi bi-eye-fill fs-5"></i>
+                                </a>
+                                {% if venta.estado != 'CANCELADA' %}
+                                    <a href="{% url 'ventas:editar_venta' venta.id %}"
+                                       class="btn-icon-action"
+                                       data-bs-toggle="tooltip" title="Editar">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </a>
+                                    <a href="{% url 'ventas:cancelar_venta' venta.id %}"
+                                       class="btn-icon-action delete"
+                                       data-bs-toggle="tooltip" title="Cancelar venta">
+                                        <i class="bi bi-x-circle-fill fs-5"></i>
+                                    </a>
+                                {% else %}
+                                    <button class="btn-icon-action" disabled data-bs-toggle="tooltip" title="Editar">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </button>
+                                    <button class="btn-icon-action" disabled data-bs-toggle="tooltip" title="Cancelar venta">
+                                        <i class="bi bi-x-circle-fill fs-5"></i>
+                                    </button>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="8" class="text-center py-5 text-muted">
-                                <span class="fs-1"></span>
-                                <p class="mt-3 mb-0 fs-5">No hay ventas registradas</p>
-                                <p class="text-muted small">Haz clic en "Agregar Nueva Venta" para comenzar</p>
+                            <td colspan="8" class="text-center py-5 my-5">
+                                <div class="opacity-50 mb-3">
+                                    <i class="bi bi-cart text-primary" style="font-size: 5rem;"></i>
+                                </div>
+                                <h4 class="fw-bold text-dark">No hay ventas registradas</h4>
+                                <p class="text-muted">Haz clic en "Nueva Venta" para comenzar.</p>
                             </td>
                         </tr>
                     {% endif %}
@@ -162,57 +206,13 @@
     </div>
 
 </div>
+{% endblock %}
 
-<style>
-:root { --primary-dark: #0a3d62; --primary-blue: #1e5a7d; --accent-blue: #2980b9; }
-
-.stats-card { border:none; border-radius:10px; background:white; transition:transform 0.2s; }
-.stats-card:hover { transform:translateY(-4px); box-shadow:0 8px 16px rgba(0,0,0,.1); }
-
-.card-header-custom {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
-    border: none;
-    border-radius: 10px 10px 0 0 !important;
-}
-.filter-card {
-    background: linear-gradient(135deg, #6c757d, #5a6268);
-    border: none;
-    border-radius: 10px 10px 0 0 !important;
-}
-.table-header {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
-}
-
-.btn-custom-primary {
-    background: linear-gradient(135deg, var(--accent-blue), var(--primary-blue));
-    border: none; color: white; transition: all .3s;
-}
-.btn-custom-primary:hover { transform: translateY(-2px); color: white; }
-
-.btn-export-pdf {
-    background: linear-gradient(135deg, #c0392b, #e74c3c);
-    color: white; border: none; border-radius: 8px;
-    padding: 10px 18px; font-weight: 600; transition: all .3s;
-}
-.btn-export-pdf:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(192,57,43,.35); color: white; }
-
-.btn-export-excel {
-    background: linear-gradient(135deg, #1d6f42, #107c41);
-    color: white; border: none; border-radius: 8px;
-    padding: 10px 18px; font-weight: 600; transition: all .3s;
-}
-.btn-export-excel:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(29,111,66,.35); color: white; }
-
-.btn-add-sale {
-    background: linear-gradient(135deg, #27ae60, #229954);
-    border: none; color: white; padding: 11px 24px;
-    font-weight: 600; border-radius: 8px; transition: all .3s;
-}
-.btn-add-sale:hover { transform: translateY(-3px); color: white; }
-
-.action-btn { margin: 0 2px; transition: all .2s; }
-.action-btn:hover { transform: scale(1.05); }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
+    });
+</script>
 {% endblock %}

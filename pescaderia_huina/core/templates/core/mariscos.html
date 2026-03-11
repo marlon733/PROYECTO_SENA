@@ -4,199 +4,310 @@
 {% block title %}Selección de Mariscos | Pescadería Huina{% endblock %}
 
 {% block content %}
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:wght@700&display=swap"
-    rel="stylesheet">
-
 <style>
-    /* Reutilizamos las variables para consistencia, pero podrías cambiar 
-       el --premium-navy por un tono más "coral" si quisieras diferenciar secciones.
-       Por ahora, mantenemos la elegancia del azul marino. */
+    :root {
+        --ocean-primary: #0f3c84;
+        --ocean-cyan: #00f7ff;
+        --ocean-dark: #001233;
+        --ocean-light: #f0f7ff;
+        --ocean-gradient: linear-gradient(135deg, #0061ff 0%, #6085ff 100%);
+        --ocean-accent: #ffc107;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        overflow-x: hidden;
+        background-color: var(--ocean-light);
+    }
+
     .catalog-wrapper-elegant {
-        --premium-navy: #1a2c42;
-        --premium-gold: #c5a47e;
-        --text-dark: #333333;
-        --text-light: #777777;
-        --bg-light: #f9fbfd;
-        --white: #ffffff;
-
-        font-family: 'Montserrat', sans-serif;
-        background-color: var(--bg-light);
-        padding: 4rem 1rem;
+        font-family: 'Poppins', sans-serif;
+        background: var(--ocean-light);
+        padding: 0;
     }
 
-    /* Títulos */
-    h2.elegant-title,
-    h3.card-title {
-        font-family: 'Playfair Display', serif;
-        color: var(--premium-navy);
-    }
-
-    /* Header de Sección */
-    .section-header-elegant {
-        text-align: center;
-        max-width: 700px;
-        margin: 0 auto 4rem auto;
+    .catalog-hero {
         position: relative;
+        overflow: hidden;
+        color: #fff;
+        padding: 5.5rem 1rem 4.5rem;
+        background: linear-gradient(160deg, var(--ocean-dark) 0%, #0742a1 60%, rgba(16, 151, 234, 0.65) 100%);
     }
 
-    .section-header-elegant h2 {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        letter-spacing: -0.5px;
-    }
-
-    .section-header-elegant::after {
+    .catalog-hero::before {
         content: '';
-        display: block;
-        width: 80px;
-        height: 3px;
-        background-color: var(--premium-gold);
-        margin: 1.5rem auto 0;
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+        opacity: 0.9;
     }
 
-    .section-subtitle {
-        font-size: 1.1rem;
-        color: var(--text-light);
-        font-weight: 300;
+    .catalog-hero .hero-inner {
+        position: relative;
+        z-index: 2;
+        max-width: 980px;
+        margin: 0 auto;
+        text-align: center;
     }
 
-    /* Grid */
+    .section-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 7px 16px;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+    }
+
+    .catalog-title {
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-top: 1rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.05;
+        font-size: clamp(2.1rem, 4.2vw, 3.2rem);
+    }
+
+    .catalog-title span {
+        color: var(--ocean-cyan);
+    }
+
+    .catalog-subtitle {
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 1.15rem;
+        margin: 0 auto;
+        max-width: 760px;
+    }
+
+    .hero-divider {
+        width: 64px;
+        height: 4px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--ocean-accent), var(--ocean-cyan));
+        margin: 1.4rem auto 0;
+    }
+
+    .catalog-section {
+        position: relative;
+        margin-top: -44px;
+        padding: 0 1rem 4rem;
+        z-index: 3;
+    }
+
     .products-grid-elegant {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.6rem;
         max-width: 1200px;
         margin: 0 auto;
     }
 
-    /* Tarjetas */
+    @media (min-width: 992px) {
+        .products-grid-elegant {
+            gap: 2rem;
+        }
+    }
+
     .product-card-elegant {
-        background: var(--white);
-        border-radius: 8px;
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
         overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-        transition: all 0.4s ease;
-        border: 1px solid rgba(0, 0, 0, 0.03);
+        box-shadow: 0 18px 45px rgba(0, 34, 255, 0.08);
+        border: 1px solid rgba(0, 97, 255, 0.08);
+        transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
         display: flex;
         flex-direction: column;
+        backdrop-filter: blur(10px);
+    }
+
+    .product-card-elegant::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(800px 300px at 20% 0%, rgba(0, 247, 255, 0.12), transparent 55%);
+        opacity: 0;
+        transition: opacity 0.35s ease;
     }
 
     .product-card-elegant:hover {
-        transform: translateY(-7px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        border-color: var(--premium-gold);
+        transform: translateY(-10px);
+        box-shadow: 0 28px 70px rgba(0, 34, 255, 0.14);
+        border-color: rgba(0, 247, 255, 0.22);
+    }
+
+    .product-card-elegant:hover::after {
+        opacity: 1;
     }
 
     .card-img-container {
-        height: 240px;
         width: 100%;
+        aspect-ratio: 4 / 3;
         overflow: hidden;
         position: relative;
+        background: linear-gradient(180deg, rgba(0, 18, 51, 0.0) 0%, rgba(0, 18, 51, 0.25) 100%);
     }
 
     .card-img-container img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transform: scale(1.02);
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s ease;
+        filter: saturate(1.04) contrast(1.02);
     }
 
     .product-card-elegant:hover .card-img-container img {
-        transform: scale(1.06);
+        transform: scale(1.08);
+        filter: saturate(1.08) contrast(1.05);
     }
 
-    /* Badges */
+    .img-sheen {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.0) 0%, rgba(255, 255, 255, 0.18) 35%, rgba(255, 255, 255, 0.0) 70%);
+        transform: translateX(-120%);
+        transition: transform 0.85s ease;
+        pointer-events: none;
+        mix-blend-mode: overlay;
+    }
+
+    .product-card-elegant:hover .img-sheen {
+        transform: translateX(120%);
+    }
+
     .badge-gold {
         position: absolute;
-        top: 20px;
-        left: 20px;
-        background: linear-gradient(45deg, var(--premium-navy), #2a405b);
-        color: var(--premium-gold);
-        padding: 6px 14px;
-        font-size: 0.7rem;
-        font-weight: 600;
+        top: 16px;
+        left: 16px;
+        background: rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        padding: 7px 12px;
+        font-size: 0.72rem;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        border-radius: 2px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        letter-spacing: 1.6px;
+        border-radius: 999px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
     }
 
-    /* Cuerpo de tarjeta */
     .card-body-elegant {
-        padding: 2rem;
+        padding: 1.5rem 1.5rem 1.25rem;
         flex-grow: 1;
         display: flex;
         flex-direction: column;
-        text-align: center;
+        text-align: left;
+        position: relative;
+        z-index: 2;
+    }
+
+    .origin-tag-subtle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: rgba(0, 18, 51, 0.75);
+        text-transform: uppercase;
+        letter-spacing: 1.6px;
+        margin-bottom: 0.5rem;
+    }
+
+    .origin-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--ocean-accent);
+        box-shadow: 0 0 0 6px rgba(255, 193, 7, 0.14);
+        flex-shrink: 0;
     }
 
     .card-title {
-        font-size: 1.5rem;
-        margin-bottom: 0.75rem;
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: -0.2px;
+        color: var(--ocean-dark);
+        margin-bottom: 0.6rem;
     }
 
     .card-desc {
-        color: var(--text-light);
-        font-size: 0.9rem;
+        color: rgba(0, 18, 51, 0.62);
+        font-size: 0.95rem;
         line-height: 1.7;
-        margin-bottom: 1.5rem;
-        font-weight: 300;
+        margin-bottom: 1.25rem;
         flex-grow: 1;
     }
 
     .card-footer-elegant {
         margin-top: auto;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding-top: 1.05rem;
+        border-top: 1px solid rgba(0, 97, 255, 0.08);
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
     }
 
     .price-elegant {
-        color: var(--premium-gold);
-        font-family: 'Playfair Display', serif;
-        font-size: 1.8rem;
-        font-weight: 700;
+        color: var(--ocean-primary);
+        font-size: 1.55rem;
+        font-weight: 900;
         line-height: 1;
+        letter-spacing: -0.3px;
     }
 
     .price-unit-elegant {
         font-size: 0.85rem;
-        color: var(--text-light);
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 400;
+        color: rgba(0, 18, 51, 0.55);
+        font-weight: 600;
+        text-align: right;
     }
 
-    .origin-tag-subtle {
-        font-size: 0.75rem;
-        color: var(--premium-navy);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 500;
-        opacity: 0.7;
-        margin-bottom: 5px;
+    @media (prefers-reduced-motion: reduce) {
+        .product-card-elegant,
+        .card-img-container img,
+        .img-sheen {
+            transition: none !important;
+        }
     }
 </style>
 
 <div class="catalog-wrapper-elegant">
 
-    <div class="section-header-elegant">
-        <h2 class="elegant-title">Exquisitos Mariscos</h2>
-        <p class="section-subtitle">Sabores intensos del océano, seleccionados para sus mejores preparaciones.</p>
-    </div>
+    <section class="catalog-hero">
+        <div class="hero-inner">
+            <span class="section-label">
+                <span class="bg-warning p-1 rounded-circle" style="box-shadow:0 0 0 6px rgba(255,193,7,0.14);"></span>
+                Catálogo · Mariscos
+            </span>
+            <h2 class="catalog-title">Exquisitos <span>Mariscos</span></h2>
+            <p class="catalog-subtitle">Sabores intensos del océano, seleccionados para sus mejores preparaciones.</p>
+            <div class="hero-divider"></div>
+        </div>
+    </section>
 
-    <div class="products-grid-elegant">
+    <section class="catalog-section">
+        <div class="products-grid-elegant">
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/Anillos_Calamar.jpg' %}" alt="Anillos de Calamar Blanco">
+                <img src="{% static 'img/Anillos_Calamar.png' %}" alt="Anillos de Calamar Blanco">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Mar</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Mar</span>
                 <h3 class="card-title">Anillos de Calamar</h3>
                 <p class="card-desc">Anillos de calamar seleccionados, totalmente limpios y con textura tierna. Producto
                     precocido y congelado individualmente (IQF) para facilitar su uso por porciones en casa.</p>
@@ -210,10 +321,11 @@
         <article class="product-card-elegant">
             <div class="card-img-container">
                 <span class="badge-gold">Práctico</span>
-                <img src="{% static 'img/Mixtura_250.jpg' %}" alt="Mixtura de mariscos 250gr">
+                <img src="{% static 'img/Mixtura_250.png' %}" alt="Mixtura de mariscos 250gr">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Selección Especial</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Selección Especial</span>
                 <h3 class="card-title">Mixtura de Mariscos (250gr)</h3>
                 <p class="card-desc">Mezcla equilibrada de camarón, calamar y almeja. Presentación ideal para
                     preparaciones pequeñas, sellada al vacío para mantener el sabor marino original.</p>
@@ -227,10 +339,11 @@
         <article class="product-card-elegant">
             <div class="card-img-container">
                 <span class="badge-gold">Familiar</span>
-                <img src="{% static 'img/Mixtura_500.jpg' %}" alt="Mixtura de mariscos 500gr">
+                <img src="{% static 'img/Mixtura_500.png' %}" alt="Mixtura de mariscos 500gr">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Selección Especial</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Selección Especial</span>
                 <h3 class="card-title">Mixtura de Mariscos (500gr)</h3>
                 <p class="card-desc">Combinación premium de frutos del mar en presentación de media libra. Un producto
                     versátil, limpio y listo para integrar en sus recetas de arroces o pastas caseras.</p>
@@ -243,10 +356,11 @@
 
         <article class="product-card-elegant">
             <div class="card-img-container">
-                <img src="{% static 'img/Bandeja_Camaron.jpg' %}" alt="Bandeja de camarón limpio">
+                <img src="{% static 'img/Bandeja_Camaron.png' %}" alt="Bandeja de camarón limpio">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Origen: Cultivo</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Origen: Cultivo</span>
                 <h3 class="card-title">Bandeja de Camarones</h3>
                 <p class="card-desc">Camarón de alta calidad, desvenado y sin cola. Empacado en bandeja higiénica que
                     garantiza la integridad del producto y facilita su almacenamiento en congelador.</p>
@@ -261,9 +375,10 @@
             <div class="card-img-container">
                 <span class="badge-gold">Más Vendido</span>
                 <img src="{% static 'img/Cazuela_Mariscos.jpg' %}" alt="Base para cazuela de mariscos">
+                <span class="img-sheen"></span>
             </div>
             <div class="card-body-elegant">
-                <span class="origin-tag-subtle">Base Preparada</span>
+                <span class="origin-tag-subtle"><span class="origin-dot"></span>Base Preparada</span>
                 <h3 class="card-title">Cazuela de Mariscos (Kit)</h3>
                 <p class="card-desc">Selección completa de mariscos variados para preparar la tradicional cazuela.
                     Incluye porciones equilibradas de proteína de mar, limpias y empacadas al vacío.</p>
@@ -274,6 +389,7 @@
             </div>
         </article>
 
-    </div>
+        </div>
+    </section>
 </div>
 {% endblock %}
