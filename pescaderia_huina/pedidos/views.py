@@ -333,73 +333,83 @@ def inventario_pedidos(request):
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = "Inventario"
-
-        azul_oscuro = "0A3D62"
-        borde_fino = Border(left=Side(style='thin', color='CCCCCC'), right=Side(style='thin', color='CCCCCC'), top=Side(style='thin', color='CCCCCC'), bottom=Side(style='thin', color='CCCCCC'))
+        
+        # Estilos
+        borde_fino = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
         alineacion_centro = Alignment(horizontal="center", vertical="center")
-
+        
+        # Encabezado principal
+        ws.append(["INVENTARIO DE PRODUCTOS"])
         ws.merge_cells('A1:D1')
-        ws['A1'] = 'INVENTARIO DE PRODUCTOS — PESCADERÍA HUINA'
-        ws['A1'].font = Font(bold=True, color="FFFFFF", size=13)
-        ws['A1'].fill = PatternFill(start_color=azul_oscuro, end_color=azul_oscuro, fill_type="solid")
-        ws['A1'].alignment = alineacion_centro
-        ws.row_dimensions[1].height = 28
-
+        celda_titulo = ws['A1']
+        celda_titulo.font = Font(name='Arial', size=14, bold=True, color="FFFFFF")
+        celda_titulo.fill = PatternFill(start_color="0D6EFD", fill_type="solid")
+        celda_titulo.alignment = alineacion_centro
+        ws.row_dimensions[1].height = 25
+        
+        # Subtítulo
+        ws.append([f"Generado: {timezone.now().strftime('%d/%m/%Y %H:%M')}"])
         ws.merge_cells('A2:D2')
-        ws['A2'] = f"Generado: {timezone.now().strftime('%d/%m/%Y %H:%M')}"
-        ws['A2'].font = Font(bold=True, size=10)
-        ws['A2'].fill = PatternFill(start_color="E8F4F8", end_color="E8F4F8", fill_type="solid")
-        ws['A2'].alignment = alineacion_centro
-        ws.row_dimensions[2].height = 20
-
+        ws['A2'].font = Font(italic=True, color="6C757D")
+        
+        ws.append([])
+        
         fila = 4
         
+        # Función para crear sección
         def agregar_seccion(titulo, productos_list):
             nonlocal fila
+            
+            # Título de categoría
+            ws.append([titulo])
             ws.merge_cells(f'A{fila}:D{fila}')
-            ws[f'A{fila}'] = titulo
-            ws[f'A{fila}'].font = Font(bold=True, color="FFFFFF", size=11)
-            ws[f'A{fila}'].fill = PatternFill(start_color="343A40", fill_type="solid")
-            ws[f'A{fila}'].alignment = alineacion_centro
+            celda_cat = ws[f'A{fila}']
+            celda_cat.font = Font(bold=True, color="FFFFFF", size=11)
+            celda_cat.fill = PatternFill(start_color="343A40", fill_type="solid")
+            celda_cat.alignment = alineacion_centro
             fila += 1
             
+            # Encabezados
             encabezados = ['Nombre', 'Proveedor', 'Stock Disponible', 'Presentación']
             ws.append(encabezados)
+            
             for celda in ws[fila]:
                 celda.font = Font(bold=True, color="FFFFFF")
                 celda.fill = PatternFill(start_color="6C757D", fill_type="solid")
                 celda.alignment = alineacion_centro
                 celda.border = borde_fino
+            
             fila += 1
             
-            for index, p in enumerate(productos_list):
+            # Datos
+            for p in productos_list:
                 ws.append([
                     p.nombre,
                     p.proveedor.nombre_contacto if p.proveedor else "N/A",
                     p.stock_disponible,
-                    p.get_tipo_presentacion_display() if hasattr(p, 'get_tipo_presentacion_display') else ""
+                    p.get_tipo_presentacion_display()
                 ])
-                bg = PatternFill(start_color="F2F2F2", fill_type="solid") if index % 2 == 0 else None
-                for col_idx, celda in enumerate(ws[fila], 1):
+                
+                for celda in ws[fila]:
                     celda.border = borde_fino
                     celda.alignment = alineacion_centro
-                    if bg: celda.fill = bg
-                    # Alerta visual si el stock es bajo
-                    if col_idx == 3 and p.stock_disponible <= 5:
-                        celda.font = Font(bold=True, color="DC2626") 
+                
                 fila += 1
+            
             ws.append([])
             fila += 1
-
+        
+        # Agregar secciones
         agregar_seccion("PESCADOS", pescados)
         agregar_seccion("MARISCOS", mariscos)
         agregar_seccion("POLLOS", pollos)
-
-        ws.column_dimensions['A'].width = 30
-        ws.column_dimensions['B'].width = 25
-        ws.column_dimensions['C'].width = 20
-        ws.column_dimensions['D'].width = 20
-
+        
+        # Ajustar anchos de columna
+        ws.column_dimensions['A'].width = 25
+        ws.column_dimensions['B'].width = 20
+        ws.column_dimensions['C'].width = 18
+        ws.column_dimensions['D'].width = 25
+        
         wb.save(response)
         return response
     
