@@ -5,6 +5,10 @@ from proveedores.models import Proveedor
 
 
 class PedidoForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['proveedor'].queryset = Proveedor.objects.filter(estado=True).order_by('nombre_contacto')
+
     class Meta:
         model = Pedido
         fields = ['proveedor']

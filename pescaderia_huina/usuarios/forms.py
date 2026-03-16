@@ -15,7 +15,12 @@ class LoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Ingrese su documento',
-            'autofocus': True
+            'autofocus': True,
+            'inputmode': 'numeric',
+            'pattern': r'\d{8,10}',
+            'minlength': '8',
+            'maxlength': '10',
+            'autocomplete': 'off'
         })
     )
     
@@ -40,6 +45,14 @@ class LoginForm(AuthenticationForm):
         label='Verificación de Seguridad'
     )
 
+    def clean_username(self):
+        documento = (self.cleaned_data.get('username') or '').strip()
+        if not documento.isdigit():
+            raise forms.ValidationError('El documento debe contener solo números.')
+        if not (8 <= len(documento) <= 10):
+            raise forms.ValidationError('El documento debe tener entre 8 y 10 dígitos.')
+        return documento
+
 
 class RegistroForm(UserCreationForm):
     """
@@ -51,7 +64,12 @@ class RegistroForm(UserCreationForm):
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Número de documento'
+            'placeholder': 'Número de documento',
+            'inputmode': 'numeric',
+            'pattern': r'\d{8,10}',
+            'minlength': '8',
+            'maxlength': '10',
+            'autocomplete': 'off'
         })
     )
     
@@ -91,6 +109,25 @@ class RegistroForm(UserCreationForm):
             'placeholder': 'Teléfono (opcional)'
         })
     )
+
+    direccion = forms.CharField(
+        max_length=255,
+        required=False,
+        label='Dirección',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Dirección (opcional)'
+        })
+    )
+
+    fecha_nacimiento = forms.DateField(
+        required=False,
+        label='Fecha de nacimiento',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
     
     class Meta:
         model = User
@@ -105,10 +142,18 @@ class RegistroForm(UserCreationForm):
         }
     
     def clean_documento(self):
-        """Valida que el documento no exista en la base de datos"""
-        documento = self.cleaned_data.get('documento')
+        """Valida que el documento no exista y cumpla formato (8-10 dígitos numéricos)."""
+        documento = (self.cleaned_data.get('documento') or '').strip()
+
+        if not documento.isdigit():
+            raise forms.ValidationError('El documento debe contener solo números.')
+
+        if not (8 <= len(documento) <= 10):
+            raise forms.ValidationError('El documento debe tener entre 8 y 10 dígitos.')
+
         if PerfilUsuario.objects.filter(documento=documento).exists():
             raise forms.ValidationError('Este documento ya está registrado.')
+
         return documento
     
     def clean_email(self):
@@ -123,15 +168,17 @@ class RegistroForm(UserCreationForm):
         Guarda el usuario y crea su perfil con el documento
         """
         user = super().save(commit=False)
-        user.username = self.cleaned_data['documento']  # Usamos documento como username
+        user.username = (self.cleaned_data.get('documento') or '').strip()  # Usamos documento como username
         user.email = self.cleaned_data['email']
         
         if commit:
             user.save()
             # El perfil se crea automáticamente por la señal
             perfil = user.perfil
-            perfil.documento = self.cleaned_data['documento']
+            perfil.documento = (self.cleaned_data.get('documento') or '').strip()
             perfil.telefono = self.cleaned_data.get('telefono', '')
+            perfil.direccion = self.cleaned_data.get('direccion', '')
+            perfil.fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
             perfil.save()
         
         return user
