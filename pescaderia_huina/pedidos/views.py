@@ -425,82 +425,113 @@ def inventario_pedidos(request):
         ws = wb.active
         ws.title = "Inventario"
         
-        # Estilos
-        borde_fino = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
-        alineacion_centro = Alignment(horizontal="center", vertical="center")
-        
-        # Encabezado principal
-        ws.append(["INVENTARIO DE PRODUCTOS"])
+        # Colores y estilos del Excel de ventas
+        azul_oscuro = "0A3D62"
+        verde = "198754"
+        gris_claro = "F2F2F2"
+        header_font = Font(bold=True, color="FFFFFF", size=11)
+        header_fill = PatternFill(start_color=azul_oscuro, end_color=azul_oscuro, fill_type="solid")
+        category_fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+        category_font = Font(bold=True, color="0F3976", size=10)
+        center_align = Alignment(horizontal='center', vertical='center', wrap_text=True)
+        left_align = Alignment(horizontal='left', vertical='center', wrap_text=True)
+        thin_border = Border(
+            left=Side(style='thin', color='CCCCCC'),
+            right=Side(style='thin', color='CCCCCC'),
+            top=Side(style='thin', color='CCCCCC'),
+            bottom=Side(style='thin', color='CCCCCC'),
+        )
+
+        # Título
         ws.merge_cells('A1:D1')
-        celda_titulo = ws['A1']
-        celda_titulo.font = Font(name='Arial', size=14, bold=True, color="FFFFFF")
-        celda_titulo.fill = PatternFill(start_color="0D6EFD", fill_type="solid")
-        celda_titulo.alignment = alineacion_centro
-        ws.row_dimensions[1].height = 25
-        
-        # Subtítulo
-        ws.append([f"Generado: {timezone.now().strftime('%d/%m/%Y %H:%M')}"])
+        ws['A1'].value = 'INVENTARIO DE PRODUCTOS — PESCADERÍA HUINA'
+        ws['A1'].font = Font(bold=True, color="FFFFFF", size=13)
+        ws['A1'].fill = PatternFill(start_color=azul_oscuro, end_color=azul_oscuro, fill_type="solid")
+        ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
+        ws.row_dimensions[1].height = 28
+
+        # Información de generación
         ws.merge_cells('A2:D2')
-        ws['A2'].font = Font(italic=True, color="6C757D")
-        
-        ws.append([])
-        
-        fila = 4
-        
-        # Función para crear sección
-        def agregar_seccion(titulo, productos_list):
-            nonlocal fila
+        ws['A2'] = f'Generado: {timezone.now().strftime("%d/%m/%Y %H:%M")}'
+        ws['A2'].font = Font(italic=True, size=10)
+        ws['A2'].fill = PatternFill(start_color="E8F4F8", end_color="E8F4F8", fill_type="solid")
+        ws['A2'].alignment = center_align
+        ws.row_dimensions[2].height = 18
+
+        # Encabezados de tabla
+        headers = ['Nombre Producto', 'Proveedor', 'Stock Disponible', 'Presentación']
+        col_widths = [35, 25, 18, 20]
+        for col, (header, width) in enumerate(zip(headers, col_widths), 1):
+            cell = ws.cell(row=3, column=col, value=header)
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = center_align
+            cell.border = thin_border
+            ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = width
+        ws.row_dimensions[3].height = 18
+
+        # Función para agregar sección
+        def agregar_categoria(titulo, productos_list, start_row):
+            # Fila de categoría
+            ws.merge_cells(f'A{start_row}:D{start_row}')
+            cat_cell = ws[f'A{start_row}']
+            cat_cell.value = titulo
+            cat_cell.font = category_font
+            cat_cell.fill = category_fill
+            cat_cell.alignment = center_align
+            cat_cell.border = thin_border
+            ws.row_dimensions[start_row].height = 16
             
-            # Título de categoría
-            ws.append([titulo])
-            ws.merge_cells(f'A{fila}:D{fila}')
-            celda_cat = ws[f'A{fila}']
-            celda_cat.font = Font(bold=True, color="FFFFFF", size=11)
-            celda_cat.fill = PatternFill(start_color="343A40", fill_type="solid")
-            celda_cat.alignment = alineacion_centro
-            fila += 1
-            
-            # Encabezados
-            encabezados = ['Nombre', 'Proveedor', 'Stock Disponible', 'Presentación']
-            ws.append(encabezados)
-            
-            for celda in ws[fila]:
-                celda.font = Font(bold=True, color="FFFFFF")
-                celda.fill = PatternFill(start_color="6C757D", fill_type="solid")
-                celda.alignment = alineacion_centro
-                celda.border = borde_fino
-            
-            fila += 1
+            row_num = start_row + 1
             
             # Datos
             for p in productos_list:
-                ws.append([
-                    p.nombre,
-                    p.proveedor.nombre_contacto if p.proveedor else "N/A",
-                    p.stock_disponible,
-                    p.get_tipo_presentacion_display()
-                ])
+                ws[f'A{row_num}'] = p.nombre
+                ws[f'B{row_num}'] = p.proveedor.nombre_contacto if p.proveedor else "N/A"
+                ws[f'C{row_num}'] = p.stock_disponible
+                ws[f'D{row_num}'] = p.get_tipo_presentacion_display()
                 
-                for celda in ws[fila]:
-                    celda.border = borde_fino
-                    celda.alignment = alineacion_centro
+                # Determinación de color para stock
+                if p.stock_disponible <= 0:
+                    stock_fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+                    stock_font = Font(bold=True, color="9C0006")
+                elif p.stock_disponible <= 10:
+                    stock_fill = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
+                    stock_font = Font(bold=True, color="9C6500")
+                else:
+                    stock_fill = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
+                    stock_font = Font(bold=True, color="006100")
                 
-                fila += 1
+                for col in range(1, 5):
+                    cell = ws.cell(row=row_num, column=col)
+                    cell.border = thin_border
+                    if col == 3:  # Stock
+                        cell.fill = stock_fill
+                        cell.font = stock_font
+                        cell.alignment = center_align
+                    elif col == 1:
+                        cell.alignment = left_align
+                    else:
+                        cell.alignment = center_align
+                    
+                    # Alternancia de color de fondo
+                    if row_num % 2 == 0 and col != 3:
+                        cell.fill = PatternFill(start_color=gris_claro, end_color=gris_claro, fill_type="solid")
+                
+                ws.row_dimensions[row_num].height = 15
+                row_num += 1
             
-            ws.append([])
-            fila += 1
+            return row_num
+
+        # Agregar todas las categorías
+        fila_actual = 4
+        fila_actual = agregar_categoria("🐟 PESCADOS", pescados, fila_actual)
+        fila_actual += 1
+        fila_actual = agregar_categoria("🦐 MARISCOS", mariscos, fila_actual)
+        fila_actual += 1
+        fila_actual = agregar_categoria("🐔 POLLOS", pollos, fila_actual)
         
-        # Agregar secciones
-        agregar_seccion("PESCADOS", pescados)
-        agregar_seccion("MARISCOS", mariscos)
-        agregar_seccion("POLLOS", pollos)
-        
-        # Ajustar anchos de columna
-        ws.column_dimensions['A'].width = 25
-        ws.column_dimensions['B'].width = 20
-        ws.column_dimensions['C'].width = 18
-        ws.column_dimensions['D'].width = 25
-        
+        ws.freeze_panes = 'A4'
         wb.save(response)
         return response
     

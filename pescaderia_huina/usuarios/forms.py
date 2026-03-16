@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
+from django_recaptcha.fields import ReCaptchaField
 from .models import PerfilUsuario
 
 class LoginForm(AuthenticationForm):
@@ -33,6 +34,10 @@ class LoginForm(AuthenticationForm):
             'class': 'form-check-input'
         }),
         label='Recordarme'
+    )
+    
+    captcha = ReCaptchaField(
+        label='Verificación de Seguridad'
     )
 
 
