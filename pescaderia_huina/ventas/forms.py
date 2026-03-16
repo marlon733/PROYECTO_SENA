@@ -58,15 +58,15 @@ class VentaItemForm(forms.ModelForm):
             }),
             'cantidad': forms.NumberInput(attrs={
                 'class': 'form-control cantidad-input',
-                'step': '0.01',
-                'min': '0.01',
+                'step': '1',
+                'min': '1',
                 'placeholder': 'Cantidad'
             }),
             #  precio_unitario se hereda del producto via JS, pero editable
             'precio_unitario': forms.NumberInput(attrs={
                 'class': 'form-control precio-input',
-                'step': '0.01',
-                'min': '0.01',
+                'step': '1',
+                'min': '0',
                 'placeholder': 'Precio unitario'
             }),
         }

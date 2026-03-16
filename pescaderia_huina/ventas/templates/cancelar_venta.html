@@ -1,77 +1,170 @@
 {% extends "core/panel_admin_base.html" %}
 {% block title %}Cancelar Venta {{ venta.id }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .card-danger-ocean {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(220, 53, 69, 0.15);
+    }
+    .card-header-danger {
+        background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+        padding: 2rem 1rem 1rem;
+        border-bottom: none;
+        position: relative;
+    }
+    .icon-danger-container {
+        width: 80px; height: 80px;
+        background: #ffebeb;
+        color: #dc3545;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0.05);
+        animation: pulse-red 2s infinite;
+    }
+    @keyframes pulse-red {
+        0%   { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.2); }
+        70%  { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
+    .target-info {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1.5rem 0;
+    }
+    .btn-delete-confirm {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-delete-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        color: white;
+    }
+    .btn-cancel {
+        border-radius: 50px;
+        font-weight: 600;
+        color: #6c757d;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+    .btn-cancel:hover {
+        background-color: #e2e6ea;
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="card shadow" style="border:none; border-radius:10px;">
-        <div class="card-header bg-danger text-white" style="border-radius:10px 10px 0 0;">
-            <h4 class="mb-0">Cancelar Venta {{ venta.id }}</h4>
-        </div>
-        <div class="card-body p-4">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card card-danger-ocean">
 
-            {% if messages %}{% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            {% endfor %}{% endif %}
+                <div class="card-header-danger text-center">
+                    <div class="icon-danger-container">
+                        <i class="bi bi-x-circle-fill fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-1">Cancelar Venta {{ venta.id }}?</h3>
+                    <p class="text-muted small">Esta acción revertirá el stock de los productos</p>
+                </div>
 
-            <div class="alert alert-warning">
-                <h5 class="alert-heading"> Advertencia</h5>
-                <p>¿Está seguro de que desea cancelar esta venta?</p>
-                <p class="mb-0">Esta acción revertirá el stock de todos los productos y marcará la venta como cancelada.</p>
-            </div>
+                <div class="card-body px-4 pb-5 pt-0">
 
-            <!-- Resumen de la venta -->
-            <div class="card mb-4" style="border-radius:10px;">
-                <div class="card-body">
-                    <h5 class="border-bottom pb-2 mb-3" style="color:#0a3d62;">Información de la Venta</h5>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Cliente:</strong> {{ venta.nombre_cliente|default:"Cliente anónimo" }}</p>
-                            <p><strong>Documento:</strong> {{ venta.documento_cliente|default:"No especificado" }}</p>
+                    {% if messages %}{% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 border-0 shadow-sm">
+                        {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}{% endif %}
+
+                    <!-- Información de la venta -->
+                    <div class="target-info">
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <small class="text-muted d-block" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Cliente</small>
+                                <span class="fw-bold text-dark">{{ venta.nombre_cliente|default:"Anónimo" }}</span>
+                            </div>
+                            <div class="col-6 text-end">
+                                <small class="text-muted d-block" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Fecha</small>
+                                <span class="fw-semibold text-secondary">{{ venta.fecha_venta|date:"d/m/Y H:i" }}</span>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <p><strong>Fecha:</strong> {{ venta.fecha_venta|date:"d/m/Y H:i" }}</p>
-                            <p><strong>Total:</strong> <span class="fw-bold text-success fs-5">${{ venta.total|floatformat:2|default:"0.00" }}</span></p>
+                        <div class="row g-2 pt-2 border-top">
+                            <div class="col-6">
+                                <small class="text-muted d-block" style="font-size:0.75rem;">Documento</small>
+                                <span class="fw-semibold text-secondary">{{ venta.documento_cliente|default:"No especificado" }}</span>
+                            </div>
+                            <div class="col-6 text-end">
+                                <small class="text-muted d-block" style="font-size:0.75rem;">Total</small>
+                                <span class="fw-bold text-success fs-5">${{ venta.total|floatformat:0|default:"0" }}</span>
+                            </div>
                         </div>
                     </div>
-                    <h6 class="text-muted mb-2">Productos que se devolverán al stock:</h6>
-                    <ul class="list-group list-group-flush">
-                        {% for item in venta.items.all %}
-                         <li class="list-group-item px-0">
-                             <strong>{{ item.producto.nombre }}</strong>
-                             <span class="badge bg-secondary ms-2">
-                                  {{ item.cantidad }}{% if item.tipo_presentacion == 'POR_LIBRA' %} lb{% else %} und{% endif %}
-                             </span>
-                          </li>
-                        {% empty %}
-                        {% if venta.producto %}
-                        <li class="list-group-item px-0">{{ venta.producto.nombre }} × {{ venta.cantidad }}</li>
-                        {% endif %}
-                        {% endfor %}
-                    </ul>
+
+                    <!-- Productos a devolver -->
+                    <div class="mb-3">
+                        <small class="text-muted fw-semibold" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">
+                            <i class="bi bi-arrow-return-left me-1"></i>Productos que se devolverán al stock:
+                        </small>
+                        <ul class="list-group list-group-flush mt-2">
+                            {% for item in venta.items.all %}
+                            <li class="list-group-item px-0 py-1 border-0" style="background:transparent;">
+                                <i class="bi bi-dot text-danger"></i>
+                                <strong>{{ item.producto.nombre }}</strong>
+                                <span class="badge bg-light text-dark border ms-2">
+                                    {{ item.cantidad|floatformat:0 }}{% if item.tipo_presentacion == 'POR_LIBRA' %} lb{% else %} unidades{% endif %}
+                                </span>
+                            </li>
+                            {% empty %}
+                            {% if venta.producto %}
+                            <li class="list-group-item px-0 py-1 border-0" style="background:transparent;">{{ venta.producto.nombre }} × {{ venta.cantidad|floatformat:0 }}</li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-danger d-flex align-items-center p-3 mb-4 shadow-sm text-start rounded-3" role="alert">
+                        <i class="bi bi-shield-x fs-2 me-3 flex-shrink-0"></i>
+                        <div>
+                            <strong class="d-block mb-1">Acción irreversible.</strong>
+                            La venta quedará marcada como cancelada y el stock será restaurado.
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-uppercase" style="font-size:0.78rem; letter-spacing:0.5px; color:#6c757d;">
+                                {{ form.motivo.label }}
+                                <span class="badge bg-secondary fw-normal ms-2" style="font-size:.68rem;">opcional</span>
+                            </label>
+                            {{ form.motivo }}
+                            {% if form.motivo.errors %}<div class="text-danger small mt-1">{{ form.motivo.errors }}</div>{% endif %}
+                            <div class="form-text text-muted">Puede dejar este campo vacío si lo prefiere.</div>
+                        </div>
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-delete-confirm shadow-sm">
+                                <i class="bi bi-x-circle me-2"></i>Sí, Confirmar Cancelación
+                            </button>
+                            <a href="{% url 'productos:productos_list' %}" class="btn btn-cancel py-2 text-decoration-none text-center">
+                                No, Volver al listado
+                            </a>
+                        </div>
+                    </form>
+
                 </div>
             </div>
-
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">
-                        {{ form.motivo.label }}
-                        <span class="badge bg-secondary fw-normal ms-2" style="font-size:.7rem;">opcional</span>
-                    </label>
-                    {{ form.motivo }}
-                    {% if form.motivo.errors %}<div class="text-danger small mt-1">{{ form.motivo.errors }}</div>{% endif %}
-                    <div class="form-text text-muted">Puede dejar este campo vacío si lo prefiere.</div>
-                </div>
-                <div class="text-end mt-4">
-                    <a href="{% url 'ventas:detalle_venta' venta.id %}" class="btn btn-secondary me-2">← Volver</a>
-                    <button type="submit" class="btn btn-danger btn-lg">✕ Confirmar Cancelación</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
