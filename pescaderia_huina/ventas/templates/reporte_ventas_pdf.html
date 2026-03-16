@@ -26,64 +26,61 @@
         .text-left   { text-align: left; }
         .text-bold   { font-weight: bold; }
 
-        /* Cabecera */
-        .report-title    { font-size: 20px; font-weight: bold; color: #0a3d62; margin: 0; text-transform: uppercase; }
-        .report-subtitle { font-size: 11px; color: #555555; }
+        /* CABECERA */
+        .header-table { width: 100%; margin-bottom: 16px; border-collapse: collapse; }
+        .header-table td { padding: 4px; border: none; }
+        .report-title    { font-size: 22px; font-weight: bold; color: #0f3976; margin: 0; text-transform: uppercase; }
+        .report-subtitle { font-size: 12px; font-weight: bold; color: #333333; }
 
-        /* Stats */
-        .stats-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
-        .stats-table th {
-            background-color: #0a3d62;
-            color: #ffffff;
-            font-size: 10px;
-            padding: 6px;
-            text-align: center;
-            text-transform: uppercase;
+        /* CAJA META */
+        .meta-box { border: 1px solid #BFBFBF; background-color: #F3F2F1; padding: 5px 8px; }
+
+        /* TABLAS ESTILO EXCEL */
+        .excel-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+        .excel-table th, .excel-table td {
+            border: 1px solid #BFBFBF;
+            padding: 5px 7px;
+            vertical-align: middle;
         }
-        .stats-table td { padding: 8px; text-align: center; background-color: #e8f4f8; font-weight: bold; font-size: 14px; border: 1px solid #dee2e6; }
-        .stats-table td.verde  { color: #198754; }
-        .stats-table td.azul   { color: #0a3d62; }
-        .stats-table td.rojo   { color: #dc2626; }
-
-        /* Tabla principal */
-        .excel-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         .excel-table th {
-            background-color: #0a3d62;
-            color: #ffffff;
-            font-size: 9px;
-            padding: 5px 6px;
+            background-color: #0f3976;
+            color: #FFFFFF;
+            font-size: 10px;
             text-transform: uppercase;
             font-weight: bold;
-            border: 1px solid #BFBFBF;
-        }
-        .excel-table td {
-            border: 1px solid #BFBFBF;
-            padding: 5px 6px;
-            vertical-align: middle;
-            font-size: 9px;
         }
 
-        /* Filas alternadas */
-        .fila-par       { background-color: #f8fffe; }
-        .fila-impar     { background-color: #ffffff; }
-        .fila-cancelada { background-color: #fde8e8; }
+        /* STATS */
+        .stat-value { background-color: #F3F2F1; font-weight: bold; font-size: 16px; text-align: center; padding: 8px; border: 1px solid #BFBFBF; }
+        .stat-verde { color: #006100; }
+        .stat-azul  { color: #0f3976; }
+        .stat-rojo  { color: #9C0006; }
 
-        /* Estado */
-        .estado-completada { font-weight: bold; color: #198754; text-transform: uppercase; }
-        .estado-cancelada  { font-weight: bold; color: #dc2626; text-transform: uppercase; }
-        .estado-pendiente  { font-weight: bold; color: #f59e0b; text-transform: uppercase; }
+        /* ESTADOS (celdas con color de fondo) */
+        .status-cell { font-weight: bold; text-align: center; font-size: 9px; text-transform: uppercase; padding: 4px 6px; }
+        .bg-green { background-color: #C6EFCE; color: #006100; }
+        .bg-amber { background-color: #FFEB9C; color: #9C6500; }
+        .bg-red   { background-color: #FFC7CE; color: #9C0006; }
 
-        /* Periodo */
-        .periodo-box {
-            background-color: #f0f7ff;
-            border: 1px solid #c7dff7;
-            padding: 5px 10px;
-            margin-bottom: 10px;
-            font-size: 9px;
-            color: #555;
+        /* FILAS */
+        .fila-par       { background-color: #F8F8F8; }
+        .fila-impar     { background-color: #FFFFFF; }
+        .fila-cancelada { background-color: #FFC7CE; }
+
+        /* FILA TOTAL */
+        .total-row td {
+            background-color: #F3F2F1;
+            font-weight: bold;
+            font-size: 11px;
+            border-top: 2px solid #000000;
+            border-bottom: 2px double #000000;
         }
 
-        hr { border: none; border-top: 2px solid #0a3d62; margin-bottom: 12px; }
+        .form-label {
+            background-color: #F3F2F1;
+            font-weight: bold;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -91,48 +88,60 @@
     <div id="footer_content">
         <table style="width:100%; border-top:1px solid #BFBFBF; padding-top:5px;">
             <tr>
-                <td style="font-size:8px; color:#555; text-align:left;">Reporte Oficial | Sistema de Gestión Pescadería Huina</td>
+                <td style="font-size:8px; color:#555; text-align:left;">Documento Oficial | Sistema de Gestión Pescadería Huina</td>
                 <td style="font-size:8px; color:#555; text-align:right;">Página <pdf:pagenumber> de <pdf:pagecount></td>
             </tr>
         </table>
     </div>
 
     <!-- Encabezado -->
-    <table style="width:100%; margin-bottom:10px;">
+    <table class="header-table">
         <tr>
             <td style="width:60%;">
-                <div class="report-title">PESCADERÍA HUINA</div>
-                <div class="report-subtitle">Reporte de Ventas — Generado el {% now "d/m/Y H:i" %}</div>
+                <h1 class="report-title">PESCADERÍA HUINA</h1>
+                <div class="report-subtitle">Reporte de Ventas</div>
             </td>
-            <td style="width:40%; text-align:right; vertical-align:bottom;">
-                {% if fecha_inicio or fecha_fin %}
-                <div class="periodo-box" style="text-align:right;">
-                    📅 Período:
-                    {% if fecha_inicio %}desde {{ fecha_inicio }}{% endif %}
-                    {% if fecha_fin %}hasta {{ fecha_fin }}{% endif %}
-                    {% if estado_filtro %} | Estado: {{ estado_filtro }}{% endif %}
-                </div>
-                {% endif %}
+            <td style="width:40%; vertical-align:bottom;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td class="text-right text-bold" style="padding-right:10px; font-size:10px;">Generado el:</td>
+                        <td class="text-center meta-box text-bold" style="font-size:10px;">{% now "d/m/Y H:i" %}</td>
+                    </tr>
+                    {% if fecha_inicio or fecha_fin %}
+                    <tr>
+                        <td class="text-right text-bold" style="padding-right:10px; font-size:10px;">Período:</td>
+                        <td class="text-center meta-box" style="font-size:10px;">
+                            {% if fecha_inicio %}{{ fecha_inicio }}{% else %}inicio{% endif %}
+                            &nbsp;—&nbsp;
+                            {% if fecha_fin %}{{ fecha_fin }}{% else %}hoy{% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% if estado_filtro %}
+                    <tr>
+                        <td class="text-right text-bold" style="padding-right:10px; font-size:10px;">Estado:</td>
+                        <td class="text-center meta-box" style="font-size:10px;">{{ estado_filtro }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
             </td>
         </tr>
     </table>
 
-    <hr>
-
-    <!-- Estadísticas -->
-    <table class="stats-table">
+    <!-- Estadísticas según filtro de fechas -->
+    <table class="excel-table" style="margin-bottom:16px;">
         <thead>
             <tr>
-                <th>Ventas Completadas</th>
-                <th>Ingresos Totales</th>
-                <th>Ventas Canceladas</th>
+                <th style="width:33%;">Ventas Completadas</th>
+                <th style="width:34%;">Ingresos Totales</th>
+                <th style="width:33%;">Ventas Canceladas</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td class="azul">{{ total_completadas }}</td>
-                <td class="verde">${{ total_ingresos|floatformat:2|intcomma }}</td>
-                <td class="rojo">{{ total_canceladas }}</td>
+                <td class="stat-value stat-azul">{{ total_completadas }}</td>
+                <td class="stat-value stat-verde">$ {{ total_ingresos|floatformat:0|intcomma }}</td>
+                <td class="stat-value stat-rojo">{{ total_canceladas }}</td>
             </tr>
         </tbody>
     </table>
@@ -142,14 +151,14 @@
         <thead>
             <tr>
                 <th style="width:4%;">#</th>
-                <th style="width:12%;">Cliente</th>
+                <th style="width:13%;">Cliente</th>
                 <th style="width:10%;">Documento</th>
-                <th style="width:30%;">Productos</th>
+                <th style="width:28%;">Productos</th>
                 <th style="width:10%;" class="text-right">Subtotal</th>
                 <th style="width:10%;" class="text-right">IVA (19%)</th>
                 <th style="width:10%;" class="text-right">Total</th>
-                <th style="width:9%;" class="text-center">Fecha</th>
-                <th style="width:8%;" class="text-center">Estado</th>
+                <th style="width:8%;" class="text-center">Fecha</th>
+                <th style="width:7%;" class="text-center">Estado</th>
             </tr>
         </thead>
         <tbody>
@@ -160,22 +169,22 @@
                 <td class="text-center">{{ venta.documento_cliente|default:"N/A" }}</td>
                 <td>
                     {% for item in venta.items.all %}
-                        {{ item.producto.nombre }} x{{ item.cantidad|floatformat:"-1" }}{% if not forloop.last %}, {% endif %}
+                        {{ item.producto.nombre }} x{{ item.cantidad|floatformat:0 }}{% if not forloop.last %}, {% endif %}
                     {% empty %}
                         {% if venta.producto %}{{ venta.producto.nombre }}{% else %}N/A{% endif %}
                     {% endfor %}
                 </td>
-                <td class="text-right">${{ venta.subtotal|default:0|floatformat:2|intcomma }}</td>
-                <td class="text-right">${{ venta.iva_monto|default:0|floatformat:2|intcomma }}</td>
-                <td class="text-right">${{ venta.total|default:0|floatformat:2|intcomma }}</td>
-                <td class="text-center">{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td>
-                <td class="text-center">
+                <td class="text-right">$ {{ venta.subtotal|default:0|floatformat:0|intcomma }}</td>
+                <td class="text-right">$ {{ venta.iva_monto|default:0|floatformat:0|intcomma }}</td>
+                <td class="text-right">$ {{ venta.total|default:0|floatformat:0|intcomma }}</td>
+                <td class="text-center">{{ venta.fecha_venta|date:"d/m/Y" }}</td>
+                <td style="padding:0;">
                     {% if venta.estado == 'COMPLETADA' %}
-                        <span class="estado-completada">Completada</span>
+                        <div class="status-cell bg-green">Completada</div>
                     {% elif venta.estado == 'CANCELADA' %}
-                        <span class="estado-cancelada">Cancelada</span>
+                        <div class="status-cell bg-red">Cancelada</div>
                     {% else %}
-                        <span class="estado-pendiente">Pendiente</span>
+                        <div class="status-cell bg-amber">Pendiente</div>
                     {% endif %}
                 </td>
             </tr>
@@ -186,6 +195,15 @@
                 </td>
             </tr>
             {% endfor %}
+
+            {% if ventas %}
+            <tr class="total-row">
+                <td colspan="5" style="border-right:none;"></td>
+                <td class="text-right text-bold" style="border-left:none;">TOTAL INGRESOS:</td>
+                <td class="text-right" style="font-size:13px; color:#006100;">$ {{ total_ingresos|floatformat:0|intcomma }}</td>
+                <td colspan="2"></td>
+            </tr>
+            {% endif %}
         </tbody>
     </table>
 
