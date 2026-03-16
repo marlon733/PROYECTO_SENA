@@ -374,6 +374,16 @@
           >
         </div>
 
+        <div class="input-group-modern">
+          <label>Verifico que no soy un bot</label>
+          {{ form.captcha }}
+          {% if form.captcha.errors %}
+          <small style="color: #ef4444; display: block; margin-top: 8px; font-weight: 500;">
+            <i class="bi bi-x-circle me-1"></i> {{ form.captcha.errors.0 }}
+          </small>
+          {% endif %}
+        </div>
+
         <button type="submit" class="btn-primary-modern">
           Ingresar al Sistema
           <i class="bi bi-arrow-right-short" style="font-size: 1.3rem"></i>
