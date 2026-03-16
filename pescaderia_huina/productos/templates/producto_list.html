@@ -99,20 +99,17 @@
                                     {% endif %}
                                 </td>
 
-                                <td class="text-center pe-4 py-3">
-                                    <div class="btn-group" role="group">
-                                        <a href="{% url 'productos:producto_editar' producto.id %}"
-                                           class="btn btn-sm btn-light text-primary border-0 me-1"
-                                           title="Editar">
-                                            <i class="bi bi-pencil-square fs-6"></i>
-                                        </a>
-
-                                        <a href="{% url 'productos:producto_eliminar' producto.id %}"
-                                           class="btn btn-sm btn-light text-danger border-0"
-                                           title="Eliminar">
-                                            <i class="bi bi-trash fs-6"></i>
-                                        </a>
-                                    </div>
+                                <td class="text-center pe-4 py-3 text-nowrap">
+                                    <a href="{% url 'productos:producto_editar' producto.id %}"
+                                       class="btn-icon-action"
+                                       data-bs-toggle="tooltip" title="Editar">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </a>
+                                    <a href="{% url 'productos:producto_eliminar' producto.id %}"
+                                       class="btn-icon-action delete"
+                                       data-bs-toggle="tooltip" title="Eliminar">
+                                        <i class="bi bi-trash fs-5"></i>
+                                    </a>
                                 </td>
 
                             </tr>
@@ -157,5 +154,15 @@
 .input-group:focus-within {
     box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15) !important;
 }
+
+/* Action Icon Buttons */
+.btn-icon-action {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background-color: rgba(15, 57, 118, 0.08); color: #0f3976;
+    transition: all 0.2s; border: none; margin: 0 2px;
+}
+.btn-icon-action:hover { background-color: #0f3976; color: white; transform: translateY(-2px); }
+.btn-icon-action.delete:hover { background-color: #dc3545; }
 </style>
 {% endblock %}
