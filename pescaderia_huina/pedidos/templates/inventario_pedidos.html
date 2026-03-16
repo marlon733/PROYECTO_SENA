@@ -4,230 +4,250 @@
 {% block title %}Inventario de Pedidos | Pescadería Huina{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
 <style>
-.filter-card {
-    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-    border: none;
-    border-radius: 10px 10px 0 0 !important;
-}
+    .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(15, 57, 118, 0.1);
+        border-color: var(--primary-blue);
+    }
 
-.table-header {
-    background: linear-gradient(135deg, var(--ocean-dark) 0%, var(--ocean-primary) 100%) !important;
-    color: white !important;
-}
-.table-header th {
-    color: white !important;
-    font-weight: 600;
-    border: none;
-}
-
-.section-card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.table-responsive {
-    border-radius: 0 0 10px 10px;
-}
-
-.section-title {
-    margin-bottom: 1rem;
-    font-weight: 700;
-    color: #334155;
-}
-
-.count-badge {
-    background: linear-gradient(135deg, var(--ocean-primary) 0%, var(--ocean-cyan) 100%);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-
+    .inventory-section-head {
+        background-color: var(--header-blue-bg);
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .inventory-section-title {
+        color: var(--dark-blue);
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin: 0;
+    }
+    .inventory-count {
+        background-color: var(--light-blue-bg);
+        color: var(--dark-blue);
+        border: 1px solid #dee2e6;
+        border-radius: 2rem;
+        padding: 0.25rem 0.7rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4" style="background-color: #f8fafc;">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="fw-800" style="letter-spacing: -1px;">Inventario de Pedidos</h1>
+<div class="container">
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="page-title mb-2">Inventario de Pedidos</h2>
+            <p class="text-muted mb-0 fs-5">Consulta stock disponible por categoría y producto.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-muted small fw-bold text-uppercase me-1 d-none d-lg-inline">Exportar:</span>
+            <a href="?export=pdf" class="btn btn-export pdf text-decoration-none" title="Descargar en PDF">
+                <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+            </a>
+            <a href="?export=excel" class="btn btn-export excel text-decoration-none" title="Descargar en Excel">
+                <i class="bi bi-file-earmark-excel-fill"></i> Excel
+            </a>
         </div>
     </div>
 
-    <!-- Filtros de búsqueda -->
-    <div class="card shadow mb-3" style="border: none; border-radius: 10px;">
-        <div class="card-header filter-card text-white">
-            <h5 class="mb-0">Consultar Inventario</h5>
-        </div>
-        <div class="card-body">
-            <div class="row g-3">
+    <div class="card card-modern mb-4">
+        <div class="card-body p-4">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-5">
+                    <label class="filter-label">Buscar coincidencias</label>
+                    <div class="search-input-group input-group shadow-sm">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="filterSearch" class="form-control" placeholder="Nombre del producto...">
+                        <a href="#" id="clearSearch" class="btn-clear-search d-none" title="Limpiar texto">
+                            <i class="bi bi-x-circle-fill fs-5"></i>
+                        </a>
+                    </div>
+                </div>
+
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold">Categoría</label>
-                    <select id="filterCategory" class="form-select">
+                    <label class="filter-label">Categoría</label>
+                    <select id="filterCategory" class="form-select shadow-sm">
                         <option value="">Todas</option>
                         <option value="PE">Pescados</option>
                         <option value="MA">Mariscos</option>
                         <option value="PO">Pollos</option>
                     </select>
                 </div>
-                <div class="col-md-5">
-                    <label class="form-label fw-semibold">Buscar</label>
-                    <input type="text" id="filterSearch" class="form-control" placeholder="Nombre del producto...">
+
+                <div class="col-md-3">
+                    <button type="button" id="btnClear" class="btn btn-light border shadow-sm text-danger w-100">
+                        <i class="bi bi-eraser-fill me-1"></i> Limpiar filtros
+                    </button>
                 </div>
-                <div class="col-md-3 d-flex align-items-end gap-2">
-                    <button type="button" id="btnClear" class="btn btn-outline-secondary flex-fill">Limpiar</button>
-                    <a href="?export=pdf" class="btn btn-danger" title="Descargar en PDF">
-                        <i class="fas fa-file-pdf"></i> PDF
-                    </a>
-                    <a href="?export=excel" class="btn btn-success" title="Descargar en Excel">
-                        <i class="fas fa-file-excel"></i> Excel
-                    </a>
-                </div>
+
+            </div>
+
+            <hr class="my-3 border-light">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">
+                    <span id="filterStatus">Mostrando todos los productos</span>
+                </span>
+                <span class="text-muted small d-none d-md-inline">Tip: escribe para filtrar por nombre</span>
             </div>
         </div>
     </div>
 
     <!-- Pescados -->
-    <div class="row mb-4" data-category="PE">
-        <div class="col-12">
-            <h3 class="section-title">
-                Pescados 
-                <span class="count-badge">{{ pescados.count }} producto{{ pescados.count|pluralize }}</span>
-            </h3>
-            <div class="card section-card">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" data-table="PE">
-                        <thead class="table-header">
-                            <tr>
-                                <th style="min-width: 200px;">Nombre</th>
-                                <th style="min-width: 150px;">Proveedor</th>
-                                <th style="min-width: 150px;">Presentación</th>
-                                <th class="text-end" style="width: 120px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
-                            </tr>
-                        </thead>+
-                        <tbody>
-                            {% for p in pescados %}
-                            <tr data-product-name="{{ p.nombre|lower }}">
-                                <td><strong>{{ p.nombre }}</strong></td>
-                                <td>{{ p.proveedor }}</td>
-                                <td>{{ p.get_tipo_presentacion_display }}</td>
-                                <td class="text-end">
-                                    {% if p.stock_disponible <= 0 %}
-                                        <span class="badge bg-danger">{{ p.stock_disponible }}</span>
-                                    {% elif p.stock_disponible <= 10 %}
-                                        <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
-                                    {% else %}
-                                        <span class="badge bg-success">{{ p.stock_disponible }}</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr class="no-results-row">
-                                <td colspan="4" class="text-center text-muted py-4">No hay productos de tipo pescado.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+    <div class="card card-modern mb-4" data-category="PE">
+        <div class="card-body p-0 overflow-hidden rounded-4">
+            <div class="inventory-section-head d-flex justify-content-between align-items-center px-4 py-3">
+                <p class="inventory-section-title">Pescados</p>
+                <span class="inventory-count">{{ pescados.count }} producto{{ pescados.count|pluralize }}</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-professional align-middle mb-0" data-table="PE">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 220px;">Nombre</th>
+                            <th style="min-width: 170px;">Proveedor</th>
+                            <th style="min-width: 170px;">Presentación</th>
+                            <th class="text-end" style="width: 170px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pescados %}
+                        <tr data-product-name="{{ p.nombre|lower }}">
+                            <td class="proveedor-name">{{ p.nombre }}</td>
+                            <td class="text-muted fw-semibold">{{ p.proveedor }}</td>
+                            <td class="text-muted fw-semibold">{{ p.get_tipo_presentacion_display }}</td>
+                            <td class="text-end">
+                                {% if p.stock_disponible <= 0 %}
+                                    <span class="badge bg-danger">{{ p.stock_disponible }}</span>
+                                {% elif p.stock_disponible <= 10 %}
+                                    <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
+                                {% else %}
+                                    <span class="badge bg-success">{{ p.stock_disponible }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr class="no-results-row">
+                            <td colspan="4" class="text-center py-5 my-5">
+                                <div class="opacity-50 mb-3">
+                                    <i class="bi bi-basket text-primary" style="font-size: 4rem;"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1">No hay productos de tipo pescado</h5>
+                                <p class="text-muted mb-0">Cuando existan registros, aparecerán aquí.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <!-- Mariscos -->
-    <div class="row mb-4" data-category="MA">
-        <div class="col-12">
-            <h3 class="section-title">
-                Mariscos 
-                <span class="count-badge">{{ mariscos.count }} producto{{ mariscos.count|pluralize }}</span>
-            </h3>
-            <div class="card section-card">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" data-table="MA">
-                        <thead class="table-header">
-                            <tr>
-                                <th style="min-width: 200px;">Nombre</th>
-                                <th style="min-width: 150px;">Proveedor</th>
-                                <th style="min-width: 150px;">Presentación</th>
-                                <th class="text-end" style="width: 120px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in mariscos %}
-                            <tr data-product-name="{{ p.nombre|lower }}">
-                                <td><strong>{{ p.nombre }}</strong></td>
-                                <td>{{ p.proveedor }}</td>
-                                <td>{{ p.get_tipo_presentacion_display }}</td>
-                                <td class="text-end">
-                                    {% if p.stock_disponible <= 0 %}
-                                        <span class="badge bg-danger">{{ p.stock_disponible }}</span>
-                                    {% elif p.stock_disponible <= 10 %}
-                                        <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
-                                    {% else %}
-                                        <span class="badge bg-success">{{ p.stock_disponible }}</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr class="no-results-row">
-                                <td colspan="4" class="text-center text-muted py-4">No hay productos de tipo marisco.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+    <div class="card card-modern mb-4" data-category="MA">
+        <div class="card-body p-0 overflow-hidden rounded-4">
+            <div class="inventory-section-head d-flex justify-content-between align-items-center px-4 py-3">
+                <p class="inventory-section-title">Mariscos</p>
+                <span class="inventory-count">{{ mariscos.count }} producto{{ mariscos.count|pluralize }}</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-professional align-middle mb-0" data-table="MA">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 220px;">Nombre</th>
+                            <th style="min-width: 170px;">Proveedor</th>
+                            <th style="min-width: 170px;">Presentación</th>
+                            <th class="text-end" style="width: 170px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in mariscos %}
+                        <tr data-product-name="{{ p.nombre|lower }}">
+                            <td class="proveedor-name">{{ p.nombre }}</td>
+                            <td class="text-muted fw-semibold">{{ p.proveedor }}</td>
+                            <td class="text-muted fw-semibold">{{ p.get_tipo_presentacion_display }}</td>
+                            <td class="text-end">
+                                {% if p.stock_disponible <= 0 %}
+                                    <span class="badge bg-danger">{{ p.stock_disponible }}</span>
+                                {% elif p.stock_disponible <= 10 %}
+                                    <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
+                                {% else %}
+                                    <span class="badge bg-success">{{ p.stock_disponible }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr class="no-results-row">
+                            <td colspan="4" class="text-center py-5 my-5">
+                                <div class="opacity-50 mb-3">
+                                    <i class="bi bi-basket text-primary" style="font-size: 4rem;"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1">No hay productos de tipo marisco</h5>
+                                <p class="text-muted mb-0">Cuando existan registros, aparecerán aquí.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <!-- Pollos -->
-    <div class="row mb-4" data-category="PO">
-        <div class="col-12">
-            <h3 class="section-title">
-                Pollos 
-                <span class="count-badge">{{ pollos.count }} producto{{ pollos.count|pluralize }}</span>
-            </h3>
-            <div class="card section-card">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" data-table="PO">
-                        <thead class="table-header">
-                            <tr>
-                                <th style="min-width: 200px;">Nombre</th>
-                                <th style="min-width: 150px;">Proveedor</th>
-                                <th style="min-width: 150px;">Presentación</th>
-                                <th class="text-end" style="width: 120px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in pollos %}
-                            <tr data-product-name="{{ p.nombre|lower }}">
-                                <td><strong>{{ p.nombre }}</strong></td>
-                                <td>{{ p.proveedor }}</td>
-                                <td>{{ p.get_tipo_presentacion_display }}</td>
-                                <td class="text-end">
-                                    {% if p.stock_disponible <= 0 %}
-                                        <span class="badge bg-danger">{{ p.stock_disponible }}</span>
-                                    {% elif p.stock_disponible <= 10 %}
-                                        <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
-                                    {% else %}
-                                        <span class="badge bg-success">{{ p.stock_disponible }}</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr class="no-results-row">
-                                <td colspan="4" class="text-center text-muted py-4">No hay productos de tipo pollo.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+    <div class="card card-modern mb-4" data-category="PO">
+        <div class="card-body p-0 overflow-hidden rounded-4">
+            <div class="inventory-section-head d-flex justify-content-between align-items-center px-4 py-3">
+                <p class="inventory-section-title">Pollos</p>
+                <span class="inventory-count">{{ pollos.count }} producto{{ pollos.count|pluralize }}</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-professional align-middle mb-0" data-table="PO">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 220px;">Nombre</th>
+                            <th style="min-width: 170px;">Proveedor</th>
+                            <th style="min-width: 170px;">Presentación</th>
+                            <th class="text-end" style="width: 170px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pollos %}
+                        <tr data-product-name="{{ p.nombre|lower }}">
+                            <td class="proveedor-name">{{ p.nombre }}</td>
+                            <td class="text-muted fw-semibold">{{ p.proveedor }}</td>
+                            <td class="text-muted fw-semibold">{{ p.get_tipo_presentacion_display }}</td>
+                            <td class="text-end">
+                                {% if p.stock_disponible <= 0 %}
+                                    <span class="badge bg-danger">{{ p.stock_disponible }}</span>
+                                {% elif p.stock_disponible <= 10 %}
+                                    <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
+                                {% else %}
+                                    <span class="badge bg-success">{{ p.stock_disponible }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr class="no-results-row">
+                            <td colspan="4" class="text-center py-5 my-5">
+                                <div class="opacity-50 mb-3">
+                                    <i class="bi bi-basket text-primary" style="font-size: 4rem;"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1">No hay productos de tipo pollo</h5>
+                                <p class="text-muted mb-0">Cuando existan registros, aparecerán aquí.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
 </div>
 {% endblock %}
 
@@ -236,7 +256,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const filterCategory = document.getElementById('filterCategory');
     const filterSearch = document.getElementById('filterSearch');
+    const clearSearch = document.getElementById('clearSearch');
     const btnClear = document.getElementById('btnClear');
+    const filterStatus = document.getElementById('filterStatus');
 
     const categoryRows = {
         'PE': document.querySelector('[data-category="PE"]'),
@@ -246,17 +268,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function applyFilters() {
         const selectedCategory = filterCategory.value;
-        const searchText = filterSearch.value.toLowerCase();
+        const searchText = filterSearch.value.toLowerCase().trim();
+        let visibleTotal = 0;
+        let totalRows = 0;
 
         Object.keys(categoryRows).forEach(category => {
-            categoryRows[category].style.display = (!selectedCategory || selectedCategory === category) ? 'flex' : 'none';
+            if (!categoryRows[category]) return;
+            categoryRows[category].style.display = (!selectedCategory || selectedCategory === category) ? '' : 'none';
         });
 
         ['PE', 'MA', 'PO'].forEach(category => {
-            const table = document.querySelector(`[data-table="${category}"]`);
-            if (table && categoryRows[category].style.display !== 'none') {
+            if (!categoryRows[category] || categoryRows[category].style.display === 'none') return;
+
+            const table = categoryRows[category].querySelector(`[data-table="${category}"]`);
+            if (table) {
                 const rows = table.querySelectorAll('tbody tr');
                 let hasVisibleResults = false;
+
+                const productRows = table.querySelectorAll('tbody tr:not(.no-results-row)');
+                totalRows += productRows.length;
 
                 rows.forEach(row => {
                     if (row.classList.contains('no-results-row')) return;
@@ -264,6 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (searchText === '' || productName.includes(searchText)) {
                         row.style.display = 'table-row';
                         hasVisibleResults = true;
+                        visibleTotal++;
                     } else {
                         row.style.display = 'none';
                     }
@@ -275,10 +306,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+
+        const hasFilters = selectedCategory || searchText;
+        if (filterStatus) {
+            if (hasFilters) {
+                filterStatus.innerHTML = '<span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1"><i class="bi bi-funnel-fill me-1"></i> Mostrando ' + visibleTotal + ' de ' + totalRows + ' productos</span>';
+            } else {
+                filterStatus.textContent = 'Mostrando todos los productos';
+            }
+        }
+
+        if (clearSearch) {
+            clearSearch.classList.toggle('d-none', !searchText);
+        }
     }
 
     filterCategory.addEventListener('change', applyFilters);
-    filterSearch.addEventListener('keyup', applyFilters);
+    filterSearch.addEventListener('input', applyFilters);
+
+    if (clearSearch) {
+        clearSearch.addEventListener('click', function(e) {
+            e.preventDefault();
+            filterSearch.value = '';
+            applyFilters();
+            filterSearch.focus();
+        });
+    }
 
     btnClear.addEventListener('click', function() {
         filterCategory.value = '';
