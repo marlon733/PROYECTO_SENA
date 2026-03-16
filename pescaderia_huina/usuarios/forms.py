@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
+from django_recaptcha.fields import ReCaptchaField
 from .models import PerfilUsuario
 
 class LoginForm(AuthenticationForm):
@@ -33,6 +34,10 @@ class LoginForm(AuthenticationForm):
             'class': 'form-check-input'
         }),
         label='Recordarme'
+    )
+    
+    captcha = ReCaptchaField(
+        label='Verificación de Seguridad'
     )
 
 
@@ -155,6 +160,24 @@ class EditarUsuarioForm(forms.ModelForm):
         }
 
 
+class EditarMiUsuarioForm(forms.ModelForm):
+    """Formulario para que el usuario edite su propia información (sin flags admin)."""
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'first_name': 'Nombre',
+            'last_name': 'Apellido',
+            'email': 'Correo Electrónico',
+        }
+
+
 class EditarPerfilForm(forms.ModelForm):
     """
     Formulario para editar el perfil del usuario
@@ -164,6 +187,20 @@ class EditarPerfilForm(forms.ModelForm):
         fields = ['documento', 'telefono', 'direccion', 'foto_perfil', 'fecha_nacimiento']
         widgets = {
             'documento': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'foto_perfil': forms.FileInput(attrs={'class': 'form-control'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+
+class EditarMiPerfilForm(forms.ModelForm):
+    """Formulario para que el usuario edite su perfil (sin documento)."""
+
+    class Meta:
+        model = PerfilUsuario
+        fields = ['telefono', 'direccion', 'foto_perfil', 'fecha_nacimiento']
+        widgets = {
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
             'foto_perfil': forms.FileInput(attrs={'class': 'form-control'}),

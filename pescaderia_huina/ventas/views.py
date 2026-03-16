@@ -225,9 +225,19 @@ def exportar_excel(request):
     ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
     ws.row_dimensions[1].height = 28
 
-    # Estadísticas
-    total_completadas = Venta.objects.filter(estado='COMPLETADA').count()
-    total_ingresos = Venta.objects.filter(estado='COMPLETADA').aggregate(t=Sum('total'))['t'] or Decimal('0')
+    # Estadísticas filtradas por las mismas fechas
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin    = request.GET.get('fecha_fin')
+    estado       = request.GET.get('estado')
+
+    qs_base = Venta.objects.all()
+    if fecha_inicio:
+        qs_base = qs_base.filter(fecha_venta__date__gte=fecha_inicio)
+    if fecha_fin:
+        qs_base = qs_base.filter(fecha_venta__date__lte=fecha_fin)
+
+    total_completadas = qs_base.filter(estado='COMPLETADA').count()
+    total_ingresos = qs_base.filter(estado='COMPLETADA').aggregate(t=Sum('total'))['t'] or Decimal('0')
     ws.merge_cells('A2:D2')
     ws['A2'] = f'Ventas Completadas: {total_completadas}'
     ws['A2'].font = Font(bold=True, size=10)
@@ -253,11 +263,6 @@ def exportar_excel(request):
     ws.row_dimensions[3].height = 18
 
     # Datos
-    ventas_qs = Venta.objects.prefetch_related('items__producto').all()
-    fecha_inicio = request.GET.get('fecha_inicio')
-    fecha_fin    = request.GET.get('fecha_fin')
-    estado       = request.GET.get('estado')
-
     ventas_qs = Venta.objects.prefetch_related('items__producto').all()
     if fecha_inicio:
         ventas_qs = ventas_qs.filter(fecha_venta__date__gte=fecha_inicio)
@@ -339,17 +344,20 @@ def exportar_pdf(request):
     if estado_filtro:
         ventas_qs = ventas_qs.filter(estado=estado_filtro)
 
-    qs_stats = Venta.objects.filter(estado='COMPLETADA')
+    qs_base = Venta.objects.all()
     if fecha_inicio:
-        qs_stats = qs_stats.filter(fecha_venta__date__gte=fecha_inicio)
+        qs_base = qs_base.filter(fecha_venta__date__gte=fecha_inicio)
     if fecha_fin:
-        qs_stats = qs_stats.filter(fecha_venta__date__lte=fecha_fin)
+        qs_base = qs_base.filter(fecha_venta__date__lte=fecha_fin)
+
+    qs_completadas = qs_base.filter(estado='COMPLETADA')
+    qs_canceladas  = qs_base.filter(estado='CANCELADA')
 
     context = {
         'ventas':             ventas_qs,
-        'total_completadas':  qs_stats.count(),
-        'total_ingresos':     qs_stats.aggregate(t=Sum('total'))['t'] or Decimal('0'),
-        'total_canceladas':   Venta.objects.filter(estado='CANCELADA').count(),
+        'total_completadas':  qs_completadas.count(),
+        'total_ingresos':     qs_completadas.aggregate(t=Sum('total'))['t'] or Decimal('0'),
+        'total_canceladas':   qs_canceladas.count(),
         'fecha_inicio':       fecha_inicio,
         'fecha_fin':          fecha_fin,
         'estado_filtro':      estado_filtro,

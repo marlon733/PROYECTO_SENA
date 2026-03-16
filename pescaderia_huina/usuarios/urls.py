@@ -13,6 +13,8 @@ urlpatterns = [
     
     # Perfil de usuario
     path('perfil/', views.perfil_view, name='perfil'),
+    path('perfil/editar/', views.editar_perfil_view, name='editar_perfil'),
+    path('perfil/<int:user_id>/editar/', views.editar_perfil_view, name='editar_perfil_usuario'),
     # usuarios/urls.py
     path('recuperar/', views.solicitar_recuperacion, name='recuperar'),
     path('verificar/', views.verificar_codigo, name='verificar_codigo'),

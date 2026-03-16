@@ -128,3 +128,11 @@ body {
 }
 .btn-icon-action:hover { background-color: var(--primary-blue); color: var(--white); transform: translateY(-2px); }
 .btn-icon-action.delete:hover { background-color: #dc3545; }
+.btn-icon-action:disabled,
+.btn-icon-action[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #e9ecef;
+    color: #adb5bd;
+}

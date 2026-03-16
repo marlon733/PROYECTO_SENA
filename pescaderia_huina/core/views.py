@@ -52,6 +52,7 @@ def pagina_inventario(request):
 
     return render(request, 'core/inventario.html', context)
 
+@login_required
 def dashboard_view(request):
     """
     Vista principal del panel de administración
