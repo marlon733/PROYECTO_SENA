@@ -4,68 +4,46 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
 <style>
-.filter-card {
-    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-    border: none;
-    border-radius: 10px 10px 0 0 !important;
-}
-
-.table-header {
-    background: linear-gradient(135deg, var(--ocean-dark) 0%, var(--ocean-primary) 100%) !important;
-    color: white !important;
-}
-.table-header th {
-    color: white !important;
-    font-weight: 600;
-    border: none;
-}
-
-.section-card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.table-responsive {
-    border-radius: 0 0 10px 10px;
-}
-
-.section-title {
-    margin-bottom: 1rem;
-    font-weight: 700;
-    color: #334155;
-}
-
-.count-badge {
-    background: linear-gradient(135deg, var(--ocean-primary) 0%, var(--ocean-cyan) 100%);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-
+    .inventory-section {
+        margin-bottom: 2rem;
+    }
+    
+    .category-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-blue);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--primary-blue);
+        padding-left: 1rem;
+    }
+    
+    .badge-count {
+        background-color: var(--header-blue-bg);
+        color: var(--dark-blue);
+        padding: 0.35rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4" style="background-color: #f8fafc;">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="fw-800" style="letter-spacing: -1px;">Inventario de Pedidos</h1>
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h2 class="page-title mb-2">Inventario de Pedidos</h2>
+            <p class="text-muted mb-0 fs-5">Consulta el stock disponible de productos por categoría.</p>
         </div>
     </div>
 
     <!-- Filtros de búsqueda -->
-    <div class="card shadow mb-3" style="border: none; border-radius: 10px;">
-        <div class="card-header filter-card text-white">
-            <h5 class="mb-0">Consultar Inventario</h5>
-        </div>
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Categoría</label>
+    <div class="card card-modern mb-4">
+        <div class="card-body p-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="filter-label">Categoría</label>
                     <select id="filterCategory" class="form-select">
                         <option value="">Todas</option>
                         <option value="PE">Pescados</option>
@@ -73,17 +51,28 @@
                         <option value="PO">Pollos</option>
                     </select>
                 </div>
-                <div class="col-md-5">
-                    <label class="form-label fw-semibold">Buscar</label>
-                    <input type="text" id="filterSearch" class="form-control" placeholder="Nombre del producto...">
+                <div class="col-md-3">
+                    <label class="filter-label">Estado de Stock</label>
+                    <select id="filterStock" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="rojo">🔴 Vacío (Rojo)</option>
+                        <option value="amarillo">🟡 Medio (Amarillo)</option>
+                        <option value="verde">🟢 Bien (Verde)</option>
+                    </select>
                 </div>
-                <div class="col-md-3 d-flex align-items-end gap-2">
-                    <button type="button" id="btnClear" class="btn btn-outline-secondary flex-fill">Limpiar</button>
-                    <a href="?export=pdf" class="btn btn-danger" title="Descargar en PDF">
-                        <i class="fas fa-file-pdf"></i> PDF
+                <div class="col-md-3">
+                    <label class="filter-label">Buscar</label>
+                    <input type="text" id="filterSearch" class="form-control shadow-sm" placeholder="Nombre...">
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="button" id="btnClear" class="btn btn-light border shadow-sm text-danger flex-grow-1" title="Limpiar filtros">
+                        <i class="bi bi-eraser-fill"></i> Limpiar
+                    </button>
+                    <a href="?export=pdf" class="btn btn-outline-danger btn-export" title="Descargar en PDF">
+                        <i class="bi bi-file-pdf"></i> PDF
                     </a>
-                    <a href="?export=excel" class="btn btn-success" title="Descargar en Excel">
-                        <i class="fas fa-file-excel"></i> Excel
+                    <a href="?export=excel" class="btn btn-outline-success btn-export" title="Descargar en Excel">
+                        <i class="bi bi-file-excel"></i> Excel
                     </a>
                 </div>
             </div>
@@ -91,42 +80,53 @@
     </div>
 
     <!-- Pescados -->
-    <div class="row mb-4" data-category="PE">
-        <div class="col-12">
-            <h3 class="section-title">
-                Pescados 
-                <span class="count-badge">{{ pescados.count }} producto{{ pescados.count|pluralize }}</span>
-            </h3>
-            <div class="card section-card">
+    <div class="inventory-section" data-category="PE">
+        <h3 class="category-title">
+            Pescados 
+            <span class="badge-count">{{ pescados.count }} producto{{ pescados.count|pluralize }}</span>
+        </h3>
+        <div class="card card-modern">
+            <div class="card-body p-0 overflow-hidden rounded-4">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" data-table="PE">
-                        <thead class="table-header">
+                    <table class="table table-professional align-middle mb-0" data-table="PE">
+                        <thead>
                             <tr>
                                 <th style="min-width: 200px;">Nombre</th>
                                 <th style="min-width: 150px;">Proveedor</th>
                                 <th style="min-width: 150px;">Presentación</th>
-                                <th class="text-end" style="width: 120px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
+                                <th class="text-end pe-4" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
                             </tr>
-                        </thead>+
+                        </thead>
                         <tbody>
                             {% for p in pescados %}
-                            <tr data-product-name="{{ p.nombre|lower }}">
-                                <td><strong>{{ p.nombre }}</strong></td>
+                            {% if p.stock_disponible <= 0 %}
+                                <tr data-product-name="{{ p.nombre|lower }}" data-stock-status="rojo">
+                            {% elif p.stock_disponible <= 10 %}
+                                <tr data-product-name="{{ p.nombre|lower }}" data-stock-status="amarillo">
+                            {% else %}
+                                <tr data-product-name="{{ p.nombre|lower }}" data-stock-status="verde">
+                            {% endif %}
+                                <td class="ps-4"><strong>{{ p.nombre }}</strong></td>
                                 <td>{{ p.proveedor }}</td>
                                 <td>{{ p.get_tipo_presentacion_display }}</td>
-                                <td class="text-end">
+                                <td class="text-end pe-4 fw-bold">
                                     {% if p.stock_disponible <= 0 %}
-                                        <span class="badge bg-danger">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">{{ p.stock_disponible }}</span>
                                     {% elif p.stock_disponible <= 10 %}
-                                        <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">{{ p.stock_disponible }}</span>
                                     {% else %}
-                                        <span class="badge bg-success">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ p.stock_disponible }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr class="no-results-row">
-                                <td colspan="4" class="text-center text-muted py-4">No hay productos de tipo pescado.</td>
+                                <td colspan="4" class="text-center py-5 my-5">
+                                    <div class="opacity-50 mb-3">
+                                        <i class="bi bi-inbox text-primary" style="font-size: 4rem;"></i>
+                                    </div>
+                                    <h4 class="fw-bold text-dark">No hay productos pescados</h4>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -137,42 +137,53 @@
     </div>
 
     <!-- Mariscos -->
-    <div class="row mb-4" data-category="MA">
-        <div class="col-12">
-            <h3 class="section-title">
-                Mariscos 
-                <span class="count-badge">{{ mariscos.count }} producto{{ mariscos.count|pluralize }}</span>
-            </h3>
-            <div class="card section-card">
+    <div class="inventory-section" data-category="MA">
+        <h3 class="category-title">
+            Mariscos 
+            <span class="badge-count">{{ mariscos.count }} producto{{ mariscos.count|pluralize }}</span>
+        </h3>
+        <div class="card card-modern">
+            <div class="card-body p-0 overflow-hidden rounded-4">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" data-table="MA">
-                        <thead class="table-header">
+                    <table class="table table-professional align-middle mb-0" data-table="MA">
+                        <thead>
                             <tr>
                                 <th style="min-width: 200px;">Nombre</th>
                                 <th style="min-width: 150px;">Proveedor</th>
                                 <th style="min-width: 150px;">Presentación</th>
-                                <th class="text-end" style="width: 120px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
+                                <th class="text-end pe-4" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for p in mariscos %}
-                            <tr data-product-name="{{ p.nombre|lower }}">
-                                <td><strong>{{ p.nombre }}</strong></td>
+                            {% if p.stock_disponible <= 0 %}
+                                <tr data-product-name="{{ p.nombre|lower }}" data-stock-status="rojo">
+                            {% elif p.stock_disponible <= 10 %}
+                                <tr data-product-name="{{ p.nombre|lower }}" data-stock-status="amarillo">
+                            {% else %}
+                                <tr data-product-name="{{ p.nombre|lower }}" data-stock-status="verde">
+                            {% endif %}
+                                <td class="ps-4"><strong>{{ p.nombre }}</strong></td>
                                 <td>{{ p.proveedor }}</td>
                                 <td>{{ p.get_tipo_presentacion_display }}</td>
-                                <td class="text-end">
+                                <td class="text-end pe-4 fw-bold">
                                     {% if p.stock_disponible <= 0 %}
-                                        <span class="badge bg-danger">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">{{ p.stock_disponible }}</span>
                                     {% elif p.stock_disponible <= 10 %}
-                                        <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">{{ p.stock_disponible }}</span>
                                     {% else %}
-                                        <span class="badge bg-success">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ p.stock_disponible }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr class="no-results-row">
-                                <td colspan="4" class="text-center text-muted py-4">No hay productos de tipo marisco.</td>
+                                <td colspan="4" class="text-center py-5 my-5">
+                                    <div class="opacity-50 mb-3">
+                                        <i class="bi bi-inbox text-primary" style="font-size: 4rem;"></i>
+                                    </div>
+                                    <h4 class="fw-bold text-dark">No hay productos mariscos</h4>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -183,42 +194,53 @@
     </div>
 
     <!-- Pollos -->
-    <div class="row mb-4" data-category="PO">
-        <div class="col-12">
-            <h3 class="section-title">
-                Pollos 
-                <span class="count-badge">{{ pollos.count }} producto{{ pollos.count|pluralize }}</span>
-            </h3>
-            <div class="card section-card">
+    <div class="inventory-section" data-category="PO">
+        <h3 class="category-title">
+            Pollos 
+            <span class="badge-count">{{ pollos.count }} producto{{ pollos.count|pluralize }}</span>
+        </h3>
+        <div class="card card-modern">
+            <div class="card-body p-0 overflow-hidden rounded-4">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" data-table="PO">
-                        <thead class="table-header">
+                    <table class="table table-professional align-middle mb-0" data-table="PO">
+                        <thead>
                             <tr>
                                 <th style="min-width: 200px;">Nombre</th>
                                 <th style="min-width: 150px;">Proveedor</th>
                                 <th style="min-width: 150px;">Presentación</th>
-                                <th class="text-end" style="width: 120px;" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
+                                <th class="text-end pe-4" title="Stock Disponible = Recibido - Vendido">Stock Disponible</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for p in pollos %}
-                            <tr data-product-name="{{ p.nombre|lower }}">
-                                <td><strong>{{ p.nombre }}</strong></td>
+                            {% if p.stock_disponible <= 0 %}
+                                <tr data-product-name="{{ p.nombre|lower }}" data-stock-status="rojo">
+                            {% elif p.stock_disponible <= 10 %}
+                                <tr data-product-name="{{ p.nombre|lower }}" data-stock-status="amarillo">
+                            {% else %}
+                                <tr data-product-name="{{ p.nombre|lower }}" data-stock-status="verde">
+                            {% endif %}
+                                <td class="ps-4"><strong>{{ p.nombre }}</strong></td>
                                 <td>{{ p.proveedor }}</td>
                                 <td>{{ p.get_tipo_presentacion_display }}</td>
-                                <td class="text-end">
+                                <td class="text-end pe-4 fw-bold">
                                     {% if p.stock_disponible <= 0 %}
-                                        <span class="badge bg-danger">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">{{ p.stock_disponible }}</span>
                                     {% elif p.stock_disponible <= 10 %}
-                                        <span class="badge bg-warning text-dark">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">{{ p.stock_disponible }}</span>
                                     {% else %}
-                                        <span class="badge bg-success">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ p.stock_disponible }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr class="no-results-row">
-                                <td colspan="4" class="text-center text-muted py-4">No hay productos de tipo pollo.</td>
+                                <td colspan="4" class="text-center py-5 my-5">
+                                    <div class="opacity-50 mb-3">
+                                        <i class="bi bi-inbox text-primary" style="font-size: 4rem;"></i>
+                                    </div>
+                                    <h4 class="fw-bold text-dark">No hay productos pollos</h4>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -236,9 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const filterCategory = document.getElementById('filterCategory');
     const filterStock = document.getElementById('filterStock');
     const filterSearch = document.getElementById('filterSearch');
-    const clearSearch = document.getElementById('clearSearch');
     const btnClear = document.getElementById('btnClear');
-    const filterStatus = document.getElementById('filterStatus');
 
     const categoryRows = {
         'PE': document.querySelector('[data-category="PE"]'),
@@ -248,26 +268,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function applyFilters() {
         const selectedCategory = filterCategory.value;
+        const selectedStock = filterStock.value;
         const searchText = filterSearch.value.toLowerCase();
 
         Object.keys(categoryRows).forEach(category => {
-            categoryRows[category].style.display = (!selectedCategory || selectedCategory === category) ? 'flex' : 'none';
+            categoryRows[category].style.display = (!selectedCategory || selectedCategory === category) ? 'block' : 'none';
         });
 
         ['PE', 'MA', 'PO'].forEach(category => {
-            if (!categoryRows[category] || categoryRows[category].style.display === 'none') return;
-
-            const table = categoryRows[category].querySelector(`[data-table="${category}"]`);
-            if (table) {
+            const table = document.querySelector(`[data-table="${category}"]`);
+            if (table && categoryRows[category].style.display !== 'none') {
                 const rows = table.querySelectorAll('tbody tr');
                 let hasVisibleResults = false;
-
-                const productRows = table.querySelectorAll('tbody tr:not(.no-results-row)');
-                totalRows += productRows.length;
 
                 rows.forEach(row => {
                     if (row.classList.contains('no-results-row')) return;
                     const productName = row.getAttribute('data-product-name') || '';
+                    const stockStatus = row.getAttribute('data-stock-status') || '';
+                    
+                    const matchesSearch = searchText === '' || productName.includes(searchText);
+                    const matchesStock = selectedStock === '' || stockStatus === selectedStock;
+                    
+                    if (matchesSearch && matchesStock) {
+                        row.style.display = 'table-row';
+                        hasVisibleResults = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                const noResultsRow = table.querySelector('.no-results-row');
+                if (noResultsRow) {
+                    noResultsRow.style.display = hasVisibleResults ? 'none' : 'table-row';
+                }
+            }
+        });
+    }
+
+    filterCategory.addEventListener('change', applyFilters);
+    filterStock.addEventListener('change', applyFilters);
+    filterSearch.addEventListener('keyup', applyFilters);
+
+    btnClear.addEventListener('click', function() {
+        filterCategory.value = '';
+        filterStock.value = '';
+        filterSearch.value = '';
+        applyFilters();
+    });
+
+    applyFilters();
+});
+</script>
+{% endblock %}
                     const stockStatus = row.getAttribute('data-stock-status') || '';
                     
                     const matchesSearch = searchText === '' || productName.includes(searchText);
