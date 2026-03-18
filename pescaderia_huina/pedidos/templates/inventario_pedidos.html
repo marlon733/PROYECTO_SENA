@@ -1,9 +1,8 @@
 {% extends 'core/panel_admin_base.html' %}
 {% load static %}
 
-{% block title %}Inventario de Pedidos | Pescadería Huina{% endblock %}
-
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
 <style>
 .filter-card {
     background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
@@ -235,8 +234,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const filterCategory = document.getElementById('filterCategory');
+    const filterStock = document.getElementById('filterStock');
     const filterSearch = document.getElementById('filterSearch');
+    const clearSearch = document.getElementById('clearSearch');
     const btnClear = document.getElementById('btnClear');
+    const filterStatus = document.getElementById('filterStatus');
 
     const categoryRows = {
         'PE': document.querySelector('[data-category="PE"]'),
@@ -253,17 +255,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         ['PE', 'MA', 'PO'].forEach(category => {
-            const table = document.querySelector(`[data-table="${category}"]`);
-            if (table && categoryRows[category].style.display !== 'none') {
+            if (!categoryRows[category] || categoryRows[category].style.display === 'none') return;
+
+            const table = categoryRows[category].querySelector(`[data-table="${category}"]`);
+            if (table) {
                 const rows = table.querySelectorAll('tbody tr');
                 let hasVisibleResults = false;
+
+                const productRows = table.querySelectorAll('tbody tr:not(.no-results-row)');
+                totalRows += productRows.length;
 
                 rows.forEach(row => {
                     if (row.classList.contains('no-results-row')) return;
                     const productName = row.getAttribute('data-product-name') || '';
-                    if (searchText === '' || productName.includes(searchText)) {
+                    const stockStatus = row.getAttribute('data-stock-status') || '';
+                    
+                    const matchesSearch = searchText === '' || productName.includes(searchText);
+                    const matchesStock = selectedStock === '' || stockStatus === selectedStock;
+                    
+                    if (matchesSearch && matchesStock) {
                         row.style.display = 'table-row';
                         hasVisibleResults = true;
+                        visibleTotal++;
                     } else {
                         row.style.display = 'none';
                     }
@@ -275,6 +288,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+
+        const hasFilters = selectedCategory || searchText;
+        if (filterStatus) {
+            if (hasFilters) {
+                filterStatus.innerHTML = '<span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1"><i class="bi bi-funnel-fill me-1"></i> Mostrando ' + visibleTotal + ' de ' + totalRows + ' productos</span>';
+            } else {
+                filterStatus.textContent = 'Mostrando todos los productos';
+            }
+        }
+
+        if (clearSearch) {
+            clearSearch.classList.toggle('d-none', !searchText);
+        }
     }
 
     filterCategory.addEventListener('change', applyFilters);
@@ -282,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     btnClear.addEventListener('click', function() {
         filterCategory.value = '';
+        filterStock.value = '';
         filterSearch.value = '';
         applyFilters();
     });

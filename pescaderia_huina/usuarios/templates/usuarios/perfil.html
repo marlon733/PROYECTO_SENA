@@ -3,199 +3,397 @@
 
 {% block title %}Mi Perfil - Pescadería Huina{% endblock %}
 
-{% block content %}
+{% block extra_css %}
 <style>
-    /* Estilos Específicos del Perfil Ocean */
+    :root {
+        --huina-navy-900: #16263d;
+        --huina-navy-800: #1f3554;
+        --huina-navy-700: #2C466B;
+        --huina-ink: #0f172a;
+        --huina-muted: #64748b;
+        --huina-surface: #ffffff;
+        --huina-bg: #f8fafc;
+        --huina-border: rgba(15, 23, 42, 0.08);
+        --huina-gold: #c8a24a;
+        --huina-gold-soft: rgba(200, 162, 74, 0.18);
+    }
+
+    .page-bg { background: var(--huina-bg); }
+
+    .profile-shell {
+        max-width: 980px;
+        margin: 0 auto;
+    }
+
     .card-profile {
         border: none;
-        border-radius: 20px;
+        border-radius: 22px;
         overflow: hidden;
-        box-shadow: 0 20px 40px rgba(0, 97, 255, 0.1);
+        background: var(--huina-surface);
+        box-shadow: 0 18px 50px rgba(16, 24, 40, 0.10);
     }
 
-    /* Portada con gradiente */
     .profile-cover {
-        background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
-        height: 150px;
         position: relative;
+        padding: 28px 28px 74px;
+        background:
+            radial-gradient(900px 280px at 20% 10%, rgba(200, 162, 74, 0.20), transparent 55%),
+            radial-gradient(650px 240px at 90% 0%, rgba(255, 255, 255, 0.14), transparent 55%),
+            linear-gradient(135deg, var(--huina-navy-700), var(--huina-navy-800) 55%, var(--huina-navy-900));
     }
-    
     .profile-cover::before {
         content: '';
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='72' height='72' viewBox='0 0 72 72' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 0v10h-2V0h2zm0 62v10h-2V62h2zM0 36h10v2H0v-2zm62 0h10v2H62v-2zM52.9 18.1l7.1-7.1 1.4 1.4-7.1 7.1-1.4-1.4zM11.6 59.4l7.1-7.1 1.4 1.4-7.1 7.1-1.4-1.4zM53.7 53.7l7.1 7.1-1.4 1.4-7.1-7.1 1.4-1.4zM12.4 12.4l7.1 7.1-1.4 1.4-7.1-7.1 1.4-1.4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
     }
 
-    /* Contenedor de la foto */
+    .cover-row {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .cover-title {
+        color: #fff;
+        margin: 0;
+        font-weight: 800;
+        letter-spacing: -0.6px;
+        line-height: 1.1;
+    }
+    .cover-subtitle {
+        color: rgba(255, 255, 255, 0.75);
+        margin: 6px 0 0;
+        max-width: 60ch;
+    }
+
+    .role-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #fff;
+        padding: .5rem .9rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: .9rem;
+        backdrop-filter: blur(8px);
+    }
+
+    .avatar-wrap {
+        position: relative;
+        margin-top: -52px;
+        padding: 0 28px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
     .avatar-container {
         position: relative;
-        margin-top: -75px; /* Sube la foto hacia la portada */
-        display: inline-block;
+        width: 132px;
+        height: 132px;
     }
-
     .profile-avatar {
-        width: 150px;
-        height: 150px;
+        width: 132px;
+        height: 132px;
         object-fit: cover;
-        border: 5px solid #fff;
         border-radius: 50%;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-        background-color: #fff;
+        background: #fff;
+        border: 6px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.14);
+    }
+    .avatar-ring {
+        position: absolute;
+        inset: -8px;
+        border-radius: 999px;
+        background: conic-gradient(from 220deg, rgba(200,162,74,0.95), rgba(255,255,255,0.10), rgba(200,162,74,0.70));
+        filter: blur(0px);
+        z-index: -1;
     }
 
-    /* Botón para subir foto */
     .btn-upload-photo {
         position: absolute;
-        bottom: 10px;
-        right: 10px;
-        width: 40px;
-        height: 40px;
+        bottom: 6px;
+        right: 6px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
-        background-color: var(--ocean-primary);
-        color: white;
-        display: flex;
+        background: linear-gradient(135deg, var(--huina-gold), #e4c46a);
+        color: var(--huina-navy-900);
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: 3px solid #fff;
+        border: 3px solid rgba(255, 255, 255, 0.95);
         cursor: pointer;
-        transition: transform 0.2s;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease, filter 0.2s ease;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.18);
     }
-
     .btn-upload-photo:hover {
-        transform: scale(1.1);
-        background-color: var(--ocean-cyan);
+        transform: translateY(-2px) scale(1.03);
+        filter: brightness(1.02);
     }
 
-    /* Estilos de los campos de información */
-    .info-label {
-        font-size: 0.85rem;
-        text-transform: uppercase;
+    .identity {
+        flex: 1;
+        min-width: 240px;
+        padding-bottom: 6px;
+    }
+    .identity h3 {
+        margin: 0;
+        color: var(--huina-ink);
+        font-weight: 900;
+        letter-spacing: -0.5px;
+    }
+    .identity p {
+        margin: 6px 0 0;
+        color: var(--huina-muted);
+    }
+
+    .card-body-profile {
+        padding: 22px 28px 28px;
+    }
+
+    .section-label {
+        font-size: 0.8rem;
+        font-weight: 900;
         letter-spacing: 1px;
-        color: #6c757d;
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
-
-    .info-value {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: var(--text-dark);
-        padding: 10px;
-        background-color: #f8fbff;
-        border-radius: 10px;
-        border: 1px solid #eef2f7;
+        text-transform: uppercase;
+        color: var(--huina-navy-700);
+        margin: 0 0 12px;
         display: flex;
         align-items: center;
+        gap: .5rem;
     }
-    
-    .info-value i {
-        color: var(--ocean-primary);
-        margin-right: 10px;
-        font-size: 1.2rem;
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 14px;
+    }
+    .info-card {
+        grid-column: span 6;
+        border: 1px solid var(--huina-border);
+        background: #fff;
+        border-radius: 16px;
+        padding: 14px 14px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .info-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 26px rgba(16, 24, 40, 0.06);
+    }
+    .info-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: rgba(44, 70, 107, 0.08);
+        color: var(--huina-navy-700);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        border: 1px solid rgba(44, 70, 107, 0.10);
+    }
+    .info-meta { flex: 1; min-width: 0; }
+    .info-label {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--huina-muted);
+        font-weight: 800;
+        margin: 0 0 6px;
+    }
+    .info-value {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--huina-ink);
+        margin: 0;
+        word-break: break-word;
+    }
+    .info-hint {
+        margin: 6px 0 0;
+        color: var(--huina-muted);
+        font-size: .85rem;
+    }
+
+    .action-bar {
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid var(--huina-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .btn-huina-primary {
+        background: linear-gradient(135deg, var(--huina-navy-700), var(--huina-navy-900));
+        border: none;
+        color: #fff;
+        border-radius: 14px;
+        font-weight: 900;
+        letter-spacing: .2px;
+        padding: .75rem 1.25rem;
+    }
+    .btn-huina-primary:hover {
+        background: linear-gradient(135deg, var(--huina-navy-900), #0f1b2d);
+        transform: translateY(-1px);
+        color: #fff;
+    }
+    .btn-soft-gold {
+        background: var(--huina-gold-soft);
+        border: 1px solid rgba(200, 162, 74, 0.28);
+        color: var(--huina-navy-900);
+        border-radius: 14px;
+        font-weight: 900;
+        padding: .75rem 1.25rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+    }
+    .btn-soft-gold:hover {
+        background: rgba(200, 162, 74, 0.24);
+        color: var(--huina-navy-900);
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 992px) {
+        .info-card { grid-column: span 12; }
     }
 </style>
+{% endblock %}
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                
-                <div class="card card-profile bg-white">
-                    <div class="profile-cover"></div>
-
-                    <div class="card-body text-center pt-0 px-4 pb-5">
-                        
-                        <div class="avatar-container mb-4">
-                            {% if request.user.perfil.foto_perfil %}
-                                <img src="{{ request.user.perfil.foto_perfil.url }}" alt="Foto de perfil" class="profile-avatar" id="avatarPreview">
-                            {% else %}
-                                <div class="profile-avatar d-flex align-items-center justify-content-center bg-light text-primary">
-                                    <i class="bi bi-person-fill display-1 opacity-50"></i>
-                                </div>
-                            {% endif %}
-
-                            <label for="id_foto_perfil" class="btn-upload-photo" title="Cambiar foto">
-                                <i class="bi bi-camera-fill"></i>
-                            </label>
-                            <input type="file" name="foto_perfil" id="id_foto_perfil" class="d-none" accept="image/*" onchange="previewImage(this)">
+{% block content %}
+<div class="page-bg">
+    <div class="container py-5">
+        <div class="profile-shell">
+            <div class="card card-profile">
+                <div class="profile-cover">
+                    <div class="cover-row">
+                        <div>
+                            <h2 class="cover-title">Mi Perfil</h2>
+                            <p class="cover-subtitle">Consulta tu información y edítala desde el botón.</p>
                         </div>
-
-                        <h3 class="fw-bold mb-1">{{ request.user.get_full_name|default:request.user.username }}</h3>
-                        <p class="text-muted mb-4">
-                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
-                                {% if request.user.is_staff %}Administrador{% else %}Cliente{% endif %}
-                            </span>
-                        </p>
-
-                        <hr class="my-4 opacity-10">
-
-                        <div class="row g-4 text-start">
-                            <div class="col-md-6">
-                                <label class="info-label">Usuario</label>
-                                <div class="info-value">
-                                    <i class="bi bi-person-badge"></i> {{ request.user.username }}
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <label class="info-label">Correo Electrónico</label>
-                                <div class="info-value">
-                                    <i class="bi bi-envelope"></i> {{ request.user.email }}
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="info-label">Nombre</label>
-                                <div class="info-value">
-                                    <i class="bi bi-person"></i> {{ request.user.first_name }}
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="info-label">Apellido</label>
-                                <div class="info-value">
-                                    <i class="bi bi-person"></i> {{ request.user.last_name }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-5">
-                            <button type="submit" class="btn btn-huina-primary px-5 py-2 shadow">
-                                <i class="bi bi-save me-2"></i> Actualizar Perfil
-                            </button>
-                        </div>
-
+                        <span class="role-pill">
+                            <i class="bi bi-shield-lock-fill"></i>
+                            {% if request.user.is_staff %}Administrador{% else %}Cliente{% endif %}
+                        </span>
                     </div>
                 </div>
-            </form>
+
+                <div class="avatar-wrap">
+                    <div class="d-flex align-items-end gap-3 flex-wrap">
+                        <div class="avatar-container">
+                            <div class="avatar-ring"></div>
+                            {% if request.user.perfil.foto_perfil %}
+                                <img src="{{ request.user.perfil.foto_perfil.url }}" alt="Foto de perfil" class="profile-avatar">
+                            {% else %}
+                                <div class="profile-avatar d-flex align-items-center justify-content-center bg-light">
+                                    <i class="bi bi-person-fill" style="font-size: 3.4rem; color: rgba(44, 70, 107, 0.55);"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="identity">
+                            <h3>{{ request.user.get_full_name|default:request.user.username }}</h3>
+                            <p class="mb-0">Mantén tu información al día para una mejor gestión.</p>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'usuarios:editar_perfil' %}" class="btn-soft-gold">
+                        <i class="bi bi-pencil-square"></i> Editar perfil
+                    </a>
+                </div>
+
+                <div class="card-body-profile">
+                    <p class="section-label"><i class="bi bi-person-lines-fill"></i> Información del usuario</p>
+
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-icon"><i class="bi bi-person-badge fs-5"></i></div>
+                            <div class="info-meta">
+                                <p class="info-label">Usuario</p>
+                                <p class="info-value">{{ request.user.username }}</p>
+                                <p class="info-hint">Identificador para iniciar sesión.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-icon"><i class="bi bi-envelope fs-5"></i></div>
+                            <div class="info-meta">
+                                <p class="info-label">Correo</p>
+                                <p class="info-value">{{ request.user.email|default:"—" }}</p>
+                                <p class="info-hint">Notificaciones y recuperación.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-icon"><i class="bi bi-person fs-5"></i></div>
+                            <div class="info-meta">
+                                <p class="info-label">Nombre</p>
+                                <p class="info-value">{{ request.user.first_name|default:"—" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-icon"><i class="bi bi-person fs-5"></i></div>
+                            <div class="info-meta">
+                                <p class="info-label">Apellido</p>
+                                <p class="info-value">{{ request.user.last_name|default:"—" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-icon"><i class="bi bi-telephone fs-5"></i></div>
+                            <div class="info-meta">
+                                <p class="info-label">Teléfono</p>
+                                <p class="info-value">{{ perfil_usuario.telefono|default:"—" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-icon"><i class="bi bi-geo-alt fs-5"></i></div>
+                            <div class="info-meta">
+                                <p class="info-label">Dirección</p>
+                                <p class="info-value">{{ perfil_usuario.direccion|default:"—" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-icon"><i class="bi bi-calendar3 fs-5"></i></div>
+                            <div class="info-meta">
+                                <p class="info-label">Nacimiento</p>
+                                <p class="info-value">
+                                    {% if perfil_usuario.fecha_nacimiento %}
+                                        {{ perfil_usuario.fecha_nacimiento|date:"d M, Y" }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-icon"><i class="bi bi-card-text fs-5"></i></div>
+                            <div class="info-meta">
+                                <p class="info-label">Documento</p>
+                                <p class="info-value">{{ perfil_usuario.documento|default:request.user.username }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-<script>
-    function previewImage(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var preview = document.getElementById('avatarPreview');
-                // Si no existe la imagen (era un div con icono), la creamos
-                if (!preview) {
-                    var container = document.querySelector('.avatar-container');
-                    // Limpiamos el div placeholder
-                    var placeholder = container.querySelector('.profile-avatar');
-                    if(placeholder.tagName === 'DIV') placeholder.remove();
-                    
-                    preview = document.createElement('img');
-                    preview.id = 'avatarPreview';
-                    preview.className = 'profile-avatar';
-                    container.insertBefore(preview, container.firstChild);
-                }
-                preview.src = e.target.result;
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-</script>
 {% endblock %}

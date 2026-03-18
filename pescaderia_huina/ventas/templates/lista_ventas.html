@@ -35,7 +35,7 @@
             <div class="card card-modern">
                 <div class="card-body text-center py-4">
                     <h6 class="text-muted mb-3">Ingresos Totales</h6>
-                    <h2 class="mb-0 fw-bold text-success">${{ total_ingresos|floatformat:2 }}</h2>
+                    <h2 class="mb-0 fw-bold text-success">${{ total_ingresos|floatformat:0 }}</h2>
                 </div>
             </div>
         </div>
@@ -106,7 +106,7 @@
                 <table class="table table-professional align-middle mb-0">
                     <thead>
                         <tr>
-                            <th class="ps-4" style="width:50px;">#</th>
+                            <th class="ps-4" style="width:50px;"></th>
                             <th>Cliente</th>
                             <th>Documento</th>
                             <th>Productos</th>
@@ -139,7 +139,7 @@
                                 {% endfor %}
                             </td>
                             <td class="text-end total-value fw-bold">
-                                ${{ venta.total|floatformat:2|default:"0.00" }}
+                                ${{ venta.total|floatformat:0|default:"0" }}
                             </td>
                             <td class="text-center text-muted fw-semibold small">
                                 {{ venta.fecha_venta|date:"d/m/Y" }}<br>
@@ -208,11 +208,4 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
-    });
-</script>
-{% endblock %}
+{% block extra_js %}{% endblock %}

@@ -1,21 +1,43 @@
 {% extends 'core/panel_admin_base.html' %}
+<<<<<<< HEAD
 {% load humanize %}
 {% load static %} 
+=======
+{% load static %}
+{% load humanize %} 
+>>>>>>> 740a4d8e7bc2ebadac2053dbdabe0487373f6539
 
 {% block title %}Productos{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container">
+<<<<<<< HEAD
     <div class="page-header d-flex justify-content-between align-items-center">
         <div>
             <h2 class="page-title mb-2">Directorio de Productos</h2>
             <p class="text-muted mb-0 fs-5">Catálogo general de referencias actual</p>
         </div>
         <a href="{% url 'productos:producto_crear' %}" class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill px-4 py-2" style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+=======
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="page-title mb-2">Directorio de Productos</h2>
+            <p class="text-muted mb-0 fs-5">Catálogo general de referencias actual.</p>
+        </div>
+        <a href="{% url 'productos:producto_crear' %}"
+           class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill px-4 py-2"
+           style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+>>>>>>> 740a4d8e7bc2ebadac2053dbdabe0487373f6539
             <i class="bi bi-plus-lg me-2"></i>Nuevo Producto
         </a>
     </div>
 
+<<<<<<< HEAD
     <form method="get" class="mb-4">
         <div class="card card-modern mb-4">
             <div class="card-body p-4">
@@ -57,15 +79,56 @@
                         {% endif %}
                     </span>
                 </div>
+=======
+    <div class="card card-modern mb-4">
+        <div class="card-body p-4">
+            <form method="get">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-9">
+                        <label class="filter-label">Buscar coincidencias</label>
+                        <div class="search-input-group input-group shadow-sm">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" name="q" id="searchInput" class="form-control"
+                                   placeholder="Nombre del producto..." value="{{ request.GET.q }}">
+                            <a href="?" class="btn-clear-search {% if not request.GET.q %}d-none{% endif %}" title="Limpiar texto">
+                                <i class="bi bi-x-circle-fill fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-grid">
+                        <button type="submit"
+                                class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill px-4 py-2"
+                                style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+                            <i class="bi bi-funnel-fill me-2"></i>Buscar
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <hr class="my-3 border-light">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">
+                    {% if request.GET.q %}
+                        <span id="filterStatus">Búsqueda aplicada: <strong>{{ request.GET.q }}</strong></span>
+                    {% else %}
+                        <span id="filterStatus">Mostrando todos los productos</span>
+                    {% endif %}
+                </span>
+                <span class="text-muted small">Total: <strong>{{ productos|length }}</strong></span>
+>>>>>>> 740a4d8e7bc2ebadac2053dbdabe0487373f6539
             </div>
         </div>
-    </form>
+    </div>
 
     <div class="card card-modern">
         <div class="card-body p-0 overflow-hidden rounded-4">
             <div class="table-responsive">
                 <table class="table table-professional align-middle mb-0">
+<<<<<<< HEAD
 
+=======
+>>>>>>> 740a4d8e7bc2ebadac2053dbdabe0487373f6539
                     <thead>
                         <tr>
                             <th class="ps-4">Producto</th>
@@ -76,10 +139,10 @@
                             <th class="text-center pe-4">Acciones</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         {% if productos %}
                             {% for producto in productos %}
+<<<<<<< HEAD
                             <tr>
                                 <td class="ps-4">
                                     <div class="fw-bold" style="color:#0f172a;">{{ producto.nombre }}</div>
@@ -101,11 +164,28 @@
                                 <td class="text-center">
                                     {% if producto.estado %}
                                         <i class="bi bi-check-circle-fill text-success fs-5" title="Activo"></i>
+=======
+                            <tr style="border-top:1px solid #eef2f7;">
+                                <td class="ps-4">
+                                    <div class="d-flex flex-column">
+                                        <span class="proveedor-name">{{ producto.nombre }}</span>
+                                        <span>
+                                            <small class="badge rounded-pill nit-badge">{{ producto.get_tipo_producto_display }}</small>
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td class="text-muted fw-semibold">
+                                    <i class="bi bi-shop me-1 text-primary"></i>
+                                    {% if producto.proveedor %}
+                                        {{ producto.proveedor.nombre_contacto }}
+>>>>>>> 740a4d8e7bc2ebadac2053dbdabe0487373f6539
                                     {% else %}
-                                        <i class="bi bi-x-circle-fill text-danger fs-5" title="Inactivo"></i>
+                                        <span class="text-danger fst-italic">No asignado</span>
                                     {% endif %}
                                 </td>
 
+<<<<<<< HEAD
                                 <td class="text-center pe-4 text-nowrap">
                                     <a href="{% url 'productos:producto_editar' producto.id %}" class="btn-icon-action" data-bs-toggle="tooltip" title="Editar">
                                         <i class="bi bi-pencil-square fs-5"></i>
@@ -114,28 +194,63 @@
                                         <i class="bi bi-trash fs-5"></i>
                                     </a>
                                 </td>
+=======
+                                <td class="text-muted fw-semibold">
+                                    <i class="bi bi-box-seam me-1 text-primary"></i>
+                                    {{ producto.get_tipo_presentacion_display }}
+                                </td>
+
+                                <td class="fw-bold" style="color: var(--primary-blue); font-size: 1.05rem;">
+                                    $ {{ producto.precio|intcomma }}
+                                </td>
+
+                                <td class="text-center">
+                                    {% if producto.estado %}
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Activo
+                                        </span>
+                                    {% else %}
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fw-bold">
+                                            <i class="bi bi-x-circle-fill me-1"></i> Inactivo
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="text-center pe-4 text-nowrap">
+                                    <a href="{% url 'productos:producto_editar' producto.id %}" class="btn-icon-action" title="Editar">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </a>
+                                    <a href="{% url 'productos:producto_eliminar' producto.id %}" class="btn-icon-action delete" title="Eliminar">
+                                        <i class="bi bi-trash fs-5"></i>
+                                    </a>
+                                </td>
+>>>>>>> 740a4d8e7bc2ebadac2053dbdabe0487373f6539
                             </tr>
                             {% endfor %}
                         {% else %}
                             <tr>
                                 <td colspan="6" class="text-center py-5 my-5">
                                     <div class="opacity-50 mb-3">
+<<<<<<< HEAD
                                         <i class="bi bi-box2 text-primary" style="font-size: 4rem;"></i>
                                     </div>
                                     <h4 class="fw-bold text-dark">No hay productos registrados en el catálogo</h4>
+=======
+                                        <i class="bi bi-box2 text-primary" style="font-size: 5rem;"></i>
+                                    </div>
+                                    <h4 class="fw-bold text-dark">No hay productos registrados</h4>
+>>>>>>> 740a4d8e7bc2ebadac2053dbdabe0487373f6539
                                     <p class="text-muted">Comienza registrando un nuevo producto.</p>
                                 </td>
                             </tr>
                         {% endif %}
                     </tbody>
-
                 </table>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
 
+<<<<<<< HEAD
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
 <style>
@@ -176,4 +291,7 @@
         });
     });
 </script>
+=======
+</div>
+>>>>>>> 740a4d8e7bc2ebadac2053dbdabe0487373f6539
 {% endblock %}
