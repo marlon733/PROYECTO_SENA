@@ -391,9 +391,24 @@ def nueva_password(request):
     user = User.objects.get(id=request.session['recovery_user'])
 
     if request.method == 'POST':
-        password = request.POST.get('password')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
 
-        user.set_password(password)
+        # Validar que las contraseñas coincidan
+        if not password1 or not password2:
+            messages.error(request, 'Por favor completa todos los campos.')
+            return render(request, 'usuarios/nueva_password.html')
+        
+        if password1 != password2:
+            messages.error(request, 'Las contraseñas no coinciden.')
+            return render(request, 'usuarios/nueva_password.html')
+        
+        # Validar longitud mínima
+        if len(password1) < 8:
+            messages.error(request, 'La contraseña debe tener al menos 8 caracteres.')
+            return render(request, 'usuarios/nueva_password.html')
+
+        user.set_password(password1)
         user.save()
 
         # Limpiar código
@@ -402,6 +417,7 @@ def nueva_password(request):
         perfil.recovery_code_created = None
         perfil.save()
 
+        messages.success(request, 'Tu contraseña ha sido actualizada. Ya puedes iniciar sesión.')
         request.session.flush()
         return redirect('usuarios:login')
 
