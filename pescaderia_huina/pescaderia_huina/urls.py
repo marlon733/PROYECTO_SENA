@@ -28,6 +28,7 @@ urlpatterns = [
     path('ventas/', include('ventas.urls')),
     path('proveedores/', include('proveedores.urls')), 
     path('pedidos/', include('pedidos.urls')),
+    path('copias-seguridad/', include('copia_seguridad.urls')),
 ]
 
 # Manejador de errores 404 personalizado
