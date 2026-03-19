@@ -226,7 +226,7 @@ class VentaUpdateView(LoginRequiredMixin, generic.UpdateView):
                 item.save()
 
             venta.recalcular_totales()
-            messages.success(self.request, f'Venta #{venta.id} actualizada exitosamente.')
+            messages.success(self.request, f'Venta {venta.id} actualizada exitosamente.')
         return redirect(self.success_url)
 
     def form_invalid(self, form):
@@ -261,7 +261,7 @@ class VentaCancelarView(LoginRequiredMixin, generic.FormView):
           self.venta.motivo_cancelacion = motivo
           self.venta.fecha_cancelacion = timezone.now()
           self.venta.save(update_fields=['estado', 'motivo_cancelacion', 'fecha_cancelacion'])
-          messages.success(self.request, f'Venta #{self.venta.id} cancelada exitosamente.')
+          messages.success(self.request, f'Venta {self.venta.id} cancelada exitosamente.')
         return super().form_valid(form)
 
 
