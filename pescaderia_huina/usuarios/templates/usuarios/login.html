@@ -1,98 +1,153 @@
 {% load static %} {% block extra_css %}
 <link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@600;700&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
   rel="stylesheet"
 />
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
 />
 
 <style>
   :root {
-    /* Paleta Coherente con Pescadería Huina - Index Premium */
-    --color-primary: #0742a1; /* Navy oscuro elegante para textos */
-    --color-accent: #06b6d4; /* Cyan/Turquesa Vibrante (Frescura) */
-    --color-accent-hover: #0891b2;
-    --color-bg-light: #f8fafc; /* Blanco humo muy suave */
-    --color-white: #ffffff;
-    --color-border: #e2e8f0;
-    --color-text-muted: #64748b;
+    --ocean-primary: #0061ff;
+    --ocean-cyan: #60efff;
+    --ocean-dark: #001233;
+    --ocean-light: #f0f7ff;
+    
+    --text-strong: #001233;
+    --text-muted: #6b7d8f;
+    --surface-1: rgba(255,255,255,0.96);
+    --surface-2: #ffffff;
   }
 
-  body,
-  html {
-    margin: 0;
-    padding: 0;
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body, html {
     height: 100%;
-    font-family: "Inter", sans-serif;
-    background-color: var(--color-white);
-    color: var(--color-primary);
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    background: var(--ocean-light);
+    letter-spacing: 0.3px;
   }
 
-  /* Layout de Pantalla Partida */
+  /* ============================================================
+     LAYOUT PRINCIPAL
+  ============================================================ */
   .auth-container {
     display: flex;
     min-height: 100vh;
     width: 100%;
+    overflow: hidden;
   }
 
-  /* --- IZQUIERDA: IMAGEN DEL "SEÑOR" --- */
+  /* ============================================================
+     LADO IZQUIERDO — VISUAL PREMIUM ANIMADO
+  ============================================================ */
   .auth-visual {
-    flex: 1.1;
+    flex: 1.3;
     position: relative;
-    background-color: var(--color-primary);
+    background: linear-gradient(135deg, #001233 0%, #041d52 40%, #0742a1 80%, #3455bf 100%);
     overflow: hidden;
     display: flex;
-    align-items: flex-end;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     padding: 60px;
   }
 
-  /* Gradiente igual al lado izquierdo de registro */
+  /* Efectos de fondo */
+  .auth-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(96, 239, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(0, 97, 255, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .auth-visual::after {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(96, 239, 255, 0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: float-bg 8s ease-in-out infinite;
+  }
+
+  @keyframes float-bg {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(30px); }
+  }
+
   .auth-bg-image {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #001233 0%, #0f3c84 80%, #3455bf 100%);
-    z-index: 1;
-  }
-
-  /* Textura SVG sutil sobre el gradiente */
-  .auth-bg-image::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     pointer-events: none;
+    z-index: 0;
   }
 
   .visual-content {
     position: relative;
     z-index: 2;
     color: white;
-    max-width: 500px;
+    max-width: 520px;
+    animation: slideInLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .visual-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+
+  .visual-logo i {
+    font-size: 2rem;
+    color: var(--ocean-cyan);
+  }
+
+  .visual-logo span {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
   }
 
   .visual-content h2 {
-    font-family: "Cormorant Garamond", serif;
-    font-size: 3.5rem;
-    line-height: 1.1;
+    font-size: 3.2rem;
+    line-height: 1.2;
     margin-bottom: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
+    letter-spacing: -1px;
   }
 
   .visual-content p {
-    font-size: 1.15rem;
-    opacity: 0.9;
-    font-weight: 300;
-    border-left: 4px solid var(--color-accent);
-    padding-left: 25px;
-    line-height: 1.6;
+    font-size: 1.1rem;
+    opacity: 0.85;
+    font-weight: 400;
+    line-height: 1.7;
+    border-left: 4px solid var(--ocean-cyan);
+    padding-left: 24px;
   }
 
-  /* --- DERECHA: FORMULARIO LIMPIO --- */
+  /* ============================================================
+     LADO DERECHO — FORMULARIO MODERNO
+  ============================================================ */
   .auth-form-side {
     flex: 1;
     display: flex;
@@ -100,173 +155,256 @@
     justify-content: center;
     align-items: center;
     padding: 40px;
-    background-color: var(--color-white);
+    background: linear-gradient(180deg, #fafbfc 0%, var(--ocean-light) 100%);
     position: relative;
   }
 
   .form-wrapper {
     width: 100%;
-    max-width: 400px;
+    max-width: 480px;
+    animation: slideInRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  /* Header del Formulario (Sin logo encima) */
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .back-link {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    padding: 10px 20px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #ffffff, #f8f9fb);
+    border: 1.5px solid rgba(0, 97, 255, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 97, 255, 0.08);
+  }
+
+  .back-link:hover {
+    color: var(--ocean-primary);
+    border-color: rgba(0, 97, 255, 0.25);
+    box-shadow: 0 8px 24px rgba(0, 97, 255, 0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Header del Formulario */
   .form-header {
-    margin-bottom: 3rem;
-    text-align: left;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .form-header-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--ocean-dark), var(--ocean-primary));
+    border-radius: 18px;
+    color: var(--ocean-cyan);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 97, 255, 0.25);
+    animation: pulse-badge 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-badge {
+    0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 97, 255, 0.25); }
+    50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(0, 97, 255, 0.4); }
   }
 
   .form-header h1 {
-    font-family: "Cormorant Garamond", serif;
-    font-size: 3rem;
-    color: var(--color-primary);
-    margin: 0 0 10px 0;
-    font-weight: 700;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-strong);
+    margin-bottom: 0.5rem;
     letter-spacing: -0.5px;
   }
 
   .form-header p {
-    color: var(--color-text-muted);
-    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
     margin: 0;
-    font-weight: 300;
+    font-weight: 500;
   }
 
-  /* Inputs Estilo Moderno */
+  /* Mensaje de alerta */
+  .alert-modern {
+    padding: 14px 18px;
+    background: rgba(255, 23, 68, 0.1);
+    border-left: 4px solid #ff1744;
+    color: #c41c3b;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+  }
+
+  .alert-modern i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  /* Input Group */
   .input-group-modern {
     margin-bottom: 1.5rem;
   }
 
   .input-group-modern label {
     display: block;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-primary);
-    margin-bottom: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.5px;
   }
 
   .form-control-modern {
     width: 100%;
-    padding: 16px 18px;
+    padding: 14px 18px;
     font-size: 1rem;
-    color: var(--color-primary);
-    background-color: var(--color-bg-light);
-    border: 1px solid transparent;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-    font-family: "Inter", sans-serif;
+    color: var(--text-strong);
+    background: var(--surface-2);
+    border: 2px solid rgba(0, 97, 255, 0.12);
+    border-radius: 14px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0, 97, 255, 0.05);
   }
 
   .form-control-modern:focus {
     outline: none;
-    background-color: var(--color-white);
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
+    background: #ffffff;
+    border-color: var(--ocean-primary);
+    box-shadow: 0 8px 32px rgba(0, 97, 255, 0.15);
+    transform: translateY(-2px);
   }
 
   .form-control-modern::placeholder {
-    color: #94a3b8;
+    color: rgba(0, 97, 255, 0.4);
   }
 
-  /* Botón Principal */
-  .btn-primary-modern {
-    width: 100%;
-    padding: 18px;
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.05rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  .input-error {
+    color: #ff1744;
+    font-size: 0.8rem;
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 6px;
+    margin-top: 6px;
+    font-weight: 600;
   }
 
-  .btn-primary-modern:hover {
-    background-color: var(--color-accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px -10px rgba(6, 182, 212, 0.4);
-  }
-
-  /* Links y Extras */
+  /* Opciones del formulario */
   .form-options {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2.5rem;
-    font-size: 0.95rem;
-    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
   }
 
   .remember-me {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--color-text-muted);
+    color: var(--text-muted);
     cursor: pointer;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .remember-me:hover {
+    color: var(--text-strong);
   }
 
   .remember-me input {
-    accent-color: var(--color-primary);
+    accent-color: var(--ocean-primary);
     width: 18px;
     height: 18px;
+    cursor: pointer;
   }
 
   .forgot-password {
-    color: var(--color-accent-hover);
+    color: var(--ocean-primary);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
+    transition: all 0.2s ease;
   }
 
   .forgot-password:hover {
+    color: var(--ocean-cyan);
     text-decoration: underline;
   }
 
-  /* Alertas */
-  .alert-modern {
-    padding: 14px 18px;
-    background-color: #fef2f2;
-    border-left: 4px solid #ef4444;
-    color: #991b1b;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    font-size: 0.95rem;
+  /* Botón Principal */
+  .btn-primary-modern {
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--ocean-primary) 0%, #0052cc 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    box-shadow: 0 10px 28px rgba(0, 97, 255, 0.25);
+    letter-spacing: 0.3px;
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    margin-top: 8px;
   }
 
-  /* Botón Volver */
-  .back-link {
-    position: absolute;
-    top: 40px;
-    right: 40px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    color: var(--color-text-muted);
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-    padding: 10px 20px;
-    border-radius: 50px;
-    background-color: var(--color-bg-light);
+  .btn-primary-modern:hover {
+    background: linear-gradient(135deg, #0052cc 0%, #0042a8 100%);
+    box-shadow: 0 15px 40px rgba(0, 97, 255, 0.35);
+    transform: translateY(-2px);
   }
 
-  .back-link:hover {
-    color: var(--color-primary);
-    background-color: #e2e8f0;
+  .btn-primary-modern:active {
+    transform: translateY(0);
   }
 
-  /* Responsive */
+  .btn-primary-modern i {
+    font-size: 1.2rem;
+  }
+
+  /* Captcha especial */
+  .input-group-modern.captcha-group {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 97, 255, 0.08);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+  ============================================================ */
   @media (max-width: 1100px) {
     .visual-content h2 {
       font-size: 2.5rem;
+    }
+
+    .visual-content p {
+      font-size: 1rem;
     }
   }
 
@@ -274,53 +412,102 @@
     .auth-visual {
       display: none;
     }
+
     .auth-form-side {
       width: 100%;
       padding: 30px;
     }
+
     .form-wrapper {
       max-width: 100%;
     }
+
     .back-link {
       top: 20px;
       right: 20px;
       padding: 8px 16px;
+      font-size: 0.8rem;
     }
+
     .form-header h1 {
-      font-size: 2.5rem;
+      font-size: 1.8rem;
+    }
+
+    .form-header p {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .auth-form-side {
+      padding: 20px;
+      justify-content: flex-start;
+      padding-top: 70px;
+    }
+
+    .form-header {
+      margin-bottom: 2rem;
+    }
+
+    .form-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .back-link {
+      top: 15px;
+      right: 15px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+    }
+
+    .form-options {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
     }
   }
 </style>
 {% endblock %} {% block content %}
 <div class="auth-container">
+  <!-- LADO IZQUIERDO — VISUAL -->
   <div class="auth-visual">
     <div class="auth-bg-image"></div>
     <div class="visual-content">
-      <h2>Tradición y Calidad</h2>
+      <div class="visual-logo">
+        <i class="bi bi-shield-check"></i>
+        <span>Acceso Seguro</span>
+      </div>
+      <h2>Gestión Premium Huina</h2>
       <p>
-        Huina representa décadas de experiencia en el mar. Accede al sistema
-        para gestionar el inventario con la precisión que tu negocio merece.
+        Accede a tu panel administrativo para gestionar inventario, pedidos 
+        y ventas con precisión. Tu seguridad es nuestra prioridad.
       </p>
     </div>
   </div>
 
+  <!-- LADO DERECHO — FORMULARIO -->
   <div class="auth-form-side">
     <a href="{% url 'core:index' %}" class="back-link">
-      <i class="bi bi-arrow-left"></i> Volver al inicio
+      <i class="bi bi-arrow-left"></i> Volver
     </a>
 
     <div class="form-wrapper">
       <div class="form-header">
+        <div class="form-header-badge">
+          <i class="bi bi-person-fill"></i>
+        </div>
         <h1>Bienvenido</h1>
-        <p>Ingresa tus credenciales para acceder al panel.</p>
+        <p>Ingresa tus credenciales para acceder al sistema</p>
       </div>
 
-      {% if messages %} {% for message in messages %}
-      <div class="alert-modern">
-        <i class="bi bi-exclamation-circle-fill" style="font-size: 1.2rem"></i>
-        <span>{{ message }}</span>
-      </div>
-      {% endfor %} {% endif %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert-modern">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
 
       <form method="POST" novalidate>
         {% csrf_token %}
@@ -330,63 +517,59 @@
           name="next"
           value="{{ next|default:'/dashboard/' }}"
         />
+
+        <!-- DOCUMENTO -->
         <div class="input-group-modern">
-          <label for="{{ form.username.id_for_label }}"
-            >Documento de Identidad</label
-          >
-          {{ form.username }} {% if form.username.errors %}
-          <small
-            style="
-              color: #ef4444;
-              display: block;
-              margin-top: 8px;
-              font-weight: 500;
-            "
-          >
-            <i class="bi bi-x-circle me-1"></i> {{ form.username.errors.0 }}
-          </small>
+          <label for="{{ form.username.id_for_label }}">
+            <i class="bi bi-file-earmark-text" style="margin-right: 4px;"></i>Documento de Identidad
+          </label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <div class="input-error">
+              <i class="bi bi-x-circle"></i> {{ form.username.errors.0 }}
+            </div>
           {% endif %}
         </div>
 
+        <!-- CONTRASEÑA -->
         <div class="input-group-modern">
-          <label for="{{ form.password.id_for_label }}">Contraseña</label>
-          {{ form.password }} {% if form.password.errors %}
-          <small
-            style="
-              color: #ef4444;
-              display: block;
-              margin-top: 8px;
-              font-weight: 500;
-            "
-          >
-            <i class="bi bi-x-circle me-1"></i> {{ form.password.errors.0 }}
-          </small>
+          <label for="{{ form.password.id_for_label }}">
+            <i class="bi bi-lock" style="margin-right: 4px;"></i>Contraseña
+          </label>
+          {{ form.password }}
+          {% if form.password.errors %}
+            <div class="input-error">
+              <i class="bi bi-x-circle"></i> {{ form.password.errors.0 }}
+            </div>
           {% endif %}
         </div>
 
+        <!-- OPCIONES -->
         <div class="form-options">
           <label class="remember-me" for="{{ form.remember_me.id_for_label }}">
             {{ form.remember_me }}
-            <span>Recordar dispositivo</span>
+            <span>Recordar este dispositivo</span>
           </label>
-          <a href="{% url 'usuarios:recuperar' %}" class="forgot-password"
-            >¿Olvidaste tu contraseña?</a
-          >
+          <a href="{% url 'usuarios:recuperar' %}" class="forgot-password">
+            ¿Olvidaste tu contraseña?
+          </a>
         </div>
 
-        <div class="input-group-modern">
-          <label>Verifico que no soy un bot</label>
+        <!-- CAPTCHA -->
+        <div class="input-group-modern captcha-group">
+          <label>Verificación de Seguridad</label>
           {{ form.captcha }}
           {% if form.captcha.errors %}
-          <small style="color: #ef4444; display: block; margin-top: 8px; font-weight: 500;">
-            <i class="bi bi-x-circle me-1"></i> {{ form.captcha.errors.0 }}
-          </small>
+            <div class="input-error">
+              <i class="bi bi-x-circle"></i> {{ form.captcha.errors.0 }}
+            </div>
           {% endif %}
         </div>
 
+        <!-- BOTÓN SUBMIT -->
         <button type="submit" class="btn-primary-modern">
+          <i class="bi bi-box-arrow-in-right"></i>
           Ingresar al Sistema
-          <i class="bi bi-arrow-right-short" style="font-size: 1.3rem"></i>
         </button>
       </form>
     </div>
@@ -399,8 +582,10 @@
       'input[type="text"], input[type="password"], input[type="number"], input[type="email"]',
     );
     inputs.forEach((input) => {
-      input.classList.add("form-control-modern");
-      if (!input.hasAttribute("placeholder")) {
+      if (!input.classList.contains("form-control-modern")) {
+        input.classList.add("form-control-modern");
+      }
+      if (!input.hasAttribute("placeholder") && input.type !== "hidden") {
         input.setAttribute("placeholder", " ");
       }
     });
