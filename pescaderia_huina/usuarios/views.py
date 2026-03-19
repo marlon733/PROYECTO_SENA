@@ -7,11 +7,13 @@ from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Q
 from .forms import (
     LoginForm,
     RegistroForm,
     EditarUsuarioForm,
+    EditarUsuarioPerfilAdminForm,
     EditarPerfilForm,
     EditarMiUsuarioForm,
     EditarMiPerfilForm,
@@ -24,6 +26,38 @@ from datetime import timedelta
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+
+
+def es_staff(user):
+    """Función auxiliar para verificar si el usuario es staff."""
+    return bool(user and getattr(user, 'is_staff', False))
+
+
+def _build_form_error_message(form):
+    """Construye un mensaje breve con campo + motivo de error."""
+    fields = []
+    for field_name in form.errors:
+        if field_name == '__all__':
+            non_field_errors = form.non_field_errors()
+            if non_field_errors:
+                fields.append(f"reglas generales ({non_field_errors[0]})")
+            continue
+        field = form.fields.get(field_name)
+        if not field:
+            continue
+        widget_type = getattr(field.widget, 'input_type', None)
+        if widget_type == 'hidden':
+            continue
+        label = str(field.label or field_name)
+        errs = form.errors.get(field_name)
+        if errs:
+            fields.append(f"{label} ({errs[0]})")
+        else:
+            fields.append(label)
+
+    if not fields:
+        return 'Revisa los campos marcados en el formulario.'
+    return 'Corrige los campos: ' + ', '.join(fields) + '.'
 
 
 # ==================== VISTAS DE AUTENTICACIÓN ====================
@@ -82,19 +116,24 @@ def login_view(request):
 
 
 @csrf_protect
-
+@login_required
+@user_passes_test(es_staff, login_url='usuarios:login')
 def registro_view(request):
     if request.method == 'POST':
-        form = RegistroForm(request.POST)
+        form = RegistroForm(request.POST, actor_user=request.user)
 
         if form.is_valid():
             user = form.save()
-            messages.success(request, "Usuario registrado correctamente")
-            return redirect('usuarios:login')
+            rol_display = user.perfil.get_rol()
+            messages.success(
+                request, 
+                f'✓ Usuario {user.get_full_name()} registrado como {rol_display}.'
+            )
+            return redirect('usuarios:lista_usuarios')
         else:
-            messages.error(request, "Corrige los errores del formulario")
+            messages.error(request, _build_form_error_message(form))
     else:
-        form = RegistroForm()
+        form = RegistroForm(actor_user=request.user)
 
     return render(request, 'usuarios/registro.html', {'form': form})
 
@@ -112,17 +151,12 @@ def logout_view(request):
 
 # ==================== PANEL DE ADMINISTRACIÓN ====================
 
-def es_staff(user):
-    """Función auxiliar para verificar si el usuario es staff"""
-    return user.is_staff
-
-
-
 @login_required
-@user_passes_test(es_staff, login_url='usuarios:login')
 def lista_usuarios_view(request):
     """
     Vista para listar todos los usuarios
+    - Staff (administradores) ven todos los usuarios con opciones de edición y eliminación
+    - Empleados no-staff ven la lista pero sin botones de acciones
     """
     # Obtener parámetros de búsqueda y filtrado
     busqueda = request.GET.get('buscar', '')
@@ -151,14 +185,18 @@ def lista_usuarios_view(request):
     # Ordenar
     usuarios = usuarios.order_by('-date_joined')
     
+    # Determinar si el usuario actual puede editar (solo staff)
+    can_edit = request.user.is_staff
+    
     context = {
         'titulo': 'Gestión de Usuarios',
         'usuarios': usuarios,
         'busqueda': busqueda,
         'filtro_activo': filtro_activo,
         'filtro_staff': filtro_staff,
+        'can_edit': can_edit,  # Flag para mostrar/ocultar botones de acciones
     }
-    return render(request, 'usuarios/panel_admin/lista_usuarios.html', context)
+    return render(request, 'usuarios/lista_usuarios.html', context)
 
 
 @login_required
@@ -168,16 +206,16 @@ def crear_usuario_view(request):
     Vista para crear un nuevo usuario desde el panel admin
     """
     if request.method == 'POST':
-        form = RegistroForm(request.POST)
+        form = RegistroForm(request.POST, actor_user=request.user)
         
         if form.is_valid():
             user = form.save()
             messages.success(request, f'Usuario {user.get_full_name()} creado exitosamente.')
             return redirect('usuarios:lista_usuarios')
         else:
-            messages.error(request, 'Por favor corrige los errores en el formulario.')
+            messages.error(request, _build_form_error_message(form))
     else:
-        form = RegistroForm()
+        form = RegistroForm(actor_user=request.user)
     
     context = {
         'titulo': 'Crear Nuevo Usuario',
@@ -201,7 +239,13 @@ def editar_usuario_view(request, user_id):
         
         if form_usuario.is_valid() and form_perfil.is_valid():
             form_usuario.save()
-            form_perfil.save()
+            perfil = form_perfil.save()
+
+            # Mantener login por documento consistente
+            if perfil.documento and usuario.username != perfil.documento:
+                usuario.username = perfil.documento
+                usuario.save(update_fields=['username'])
+
             messages.success(request, f'Usuario {usuario.get_full_name()} actualizado exitosamente.')
             return redirect('usuarios:lista_usuarios')
         else:
@@ -238,17 +282,46 @@ def eliminar_usuario_view(request, user_id):
         messages.error(request, 'No puedes eliminarte a ti mismo.')
         return redirect('usuarios:lista_usuarios')
     
-    if request.method == 'POST':
-        usuario.is_active = False
-        usuario.save()
-        messages.success(request, f'Usuario {usuario.get_full_name()} desactivado exitosamente.')
+    if request.method != 'POST':
+        messages.error(request, 'Acción no permitida. Usa el botón de desactivar.')
         return redirect('usuarios:lista_usuarios')
-    
-    context = {
-        'titulo': 'Eliminar Usuario',
-        'usuario': usuario
-    }
-    return render(request, 'usuarios/panel_admin/eliminar_usuario.html', context)
+
+    usuario.is_active = False
+    usuario.save(update_fields=['is_active'])
+    messages.success(request, f'Usuario {usuario.get_full_name()} desactivado exitosamente.')
+
+    next_url = (request.POST.get('next') or '').strip()
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
+    return redirect('usuarios:lista_usuarios')
+
+
+@login_required
+@user_passes_test(es_staff, login_url='usuarios:login')
+def eliminar_usuario_definitivo_view(request, user_id):
+    """Elimina definitivamente un usuario (y su perfil por cascada)."""
+    usuario = get_object_or_404(User, id=user_id)
+
+    if usuario.is_superuser:
+        messages.error(request, 'No se puede eliminar definitivamente un superusuario.')
+        return redirect('usuarios:lista_usuarios')
+
+    if usuario == request.user:
+        messages.error(request, 'No puedes eliminarte definitivamente a ti mismo.')
+        return redirect('usuarios:lista_usuarios')
+
+    if request.method != 'POST':
+        messages.error(request, 'Acción no permitida. Usa el botón de eliminación definitiva.')
+        return redirect('usuarios:lista_usuarios')
+
+    nombre = usuario.get_full_name() or usuario.username
+    usuario.delete()
+    messages.success(request, f'Usuario {nombre} eliminado definitivamente.')
+
+    next_url = (request.POST.get('next') or '').strip()
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
+    return redirect('usuarios:lista_usuarios')
 
 
 @login_required
@@ -292,7 +365,8 @@ def editar_perfil_view(request, user_id=None):
     except PerfilUsuario.DoesNotExist:
         perfil = PerfilUsuario.objects.create(user=usuario, documento=usuario.username)
 
-    form_usuario_cls = EditarMiUsuarioForm
+    # Admin edit (con user_id): permite ajustar rol y documento.
+    form_usuario_cls = EditarUsuarioPerfilAdminForm if user_id is not None else EditarMiUsuarioForm
     form_perfil_cls = EditarPerfilForm if user_id is not None else EditarMiPerfilForm
 
     if request.method == 'POST':
@@ -301,7 +375,13 @@ def editar_perfil_view(request, user_id=None):
 
         if form_usuario.is_valid() and form_perfil.is_valid():
             form_usuario.save()
-            form_perfil.save()
+            perfil_saved = form_perfil.save()
+
+            # Si admin cambió documento, reflejarlo en username
+            if user_id is not None and perfil_saved.documento and usuario.username != perfil_saved.documento:
+                usuario.username = perfil_saved.documento
+                usuario.save(update_fields=['username'])
+
             messages.success(request, 'Perfil actualizado exitosamente.')
             if user_id is not None:
                 return redirect('core:dashboard')
