@@ -5,7 +5,26 @@
 
 {% block content %}
 <style>
-    /* --- ESTILO AUTH OCEAN HORIZONTAL --- */
+    :root {
+        --huina-navy-900: #16263d;
+        --huina-navy-800: #1f3554;
+        --huina-navy-700: #2C466B;
+        --huina-ink: #0f172a;
+        --huina-muted: #64748b;
+        --huina-surface: #ffffff;
+        --huina-bg: #f8fafc;
+        --huina-border: rgba(15, 23, 42, 0.10);
+        --huina-gold: #c8a24a;
+        --huina-gold-soft: rgba(200, 162, 74, 0.18);
+        --huina-danger: #dc2626;
+        --huina-success: #16a34a;
+    }
+
+    /* --- ESTILO AUTH PREMIUM HORIZONTAL (Navy/Gold) --- */
+    .auth-page {
+        background: var(--huina-bg);
+    }
+
     .auth-container-horizontal {
         min-height: 85vh; /* Ocupa buena parte de la pantalla */
         display: flex;
@@ -18,15 +37,18 @@
         border: none;
         border-radius: 30px; /* Bordes más redondeados */
         overflow: hidden;
-        box-shadow: 0 25px 60px rgba(0, 18, 51, 0.2); /* Sombra profunda premium */
-        background: white;
+        box-shadow: 0 25px 60px rgba(16, 24, 40, 0.16); /* Sombra profunda premium */
+        background: var(--huina-surface);
         width: 100%;
         max-width: 1100px; /* Ancho máximo mayor para el diseño horizontal */
     }
 
     /* --- LADO IZQUIERDO (Visual) --- */
     .auth-visual-side {
-        background: linear-gradient(135deg, #001233 0%, #0061ff 80%, #60efff 100%);
+        background:
+            radial-gradient(900px 280px at 18% 12%, rgba(200, 162, 74, 0.22), transparent 58%),
+            radial-gradient(600px 240px at 95% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
+            linear-gradient(135deg, var(--huina-navy-700), var(--huina-navy-800) 55%, var(--huina-navy-900));
         padding: 4rem 3rem;
         display: flex;
         flex-direction: column;
@@ -37,17 +59,31 @@
         min-height: 100%; /* Asegura que cubra toda la altura */
     }
 
+    .visual-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .55rem .95rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.10);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #fff;
+        font-weight: 900;
+        letter-spacing: .2px;
+        backdrop-filter: blur(8px);
+    }
+
     /* Textura de fondo sutil */
     .auth-visual-side::before {
         content: '';
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.06' fill-rule='evenodd'/%3E%3C/svg%3E");
         pointer-events: none;
     }
 
     .auth-icon-large {
         width: 80px; height: 80px;
-        background: rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.12);
         backdrop-filter: blur(10px);
         border-radius: 20px;
         display: flex; align-items: center; justify-content: center;
@@ -55,6 +91,45 @@
         border: 1px solid rgba(255,255,255,0.3);
         font-size: 2.5rem;
         box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    .visual-title {
+        margin: 1.2rem 0 0;
+        font-weight: 900;
+        letter-spacing: -0.8px;
+        line-height: 1.1;
+    }
+
+    .visual-lead {
+        margin-top: .8rem;
+        opacity: 0.90;
+        max-width: 42ch;
+    }
+
+    .visual-list {
+        margin-top: 2.2rem;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 14px;
+    }
+    .visual-list li {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        opacity: 0.92;
+    }
+    .visual-list .dot {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(200, 162, 74, 0.20);
+        border: 1px solid rgba(200, 162, 74, 0.30);
+        flex: 0 0 auto;
+        margin-top: 1px;
     }
 
     /* --- LADO DERECHO (Formulario) --- */
@@ -65,11 +140,50 @@
         justify-content: center;
     }
 
+    .form-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 1.75rem;
+    }
+
+    .form-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .45rem .75rem;
+        border-radius: 999px;
+        background: var(--huina-gold-soft);
+        border: 1px solid rgba(200, 162, 74, 0.26);
+        color: var(--huina-navy-900);
+        font-weight: 900;
+        font-size: .88rem;
+        white-space: nowrap;
+    }
+
+    .form-subtitle {
+        color: var(--huina-muted);
+        margin: .4rem 0 0;
+        max-width: 62ch;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+    @media (min-width: 768px) {
+        .form-grid.two {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
     /* Estilizando los inputs (Igual que antes, para consistencia) */
     .form-group-custom label {
         font-size: 0.9rem;
-        font-weight: 700;
-        color: #4a5568;
+        font-weight: 800;
+        color: var(--huina-muted);
         margin-bottom: 0.6rem;
     }
 
@@ -77,33 +191,82 @@
     .form-group-custom select,
     .form-group-custom textarea {
         display: block; width: 100%; padding: 1rem 1.2rem;
-        font-size: 1rem; font-weight: 500; color: #2d3748;
-        background-color: #f8fafc;
-        border: 2px solid #e2e8f0; /* Borde un poco más grueso */
+        font-size: 1rem; font-weight: 600; color: var(--huina-ink);
+        background-color: var(--huina-bg);
+        border: 2px solid rgba(15, 23, 42, 0.10); /* Borde un poco más grueso */
         border-radius: 16px; /* Bordes más redondeados */
         transition: all 0.3s ease;
     }
 
+    .form-group-custom input.is-invalid,
+    .form-group-custom select.is-invalid,
+    .form-group-custom textarea.is-invalid {
+        border-color: rgba(220, 38, 38, 0.55);
+        box-shadow: 0 0 0 5px rgba(220, 38, 38, 0.08);
+        background-color: #fff;
+    }
+    .form-group-custom input.is-valid,
+    .form-group-custom select.is-valid,
+    .form-group-custom textarea.is-valid {
+        border-color: rgba(22, 163, 74, 0.45);
+        box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.08);
+        background-color: #fff;
+    }
+
     .form-group-custom input:focus {
-        border-color: #60efff;
-        box-shadow: 0 0 0 5px rgba(0, 97, 255, 0.15);
+        border-color: rgba(200, 162, 74, 0.60);
+        box-shadow: 0 0 0 5px rgba(200, 162, 74, 0.18);
         background-color: #fff;
     }
 
     /* Botón de Registro */
     .btn-register-wide {
-        background: linear-gradient(90deg, #0061ff 0%, #00c6ff 100%);
+        background: linear-gradient(135deg, var(--huina-navy-700), var(--huina-navy-900));
         border: none; color: white; font-weight: 800;
         padding: 16px; border-radius: 50px;
         font-size: 1.1rem; letter-spacing: 0.5px;
-        box-shadow: 0 10px 30px rgba(0, 97, 255, 0.3);
+        box-shadow: 0 14px 34px rgba(22, 38, 61, 0.30);
         transition: all 0.3s; width: 100%;
     }
 
     .btn-register-wide:hover {
         transform: translateY(-3px);
-        box-shadow: 0 20px 40px rgba(0, 97, 255, 0.4);
+        box-shadow: 0 22px 48px rgba(22, 38, 61, 0.38);
     }
+
+    .btn-register-wide:disabled {
+        opacity: 0.72;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: 0 12px 28px rgba(22, 38, 61, 0.18);
+    }
+
+    .doc-hint-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        margin-top: 8px;
+    }
+    .doc-help {
+        color: var(--huina-muted);
+        font-size: 0.86rem;
+        margin: 0;
+    }
+    .doc-counter {
+        font-size: 0.82rem;
+        color: var(--huina-muted);
+        user-select: none;
+        white-space: nowrap;
+    }
+    .doc-counter strong { color: var(--huina-ink); }
+
+    .inline-msg {
+        font-size: 0.86rem;
+        margin-top: 10px;
+    }
+    .inline-msg.is-error { color: var(--huina-danger); }
+    .inline-msg.is-ok { color: var(--huina-success); }
 
     /* Ajustes Responsivos */
     @media (max-width: 992px) {
@@ -111,102 +274,315 @@
         .card-auth-horizontal { max-width: 600px; }
         .auth-visual-side { padding: 3rem 2rem; align-items: center; text-align: center; }
         .auth-form-side { padding: 3rem 2rem; }
+        .form-head { align-items: center; }
     }
 </style>
 
+<div class="auth-page">
 <div class="container auth-container-horizontal">
     <div class="card card-auth-horizontal">
         <div class="row g-0 h-100">
             
             <div class="col-lg-5 auth-visual-side animate__animated animate__fadeInLeft">
-                <div class="auth-icon-large position-relative z-1">
+                <span class="visual-badge position-relative z-1">
+                    <i class="bi bi-stars"></i>
+                    Acceso Huina
+                </span>
+
+                <div class="auth-icon-large position-relative z-1 mt-4">
                     <i class="bi bi-person-badge-fill"></i>
                 </div>
-                <h2 class="fw-black display-6 mb-3 position-relative z-1" style="font-weight: 800;">Bienvenido a bordo.</h2>
-                <p class="lead opacity-90 mb-5 position-relative z-1">
-                    Crea tu cuenta en Pescadería Huina y accede a manejar el inventario
+                <h2 class="visual-title display-6 position-relative z-1">Bienvenido a bordo.</h2>
+                <p class="visual-lead lead position-relative z-1">
+                    Crea tu cuenta en Pescadería Huina y gestiona el inventario con una experiencia más rápida y ordenada.
                 </p>
-                
-                <div class="mt-auto position-relative z-1 d-none d-lg-block">
-                    <div class="d-flex align-items-center mb-3 opacity-75">
-                        <i class="bi bi-check-circle-fill me-3 text-info fs-5"></i>
-                        <span>Pedidos rápidos y seguimiento</span>
-                    </div>
-                    <div class="d-flex align-items-center mb-3 opacity-75">
-                        <i class="bi bi-check-circle-fill me-3 text-info fs-5"></i>
-                        <span>Ofertas exclusivas para miembros</span>
-                    </div>
-                    <div class="d-flex align-items-center opacity-75">
-                        <i class="bi bi-check-circle-fill me-3 text-info fs-5"></i>
-                        <span>Gestiona tu perfil fácilmente</span>
-                    </div>
-                </div>
+
+                <ul class="visual-list mt-auto position-relative z-1 d-none d-lg-grid">
+                    <li>
+                        <span class="dot"><i class="bi bi-lightning-charge-fill"></i></span>
+                        <div>
+                            <div class="fw-bold">Registro rápido</div>
+                            <div class="opacity-75">Documento como usuario de acceso.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="dot"><i class="bi bi-shield-lock-fill"></i></span>
+                        <div>
+                            <div class="fw-bold">Seguridad</div>
+                            <div class="opacity-75">Contraseña robusta y validación.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="dot"><i class="bi bi-person-check-fill"></i></span>
+                        <div>
+                            <div class="fw-bold">Perfil listo</div>
+                            <div class="opacity-75">Datos básicos y contacto.</div>
+                        </div>
+                    </li>
+                </ul>
             </div>
 
             <div class="col-lg-7 auth-form-side animate__animated animate__fadeInRight">
-                <h3 class="fw-bold text-dark mb-5">Completa tus datos</h3>
+                <div class="form-head">
+                    <div>
+                        <h3 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px;">Crea tu cuenta</h3>
+                        <p class="form-subtitle">Tu documento será tu usuario de acceso. Debe ser <strong>numérico</strong> y tener <strong>8 a 10</strong> dígitos.</p>
+                    </div>
+                    <span class="form-pill">
+                        <i class="bi bi-key-fill"></i>
+                        Registro
+                    </span>
+                </div>
                 
                 <form method="post" action="" novalidate>
                     {% csrf_token %}
 
-                    {% for field in form %}
-                        <div class="mb-4 form-group-custom">
-                            <label class="form-label">
-                                {{ field.label }} 
-                                {% if field.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                    <div class="form-grid two">
+                        <div class="form-group-custom">
+                            <label class="form-label" for="{{ form.documento.id_for_label }}">
+                                {{ form.documento.label }}{% if form.documento.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
                             </label>
-                            
-                            {{ field }}
-                            
-                            {% if field.help_text %}
-                                <div class="form-text text-muted mt-2 small">
-                                    {{ field.help_text|safe }}
-                                </div>
-                            {% endif %}
-
-                            {% if field.errors %}
+                            {{ form.documento }}
+                            <div class="doc-hint-row">
+                                <p class="doc-help">Solo números, 8–10 dígitos.</p>
+                                <div class="doc-counter" id="docCounter" aria-hidden="true">0/<strong>10</strong></div>
+                            </div>
+                            <div class="inline-msg" id="docInlineMsg" aria-live="polite"></div>
+                            {% if form.documento.errors %}
                                 <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
                                     <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
-                                    <div>
-                                        {% for error in field.errors %}
-                                            <div>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
+                                    <div>{{ form.documento.errors|striptags }}</div>
                                 </div>
                             {% endif %}
                         </div>
-                    {% endfor %}
 
-                    <div class="mt-5">
-                        <button type="submit" class="btn btn-register-wide">
-                            <i class="bi bi-person-plus-fill me-2"></i> Crear mi Cuenta
-                        </button>
+                        <div class="form-group-custom">
+                            <label class="form-label" for="{{ form.email.id_for_label }}">
+                                {{ form.email.label }}{% if form.email.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
+                                    <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                                    <div>{{ form.email.errors|striptags }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
 
-                    <div class="text-center mt-4">
-                        <p class="text-muted fw-medium">
-                            ¿Ya eres parte de Huina? 
-                            <a href="{% url 'usuarios:login' %}" class="text-primary fw-bold text-decoration-none ms-1">
-                                Inicia Sesión aquí
-                            </a>
-                        </p>
+                    <div class="form-grid two mt-3">
+                        <div class="form-group-custom">
+                            <label class="form-label" for="{{ form.first_name.id_for_label }}">
+                                {{ form.first_name.label }}{% if form.first_name.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
+                                    <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                                    <div>{{ form.first_name.errors|striptags }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label class="form-label" for="{{ form.last_name.id_for_label }}">
+                                {{ form.last_name.label }}{% if form.last_name.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
+                                    <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                                    <div>{{ form.last_name.errors|striptags }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-grid mt-3">
+                        <div class="form-group-custom">
+                            <label class="form-label" for="{{ form.telefono.id_for_label }}">
+                                {{ form.telefono.label }}{% if form.telefono.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                            </label>
+                            {{ form.telefono }}
+                            {% if form.telefono.errors %}
+                                <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
+                                    <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                                    <div>{{ form.telefono.errors|striptags }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-grid two mt-3">
+                        <div class="form-group-custom">
+                            <label class="form-label" for="{{ form.fecha_nacimiento.id_for_label }}">
+                                {{ form.fecha_nacimiento.label }}{% if form.fecha_nacimiento.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                            </label>
+                            {{ form.fecha_nacimiento }}
+                            {% if form.fecha_nacimiento.errors %}
+                                <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
+                                    <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                                    <div>{{ form.fecha_nacimiento.errors|striptags }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label class="form-label" for="{{ form.direccion.id_for_label }}">
+                                {{ form.direccion.label }}{% if form.direccion.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                            </label>
+                            {{ form.direccion }}
+                            {% if form.direccion.errors %}
+                                <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
+                                    <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                                    <div>{{ form.direccion.errors|striptags }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-grid two mt-3">
+                        <div class="form-group-custom">
+                            <label class="form-label" for="{{ form.password1.id_for_label }}">
+                                {{ form.password1.label }}{% if form.password1.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                            </label>
+                            {{ form.password1 }}
+                            {% if form.password1.help_text %}
+                                <div class="form-text text-muted mt-2 small">{{ form.password1.help_text|safe }}</div>
+                            {% endif %}
+                            {% if form.password1.errors %}
+                                <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
+                                    <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                                    <div>{{ form.password1.errors|striptags }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label class="form-label" for="{{ form.password2.id_for_label }}">
+                                {{ form.password2.label }}{% if form.password2.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                            </label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                                <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
+                                    <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>
+                                    <div>{{ form.password2.errors|striptags }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <button type="submit" class="btn btn-register-wide" id="btnRegister">
+                            <i class="bi bi-person-plus-fill me-2"></i> Crear mi Cuenta
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+</div>
 
 <script>
-    // Script auxiliar para asegurar estilos en widgets de Django
     document.addEventListener("DOMContentLoaded", function() {
-        var formFields = document.querySelectorAll('.form-group-custom input, .form-group-custom select, .form-group-custom textarea');
-        formFields.forEach(function(field) {
-            if (!field.getAttribute('placeholder')) {
-                // Opcional: Añadir placeholder genérico si no tienen
-                // field.setAttribute('placeholder', 'Escribe aquí...');
+        var docInput = document.getElementById('id_documento');
+        var counter = document.getElementById('docCounter');
+        var inlineMsg = document.getElementById('docInlineMsg');
+        var registerBtn = document.getElementById('btnRegister');
+
+        if (!docInput) return;
+
+        // Refuerzo (por si el widget cambia)
+        docInput.setAttribute('inputmode', 'numeric');
+        docInput.setAttribute('autocomplete', 'off');
+        docInput.setAttribute('minlength', '8');
+        docInput.setAttribute('maxlength', '10');
+        docInput.setAttribute('pattern', '\\d{8,10}');
+
+        var touched = false;
+        var attemptedSubmit = false;
+
+        function setMsg(text, kind) {
+            if (!inlineMsg) return;
+            inlineMsg.textContent = text || '';
+            inlineMsg.className = 'inline-msg' + (kind ? ' ' + kind : '');
+        }
+
+        function setFieldState(state) {
+            docInput.classList.remove('is-valid', 'is-invalid');
+            if (state === 'valid') docInput.classList.add('is-valid');
+            if (state === 'invalid') docInput.classList.add('is-invalid');
+        }
+
+        function isDocValid(value) {
+            return /^\d{8,10}$/.test((value || '').trim());
+        }
+
+        function updateDocState() {
+            var raw = docInput.value || '';
+            var digits = raw.replace(/\D+/g, '');
+
+            if (raw !== digits) {
+                var cursorPos = docInput.selectionStart;
+                docInput.value = digits;
+                try { docInput.setSelectionRange(Math.max(0, cursorPos - 1), Math.max(0, cursorPos - 1)); } catch (e) {}
             }
+
+            if (digits.length > 10) {
+                docInput.value = digits.slice(0, 10);
+                digits = docInput.value;
+            }
+
+            if (counter) counter.innerHTML = digits.length + '/<strong>10</strong>';
+
+            var valid = isDocValid(digits);
+
+            // Solo mostramos estado/inhabilitamos si el usuario ya tocó el campo o intentó enviar
+            if (!touched && !attemptedSubmit) {
+                setMsg('', '');
+                setFieldState('');
+                if (registerBtn) registerBtn.disabled = false;
+                return;
+            }
+
+            if (!valid) {
+                setMsg('Documento inválido: solo números (8–10 dígitos).', 'is-error');
+                setFieldState('invalid');
+                if (registerBtn) registerBtn.disabled = true;
+                return;
+            }
+
+            setMsg('Documento válido.', 'is-ok');
+            setFieldState('valid');
+            if (registerBtn) registerBtn.disabled = false;
+        }
+
+        docInput.addEventListener('input', function() {
+            updateDocState();
         });
+        docInput.addEventListener('blur', function() {
+            touched = true;
+            updateDocState();
+        });
+        updateDocState();
+
+        // Evita envío si el documento no cumple
+        var form = docInput.closest('form');
+        if (form) {
+            form.addEventListener('submit', function(ev) {
+                attemptedSubmit = true;
+                updateDocState();
+
+                var v = (docInput.value || '').trim();
+                if (!isDocValid(v)) {
+                    ev.preventDefault();
+                    setMsg('Corrige el documento: solo números (8–10 dígitos).', 'is-error');
+                    setFieldState('invalid');
+                    try { docInput.focus(); } catch (e) {}
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

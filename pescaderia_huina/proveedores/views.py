@@ -186,15 +186,15 @@ def export_proveedores_excel(request):
     return response
 
 
-# 5. ELIMINAR PROVEEDOR (SOFT DELETE)
+# 5. ELIMINAR PROVEEDOR (ELIMINACIÓN DEFINITIVA)
 @login_required
 def eliminar_proveedor(request, id):
     proveedor = get_object_or_404(Proveedor, id=id)
     
     if request.method == 'POST':
-        # Soft delete: Solo cambiamos el estado
-        proveedor.estado = False 
-        proveedor.save()
+        # Eliminación definitiva en base de datos.
+        # Nota: Pedido.proveedor tiene on_delete=CASCADE, por lo que también se eliminarán los pedidos asociados.
+        proveedor.delete()
         return redirect('proveedores:lista_proveedores')
         
     # CORRECCIÓN AQUÍ

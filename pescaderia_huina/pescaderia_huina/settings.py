@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "proveedores",
     "ventas",
     "pedidos",
+    "copia_seguridad",
 ]
 
 MIDDLEWARE = [
