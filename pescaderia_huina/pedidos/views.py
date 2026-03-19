@@ -304,9 +304,9 @@ def inventario_pedidos(request):
     
     def calcular_stock_y_pedidos(queryset):
         for p in queryset:
-            stock_recibido = DetallePedido.objects.filter(producto=p, pedido__estado__in=['REC', 'recibido']).aggregate(total=Sum('cantidad'))['total'] or 0
-            ventas_completadas = Venta.objects.filter(producto=p, estado='COMPLETADA').aggregate(total=Sum('cantidad'))['total'] or 0
-            p.stock_disponible = max(0, stock_recibido - ventas_completadas)
+            # Stock unificado del dominio Producto:
+            # recibido en pedidos - vendido en ventas no canceladas.
+            p.stock_disponible = max(0, p.stock)
         return queryset
     
     pescados = calcular_stock_y_pedidos(productos.filter(tipo_producto='PE'))
