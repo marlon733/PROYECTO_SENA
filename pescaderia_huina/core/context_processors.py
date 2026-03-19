@@ -1,7 +1,6 @@
+from decimal import Decimal
+
 from productos.models import Producto
-from pedidos.models import DetallePedido
-from ventas.models import Venta
-from django.db.models import Sum
 
 
 def low_stock_notifications(request):
@@ -19,19 +18,9 @@ def low_stock_notifications(request):
     low_stock_warning = []   # stock entre 10 y 15
     
     for p in productos:
-        stock_recibido = (
-            DetallePedido.objects
-            .filter(producto=p, pedido__estado='REC')
-            .aggregate(total=Sum('cantidad'))['total'] or 0
-        )
-        ventas_completadas = (
-            Venta.objects
-            .filter(producto=p, estado='COMPLETADA')
-            .aggregate(total=Sum('cantidad'))['total'] or 0
-        )
-        stock_disponible = stock_recibido - ventas_completadas
+        stock_disponible = Decimal(str(p.stock))
         
-        if stock_disponible == 0:
+        if stock_disponible <= 0:
             low_stock_critical.append({
                 'nombre': p.nombre,
                 'stock': stock_disponible,
