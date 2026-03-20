@@ -74,23 +74,4 @@ class Producto(models.Model):
         nombre_proveedor = self.proveedor.nombre_contacto if self.proveedor else "Sin Proveedor"
         return f"{self.nombre} ({nombre_proveedor})"
     
-    @property
-    def stock(self):
-        """
-        Stock = cantidad recibida en pedidos (estado REC)
-                − cantidad vendida en ventas no canceladas
-        """
-        from django.db.models import Sum
-
-        # ✅ Total recibido en pedidos con estado 'REC'
-        recibido = self.detallepedido_set.filter(
-            pedido__estado='REC'
-        ).aggregate(total=Sum('cantidad'))['total'] or 0
-
-        # ✅ Total vendido en ventas no canceladas
-        vendido = self.ventaitem_set.filter(
-            venta__estado__in=['COMPLETADA', 'PENDIENTE']
-        ).aggregate(total=Sum('cantidad'))['total'] or 0
-
-        return recibido - vendido
-    
+   

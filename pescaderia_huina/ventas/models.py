@@ -88,7 +88,7 @@ class VentaItem(models.Model):
     ]
 
     venta = models.ForeignKey(Venta, on_delete=models.CASCADE, related_name='items')
-    producto = models.ForeignKey('productos.Producto', on_delete=models.PROTECT, verbose_name='Producto')
+    producto = models.ForeignKey('productos.Producto', on_delete=models.CASCADE, verbose_name='Producto')
     tipo_presentacion = models.CharField(max_length=20, choices=TIPO_PRESENTACION, default='BANDEJA')
     cantidad = models.DecimalField(max_digits=10, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.01'))], verbose_name='Cantidad')

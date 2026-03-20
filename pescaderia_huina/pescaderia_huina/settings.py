@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     "proveedores",
     "ventas",
     "pedidos",
+    "copia_seguridad",
 ]
 
 MIDDLEWARE = [
@@ -83,17 +85,27 @@ WSGI_APPLICATION = 'pescaderia_huina.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# (PostgreSQL - Supabase)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.rmkckjjemybpxtombvjk',
-        'PASSWORD': 'pescaderiahuina123*', 
-        'HOST': 'aws-1-sa-east-1.pooler.supabase.com',
-        'PORT': '5432',
+# Configuración: PostgreSQL en producción, SQLite en tests
+if 'test' in sys.argv:
+    # Usar SQLite en memoria para tests (rápido y limpio)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
     }
-}
+else:
+    # PostgreSQL - Supabase (producción)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres.rmkckjjemybpxtombvjk',
+            'PASSWORD': 'pescaderiahuina123*', 
+            'HOST': 'aws-1-sa-east-1.pooler.supabase.com',
+            'PORT': '5432',
+        }
+    }
 
 
 

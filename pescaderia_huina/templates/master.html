@@ -244,7 +244,19 @@
                     </li>
                     <li class="nav-item d-none d-lg-block mx-2 text-white-50">|</li>
 
+<<<<<<< HEAD
                         {% if request.user.is_authenticated %}
+=======
+                        {% if user.is_authenticated %}
+                            {% if user.is_staff %}  
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'core:dashboard' %}">
+                                        <i class="bi bi-speedometer2"></i> Admin
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+>>>>>>> 0933c1fd4021457a1eee8c85e482995255c6bcdd
                             <li class="nav-item dropdown ms-2">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" 
                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">

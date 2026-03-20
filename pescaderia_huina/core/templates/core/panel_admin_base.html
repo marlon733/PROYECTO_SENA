@@ -750,6 +750,11 @@
                         <i class="bi bi-gear-fill"></i> <span>Mi Perfil</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{% url 'copia_seguridad:lista' %}" class="nav-link {% if 'copias-seguridad' in request.path %}active{% endif %}">
+                        <i class="bi bi-cloud-check"></i> <span>Copias de Seguridad</span>
+                    </a>
+                </li>
                 <li class="nav-item mt-2">
                    <a href="#" class="nav-link" style="color: #ff6b7a;" data-bs-toggle="modal" data-bs-target="#logoutModal">
                         <i class="bi bi-box-arrow-left" style="color: #ff6b7a;"></i>
