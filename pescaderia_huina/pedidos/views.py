@@ -304,9 +304,9 @@ def inventario_pedidos(request):
     
     def calcular_stock_y_pedidos(queryset):
         for p in queryset:
-            # Stock unificado del dominio Producto:
-            # recibido en pedidos - vendido en ventas no canceladas.
-            p.stock_disponible = max(0, p.stock)
+            # El modelo Producto no tiene atributo 'stock'
+            # Se establece stock_disponible como referencia
+            p.stock_disponible = 0  # Sin stock definido en el modelo
         return queryset
     
     pescados = calcular_stock_y_pedidos(productos.filter(tipo_producto='PE'))
