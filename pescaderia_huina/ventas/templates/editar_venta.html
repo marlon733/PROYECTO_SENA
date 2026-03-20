@@ -73,7 +73,7 @@
 
                             <div class="col-md-1">
                                 <label class="form-label fw-semibold">Subtotal</label>
-                                <div class="form-control bg-white text-end fw-bold text-success item-subtotal small">$0.00</div>
+                                <div class="form-control bg-white text-end fw-bold text-success item-subtotal small">$0</div>
                             </div>
 
                             <div class="col-md-1 text-center">
@@ -93,9 +93,9 @@
                         <div class="row justify-content-end">
                             <div class="col-md-4">
                                 <table class="table table-borderless mb-0">
-                                    <tr><td class="fw-semibold">Subtotal:</td><td class="text-end" id="resumen-subtotal">$0.00</td></tr>
-                                    <tr><td class="text-muted">IVA (19%):</td><td class="text-end text-muted" id="resumen-iva">$0.00</td></tr>
-                                    <tr class="border-top"><td class="fw-bold fs-5">Total:</td><td class="text-end fw-bold fs-5 text-success" id="resumen-total">$0.00</td></tr>
+                                    <tr><td class="fw-semibold">Subtotal:</td><td class="text-end" id="resumen-subtotal">$0</td></tr>
+                                    <tr><td class="text-muted">IVA (19%):</td><td class="text-end text-muted" id="resumen-iva">$0</td></tr>
+                                    <tr class="border-top"><td class="fw-bold fs-5">Total:</td><td class="text-end fw-bold fs-5 text-success" id="resumen-total">$0</td></tr>
                                 </table>
                             </div>
                         </div>
@@ -106,7 +106,7 @@
                 <div class="mb-4">{{ form.observaciones }}</div>
 
                 <div class="text-end mt-4">
-                    <a href="{% url 'ventas:detalle_venta' object.id %}" class="btn btn-secondary me-2">Cancelar</a>
+                    <a href="{% url 'productos:productos_list' %}" class="btn btn-secondary me-2">Cancelar</a>
                     <button type="submit" class="btn btn-lg" style="background:#1e5a7d; border-color:#1e5a7d; color:white;"> Actualizar Venta</button>
                 </div>
             </form>
@@ -179,6 +179,20 @@ const IVA = 0.19;
 const BUSCAR_URL = "{% url 'ventas:buscar_productos_api' %}";
 let itemCount = {{ item_formset.total_form_count }};
 
+function formatMoney(value) {
+    return '$' + Math.round(value || 0).toLocaleString('es-CO');
+}
+
+function normalizeIntegerInput(input) {
+    if (!input) return;
+    const rawValue = String(input.value || '').trim().replace(',', '.');
+    if (!rawValue) return;
+    const parsedValue = parseFloat(rawValue);
+    if (!Number.isNaN(parsedValue)) {
+        input.value = Math.round(parsedValue);
+    }
+}
+
 function recalcularTotales() {
     let subtotal = 0;
     document.querySelectorAll('.item-row').forEach(row => {
@@ -187,13 +201,13 @@ function recalcularTotales() {
         const precio = parseFloat(row.querySelector('.precio-input')?.value) || 0;
         const itemSub = cantidad * precio;
         const el = row.querySelector('.item-subtotal');
-        if (el) el.textContent = '$' + itemSub.toFixed(2);
+        if (el) el.textContent = formatMoney(itemSub);
         subtotal += itemSub;
     });
     const iva = subtotal * IVA;
-    document.getElementById('resumen-subtotal').textContent = '$' + subtotal.toFixed(2);
-    document.getElementById('resumen-iva').textContent = '$' + iva.toFixed(2);
-    document.getElementById('resumen-total').textContent = '$' + (subtotal + iva).toFixed(2);
+    document.getElementById('resumen-subtotal').textContent = formatMoney(subtotal);
+    document.getElementById('resumen-iva').textContent = formatMoney(iva);
+    document.getElementById('resumen-total').textContent = formatMoney(subtotal + iva);
 }
 
 function initAutocomplete(row) {
@@ -227,7 +241,9 @@ function initAutocomplete(row) {
                                 searchInput.value = p.nombre;
                                 selectEl.value = p.id;
                                 const precioEl = row.querySelector('.precio-input');
-                                if (precioEl) precioEl.value = p.precio;
+                                if (precioEl) {
+                                    precioEl.value = Math.round(parseFloat(String(p.precio).replace(',', '.')) || 0);
+                                }
                                 resultsDiv.style.display = 'none';
                                 recalcularTotales();
                             });
@@ -244,6 +260,10 @@ function initAutocomplete(row) {
 function addEventListeners(row) {
     row.querySelectorAll('.cantidad-input, .precio-input').forEach(input => {
         input.addEventListener('input', recalcularTotales);
+        input.addEventListener('blur', () => {
+            normalizeIntegerInput(input);
+            recalcularTotales();
+        });
     });
     const btnRemove = row.querySelector('.btn-remove-item');
     if (btnRemove) {
@@ -259,10 +279,12 @@ function addEventListeners(row) {
 
 document.querySelectorAll('.item-row').forEach(row => {
     addEventListeners(row);
+    normalizeIntegerInput(row.querySelector('.cantidad-input'));
+    normalizeIntegerInput(row.querySelector('.precio-input'));
     const cantidad = parseFloat(row.querySelector('.cantidad-input')?.value) || 0;
     const precio = parseFloat(row.querySelector('.precio-input')?.value) || 0;
     const el = row.querySelector('.item-subtotal');
-    if (el) el.textContent = '$' + (cantidad * precio).toFixed(2);
+    if (el) el.textContent = formatMoney(cantidad * precio);
 });
 
 document.getElementById('btn-add-item').addEventListener('click', () => {
@@ -272,7 +294,7 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
     const prefix = 'items';
     newRow.innerHTML = newRow.innerHTML.replace(new RegExp(`${prefix}-(\\d+)-`, 'g'), `${prefix}-${itemCount}-`);
     newRow.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), select, textarea').forEach(el => { el.value = ''; });
-    newRow.querySelectorAll('.item-subtotal').forEach(el => { el.textContent = '$0.00'; });
+    newRow.querySelectorAll('.item-subtotal').forEach(el => { el.textContent = '$0'; });
     newRow.querySelectorAll('.autocomplete-results').forEach(el => { el.innerHTML = ''; el.style.display = 'none'; });
     newRow.style.display = '';
     document.querySelector(`#id_${prefix}-TOTAL_FORMS`).value = itemCount + 1;
@@ -284,9 +306,3 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
 recalcularTotales();
 </script>
 {% endblock %}
-// ✅ Al cargar la página, limpiar el nombre del producto visible (quitar " - proveedor")
-document.querySelectorAll('.producto-visible-select option').forEach(opt => {
-    if (opt.value && opt.textContent.includes(' - ')) {
-        opt.textContent = opt.textContent.split(' - ')[0].trim();
-    }
-});

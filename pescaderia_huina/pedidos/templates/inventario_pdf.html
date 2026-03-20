@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+|<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -98,6 +98,158 @@
         }
         
         .text-right {
+            text-align: right;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        
+        .badge-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+        
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Inventario de Productos</h1>
+            <p>Reporte generado: {{ fecha_generacion|date:"d/m/Y H:i" }}</p>
+            <p>Pescadería Huina © 2026</p>
+        </div>
+
+        <!-- PESCADOS -->
+        <div class="section">
+            <div class="section-title">🐟 PESCADOS</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Nombre Producto</th>
+                        <th style="width: 25%;">Proveedor</th>
+                        <th style="width: 20%;">Stock Disponible</th>
+                        <th style="width: 15%;">Presentación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pescados %}
+                    <tr>
+                        <td>{{ p.nombre }}</td>
+                        <td class="text-center">{{ p.proveedor }}</td>
+                        <td class="text-center">
+                            {% if p.stock_disponible <= 0 %}
+                                <span class="badge badge-danger">{{ p.stock_disponible }}</span>
+                            {% elif p.stock_disponible <= 10 %}
+                                <span class="badge badge-warning">{{ p.stock_disponible }}</span>
+                            {% else %}
+                                <span class="badge badge-success">{{ p.stock_disponible }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">{{ p.get_tipo_presentacion_display }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">Sin productos registrados</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- MARISCOS -->
+        <div class="section">
+            <div class="section-title">🦐 MARISCOS</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Nombre Producto</th>
+                        <th style="width: 25%;">Proveedor</th>
+                        <th style="width: 20%;">Stock Disponible</th>
+                        <th style="width: 15%;">Presentación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in mariscos %}
+                    <tr>
+                        <td>{{ p.nombre }}</td>
+                        <td class="text-center">{{ p.proveedor }}</td>
+                        <td class="text-center">
+                            {% if p.stock_disponible <= 0 %}
+                                <span class="badge badge-danger">{{ p.stock_disponible }}</span>
+                            {% elif p.stock_disponible <= 10 %}
+                                <span class="badge badge-warning">{{ p.stock_disponible }}</span>
+                            {% else %}
+                                <span class="badge badge-success">{{ p.stock_disponible }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">{{ p.get_tipo_presentacion_display }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">Sin productos registrados</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- POLLOS -->
+        <div class="section">
+            <div class="section-title">🐔 POLLOS</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Nombre Producto</th>
+                        <th style="width: 25%;">Proveedor</th>
+                        <th style="width: 20%;">Stock Disponible</th>
+                        <th style="width: 15%;">Presentación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pollos %}
+                    <tr>
+                        <td>{{ p.nombre }}</td>
+                        <td class="text-center">{{ p.proveedor }}</td>
+                        <td class="text-center">
+                            {% if p.stock_disponible <= 0 %}
+                                <span class="badge badge-danger">{{ p.stock_disponible }}</span>
+                            {% elif p.stock_disponible <= 10 %}
+                                <span class="badge badge-warning">{{ p.stock_disponible }}</span>
+                            {% else %}
+                                <span class="badge badge-success">{{ p.stock_disponible }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">{{ p.get_tipo_presentacion_display }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">Sin productos registrados</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer-info">
+            <p>Pescadería Huina - Sistema de Gestión Integral</p>
+        </div>
+    </div>
+</body>
+</html>
             text-align: right;
         }
         

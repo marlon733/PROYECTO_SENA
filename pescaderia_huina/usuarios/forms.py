@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
+from django_recaptcha.fields import ReCaptchaField
 from .models import PerfilUsuario
 
 class LoginForm(AuthenticationForm):
@@ -14,7 +15,12 @@ class LoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Ingrese su documento',
-            'autofocus': True
+            'autofocus': True,
+            'inputmode': 'numeric',
+            'pattern': r'\d{8,10}',
+            'minlength': '8',
+            'maxlength': '10',
+            'autocomplete': 'off'
         })
     )
     
@@ -34,6 +40,18 @@ class LoginForm(AuthenticationForm):
         }),
         label='Recordarme'
     )
+    
+    captcha = ReCaptchaField(
+        label='Verificación de Seguridad'
+    )
+
+    def clean_username(self):
+        documento = (self.cleaned_data.get('username') or '').strip()
+        if not documento.isdigit():
+            raise forms.ValidationError('El documento debe contener solo números.')
+        if not (8 <= len(documento) <= 10):
+            raise forms.ValidationError('El documento debe tener entre 8 y 10 dígitos.')
+        return documento
 
 
 class RegistroForm(UserCreationForm):
@@ -46,7 +64,12 @@ class RegistroForm(UserCreationForm):
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Número de documento'
+            'placeholder': 'Número de documento',
+            'inputmode': 'numeric',
+            'pattern': r'\d{8,10}',
+            'minlength': '8',
+            'maxlength': '10',
+            'autocomplete': 'off'
         })
     )
     
@@ -86,6 +109,25 @@ class RegistroForm(UserCreationForm):
             'placeholder': 'Teléfono (opcional)'
         })
     )
+
+    direccion = forms.CharField(
+        max_length=255,
+        required=False,
+        label='Dirección',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Dirección (opcional)'
+        })
+    )
+
+    fecha_nacimiento = forms.DateField(
+        required=False,
+        label='Fecha de nacimiento',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
     
     class Meta:
         model = User
@@ -100,10 +142,18 @@ class RegistroForm(UserCreationForm):
         }
     
     def clean_documento(self):
-        """Valida que el documento no exista en la base de datos"""
-        documento = self.cleaned_data.get('documento')
+        """Valida que el documento no exista y cumpla formato (8-10 dígitos numéricos)."""
+        documento = (self.cleaned_data.get('documento') or '').strip()
+
+        if not documento.isdigit():
+            raise forms.ValidationError('El documento debe contener solo números.')
+
+        if not (8 <= len(documento) <= 10):
+            raise forms.ValidationError('El documento debe tener entre 8 y 10 dígitos.')
+
         if PerfilUsuario.objects.filter(documento=documento).exists():
             raise forms.ValidationError('Este documento ya está registrado.')
+
         return documento
     
     def clean_email(self):
@@ -118,15 +168,17 @@ class RegistroForm(UserCreationForm):
         Guarda el usuario y crea su perfil con el documento
         """
         user = super().save(commit=False)
-        user.username = self.cleaned_data['documento']  # Usamos documento como username
+        user.username = (self.cleaned_data.get('documento') or '').strip()  # Usamos documento como username
         user.email = self.cleaned_data['email']
         
         if commit:
             user.save()
             # El perfil se crea automáticamente por la señal
             perfil = user.perfil
-            perfil.documento = self.cleaned_data['documento']
+            perfil.documento = (self.cleaned_data.get('documento') or '').strip()
             perfil.telefono = self.cleaned_data.get('telefono', '')
+            perfil.direccion = self.cleaned_data.get('direccion', '')
+            perfil.fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
             perfil.save()
         
         return user
@@ -155,6 +207,24 @@ class EditarUsuarioForm(forms.ModelForm):
         }
 
 
+class EditarMiUsuarioForm(forms.ModelForm):
+    """Formulario para que el usuario edite su propia información (sin flags admin)."""
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'first_name': 'Nombre',
+            'last_name': 'Apellido',
+            'email': 'Correo Electrónico',
+        }
+
+
 class EditarPerfilForm(forms.ModelForm):
     """
     Formulario para editar el perfil del usuario
@@ -164,6 +234,20 @@ class EditarPerfilForm(forms.ModelForm):
         fields = ['documento', 'telefono', 'direccion', 'foto_perfil', 'fecha_nacimiento']
         widgets = {
             'documento': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'foto_perfil': forms.FileInput(attrs={'class': 'form-control'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+
+class EditarMiPerfilForm(forms.ModelForm):
+    """Formulario para que el usuario edite su perfil (sin documento)."""
+
+    class Meta:
+        model = PerfilUsuario
+        fields = ['telefono', 'direccion', 'foto_perfil', 'fecha_nacimiento']
+        widgets = {
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
             'foto_perfil': forms.FileInput(attrs={'class': 'form-control'}),

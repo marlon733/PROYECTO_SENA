@@ -17,6 +17,71 @@ from .forms import VentaForm, VentaItemFormSet, CancelarVentaForm, BusquedaVenta
 from productos.models import Producto
 
 
+def _acumular_cantidades_formset(item_formset):
+    """Suma cantidades solicitadas por producto excluyendo filas marcadas para eliminar."""
+    cantidades_por_producto = {}
+    formularios_por_producto = {}
+
+    for item_form in item_formset.forms:
+        if not item_form.cleaned_data:
+            continue
+        if item_form.cleaned_data.get('DELETE'):
+            continue
+
+        producto = item_form.cleaned_data.get('producto')
+        cantidad = item_form.cleaned_data.get('cantidad')
+        if not producto or cantidad is None:
+            continue
+
+        cantidades_por_producto[producto.id] = (
+            cantidades_por_producto.get(producto.id, Decimal('0')) + Decimal(str(cantidad))
+        )
+        formularios_por_producto.setdefault(producto.id, []).append(item_form)
+
+    return cantidades_por_producto, formularios_por_producto
+
+
+def _cantidades_actuales_venta(venta):
+    """Obtiene cantidades actuales de una venta por producto para recalcular stock al editar."""
+    actuales = {}
+    if not venta:
+        return actuales
+
+    for item in venta.items.select_related('producto').all():
+        actuales[item.producto_id] = actuales.get(item.producto_id, Decimal('0')) + Decimal(str(item.cantidad))
+
+    return actuales
+
+
+def _validar_stock_disponible(item_formset, venta_actual=None):
+    """Valida que cada producto tenga stock suficiente para la cantidad solicitada."""
+    solicitadas, formularios_por_producto = _acumular_cantidades_formset(item_formset)
+    cantidades_actuales = _cantidades_actuales_venta(venta_actual)
+    hay_error = False
+
+    for producto_id, cantidad_solicitada in solicitadas.items():
+        producto = Producto.objects.filter(id=producto_id, estado=True).first()
+        if not producto:
+            for item_form in formularios_por_producto.get(producto_id, []):
+                item_form.add_error('producto', 'El producto no está disponible.')
+            hay_error = True
+            continue
+
+        stock_disponible = Decimal(str(producto.stock))
+        # En edición, se libera temporalmente lo ya reservado por esta misma venta.
+        stock_disponible += cantidades_actuales.get(producto_id, Decimal('0'))
+
+        if cantidad_solicitada > stock_disponible:
+            for item_form in formularios_por_producto.get(producto_id, []):
+                item_form.add_error(
+                    'cantidad',
+                    f'Stock insuficiente para "{producto.nombre}". Disponible: {stock_disponible}.'
+                )
+            hay_error = True
+
+    return not hay_error
+
+
 @login_required
 def buscar_productos_api(request):
     q = request.GET.get('q', '')
@@ -98,6 +163,9 @@ class VentaCreateView(LoginRequiredMixin, generic.CreateView):
         if not item_formset.is_valid():
             messages.error(self.request, 'Corrija los errores en los productos.')
             return self.render_to_response(context)
+        if not _validar_stock_disponible(item_formset):
+            messages.error(self.request, 'No hay stock suficiente para uno o más productos.')
+            return self.render_to_response(context)
         with transaction.atomic():
             venta = form.save()
             items = item_formset.save(commit=False)
@@ -141,22 +209,24 @@ class VentaUpdateView(LoginRequiredMixin, generic.UpdateView):
         context = self.get_context_data()
         item_formset = context['item_formset']
         if not item_formset.is_valid():
-           messages.error(self.request, 'Corrija los errores en los productos.')
-           return self.render_to_response(context)
+            messages.error(self.request, 'Corrija los errores en los productos.')
+            return self.render_to_response(context)
+        if not _validar_stock_disponible(item_formset, venta_actual=self.object):
+            messages.error(self.request, 'No hay stock suficiente para guardar los cambios de la venta.')
+            return self.render_to_response(context)
+
         with transaction.atomic():
             venta = form.save()
-            for item_form in item_formset:
-                if not item_form.cleaned_data:
-                   continue
-                if item_form.cleaned_data.get('DELETE') and item_form.instance.pk:
-                   item_form.instance.delete()  # ✅ sin restaurar stock
-                continue
-            if item_form.cleaned_data.get('producto'):
-                item = item_form.save(commit=False)
+            items = item_formset.save(commit=False)
+            for obj in item_formset.deleted_objects:
+                obj.delete()
+
+            for item in items:
                 item.venta = venta
-                item.save()  # ✅ sin ajuste de stock
+                item.save()
+
             venta.recalcular_totales()
-            messages.success(self.request, f'Venta #{venta.id} actualizada exitosamente.')
+            messages.success(self.request, f'Venta {venta.id} actualizada exitosamente.')
         return redirect(self.success_url)
 
     def form_invalid(self, form):
@@ -191,7 +261,7 @@ class VentaCancelarView(LoginRequiredMixin, generic.FormView):
           self.venta.motivo_cancelacion = motivo
           self.venta.fecha_cancelacion = timezone.now()
           self.venta.save(update_fields=['estado', 'motivo_cancelacion', 'fecha_cancelacion'])
-          messages.success(self.request, f'Venta #{self.venta.id} cancelada exitosamente.')
+          messages.success(self.request, f'Venta {self.venta.id} cancelada exitosamente.')
         return super().form_valid(form)
 
 
@@ -225,9 +295,19 @@ def exportar_excel(request):
     ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
     ws.row_dimensions[1].height = 28
 
-    # Estadísticas
-    total_completadas = Venta.objects.filter(estado='COMPLETADA').count()
-    total_ingresos = Venta.objects.filter(estado='COMPLETADA').aggregate(t=Sum('total'))['t'] or Decimal('0')
+    # Estadísticas filtradas por las mismas fechas
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin    = request.GET.get('fecha_fin')
+    estado       = request.GET.get('estado')
+
+    qs_base = Venta.objects.all()
+    if fecha_inicio:
+        qs_base = qs_base.filter(fecha_venta__date__gte=fecha_inicio)
+    if fecha_fin:
+        qs_base = qs_base.filter(fecha_venta__date__lte=fecha_fin)
+
+    total_completadas = qs_base.filter(estado='COMPLETADA').count()
+    total_ingresos = qs_base.filter(estado='COMPLETADA').aggregate(t=Sum('total'))['t'] or Decimal('0')
     ws.merge_cells('A2:D2')
     ws['A2'] = f'Ventas Completadas: {total_completadas}'
     ws['A2'].font = Font(bold=True, size=10)
@@ -253,11 +333,6 @@ def exportar_excel(request):
     ws.row_dimensions[3].height = 18
 
     # Datos
-    ventas_qs = Venta.objects.prefetch_related('items__producto').all()
-    fecha_inicio = request.GET.get('fecha_inicio')
-    fecha_fin    = request.GET.get('fecha_fin')
-    estado       = request.GET.get('estado')
-
     ventas_qs = Venta.objects.prefetch_related('items__producto').all()
     if fecha_inicio:
         ventas_qs = ventas_qs.filter(fecha_venta__date__gte=fecha_inicio)
@@ -339,17 +414,20 @@ def exportar_pdf(request):
     if estado_filtro:
         ventas_qs = ventas_qs.filter(estado=estado_filtro)
 
-    qs_stats = Venta.objects.filter(estado='COMPLETADA')
+    qs_base = Venta.objects.all()
     if fecha_inicio:
-        qs_stats = qs_stats.filter(fecha_venta__date__gte=fecha_inicio)
+        qs_base = qs_base.filter(fecha_venta__date__gte=fecha_inicio)
     if fecha_fin:
-        qs_stats = qs_stats.filter(fecha_venta__date__lte=fecha_fin)
+        qs_base = qs_base.filter(fecha_venta__date__lte=fecha_fin)
+
+    qs_completadas = qs_base.filter(estado='COMPLETADA')
+    qs_canceladas  = qs_base.filter(estado='CANCELADA')
 
     context = {
         'ventas':             ventas_qs,
-        'total_completadas':  qs_stats.count(),
-        'total_ingresos':     qs_stats.aggregate(t=Sum('total'))['t'] or Decimal('0'),
-        'total_canceladas':   Venta.objects.filter(estado='CANCELADA').count(),
+        'total_completadas':  qs_completadas.count(),
+        'total_ingresos':     qs_completadas.aggregate(t=Sum('total'))['t'] or Decimal('0'),
+        'total_canceladas':   qs_canceladas.count(),
         'fecha_inicio':       fecha_inicio,
         'fecha_fin':          fecha_fin,
         'estado_filtro':      estado_filtro,

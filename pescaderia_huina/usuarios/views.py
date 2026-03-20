@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth import login, logout, authenticate,update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
@@ -7,7 +8,15 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse
 from django.db.models import Q
-from .forms import LoginForm, RegistroForm, EditarUsuarioForm, EditarPerfilForm
+from .forms import (
+    LoginForm,
+    RegistroForm,
+    
+    EditarUsuarioForm,
+    EditarPerfilForm,
+    EditarMiUsuarioForm,
+    EditarMiPerfilForm,
+)
 from .models import PerfilUsuario
 import random
 from django.utils import timezone
@@ -246,29 +255,73 @@ def eliminar_usuario_view(request, user_id):
 @login_required
 def perfil_view(request):
     """
-    Vista para que el usuario vea/edite su propio perfil
+    Vista para que el usuario vea su propio perfil (solo lectura).
     """
     usuario = request.user
+
+    # Asegurar que el usuario tenga perfil asociado
+    try:
+        perfil = usuario.perfil
+    except PerfilUsuario.DoesNotExist:
+        # Fallback: crear perfil mínimo (documento = username)
+        perfil = PerfilUsuario.objects.create(user=usuario, documento=usuario.username)
     
+    context = {
+        'titulo': 'Mi Perfil',
+        'perfil_usuario': perfil,
+    }
+    return render(request, 'usuarios/perfil.html', context)
+
+
+@login_required
+def editar_perfil_view(request, user_id=None):
+    """Vista para editar perfil en una página separada.
+
+    - Sin `user_id`: el usuario edita su propio perfil.
+    - Con `user_id`: solo staff puede editar el perfil de otro usuario (uso desde dashboard).
+    """
+
+    if user_id is not None:
+        if not request.user.is_staff:
+            raise PermissionDenied
+        usuario = get_object_or_404(User, id=user_id)
+    else:
+        usuario = request.user
+
+    try:
+        perfil = usuario.perfil
+    except PerfilUsuario.DoesNotExist:
+        perfil = PerfilUsuario.objects.create(user=usuario, documento=usuario.username)
+
+    form_usuario_cls = EditarMiUsuarioForm
+    form_perfil_cls = EditarPerfilForm if user_id is not None else EditarMiPerfilForm
+
     if request.method == 'POST':
-        form_usuario = EditarUsuarioForm(request.POST, instance=usuario)
-        form_perfil = EditarPerfilForm(request.POST, request.FILES, instance=usuario.perfil)
-        
+        form_usuario = form_usuario_cls(request.POST, instance=usuario)
+        form_perfil = form_perfil_cls(request.POST, request.FILES, instance=perfil)
+
         if form_usuario.is_valid() and form_perfil.is_valid():
             form_usuario.save()
             form_perfil.save()
             messages.success(request, 'Perfil actualizado exitosamente.')
+            if user_id is not None:
+                return redirect('core:dashboard')
             return redirect('usuarios:perfil')
+        else:
+            messages.error(request, 'Por favor corrige los errores en el formulario.')
     else:
-        form_usuario = EditarUsuarioForm(instance=usuario)
-        form_perfil = EditarPerfilForm(instance=usuario.perfil)
-    
+        form_usuario = form_usuario_cls(instance=usuario)
+        form_perfil = form_perfil_cls(instance=perfil)
+
     context = {
-        'titulo': 'Mi Perfil',
+        'titulo': 'Editar Perfil',
+        'usuario_obj': usuario,
+        'perfil_usuario': perfil,
         'form_usuario': form_usuario,
         'form_perfil': form_perfil,
+        'is_admin_edit': user_id is not None,
     }
-    return render(request, 'usuarios/perfil.html', context)
+    return render(request, 'usuarios/editar_perfil.html', context)
 def solicitar_recuperacion(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -339,9 +392,24 @@ def nueva_password(request):
     user = User.objects.get(id=request.session['recovery_user'])
 
     if request.method == 'POST':
-        password = request.POST.get('password')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
 
-        user.set_password(password)
+        # Validar que las contraseñas coincidan
+        if not password1 or not password2:
+            messages.error(request, 'Por favor completa todos los campos.')
+            return render(request, 'usuarios/nueva_password.html')
+        
+        if password1 != password2:
+            messages.error(request, 'Las contraseñas no coinciden.')
+            return render(request, 'usuarios/nueva_password.html')
+        
+        # Validar longitud mínima
+        if len(password1) < 8:
+            messages.error(request, 'La contraseña debe tener al menos 8 caracteres.')
+            return render(request, 'usuarios/nueva_password.html')
+
+        user.set_password(password1)
         user.save()
 
         # Limpiar código
@@ -350,6 +418,7 @@ def nueva_password(request):
         perfil.recovery_code_created = None
         perfil.save()
 
+        messages.success(request, 'Tu contraseña ha sido actualizada. Ya puedes iniciar sesión.')
         request.session.flush()
         return redirect('usuarios:login')
 

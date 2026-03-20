@@ -105,7 +105,7 @@
                             <!-- Subtotal -->
                             <div class="col-md-1">
                                 <label class="form-label fw-semibold">Subtotal</label>
-                                <div class="form-control bg-white text-end fw-bold text-success item-subtotal small">$0.00</div>
+                                <div class="form-control bg-white text-end fw-bold text-success item-subtotal small">$0</div>
                             </div>
 
                         </div>
@@ -131,9 +131,9 @@
                         <div class="row justify-content-end">
                             <div class="col-md-4">
                                 <table class="table table-borderless mb-0">
-                                    <tr><td class="fw-semibold">Subtotal:</td><td class="text-end" id="resumen-subtotal">$0.00</td></tr>
-                                    <tr><td class="text-muted">IVA (19%):</td><td class="text-end text-muted" id="resumen-iva">$0.00</td></tr>
-                                    <tr class="border-top"><td class="fw-bold fs-5">Total:</td><td class="text-end fw-bold fs-5 text-success" id="resumen-total">$0.00</td></tr>
+                                    <tr><td class="fw-semibold">Subtotal:</td><td class="text-end" id="resumen-subtotal">$0</td></tr>
+                                    <tr><td class="text-muted">IVA (19%):</td><td class="text-end text-muted" id="resumen-iva">$0</td></tr>
+                                    <tr class="border-top"><td class="fw-bold fs-5">Total:</td><td class="text-end fw-bold fs-5 text-success" id="resumen-total">$0</td></tr>
                                 </table>
                             </div>
                         </div>
@@ -248,6 +248,10 @@ const BUSCAR_URL = "{% url 'ventas:buscar_productos_api' %}";
 let itemCount = {{ item_formset.total_form_count }};
 
 // ── Recalcular totales ─────────────────────────────────────────────────────
+function formatMoney(value) {
+    return value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
 function recalcularTotales() {
     let subtotal = 0;
     document.querySelectorAll('.item-row').forEach(row => {
@@ -256,13 +260,13 @@ function recalcularTotales() {
         const precio   = parseFloat(row.querySelector('.precio-input')?.value)   || 0;
         const itemSub  = cantidad * precio;
         const el = row.querySelector('.item-subtotal');
-        if (el) el.textContent = '$' + itemSub.toFixed(2);
+        if (el) el.textContent = '$' + formatMoney(itemSub);
         subtotal += itemSub;
     });
     const iva = subtotal * IVA;
-    document.getElementById('resumen-subtotal').textContent = '$' + subtotal.toFixed(2);
-    document.getElementById('resumen-iva').textContent      = '$' + iva.toFixed(2);
-    document.getElementById('resumen-total').textContent    = '$' + (subtotal + iva).toFixed(2);
+    document.getElementById('resumen-subtotal').textContent = '$' + formatMoney(subtotal);
+    document.getElementById('resumen-iva').textContent      = '$' + formatMoney(iva);
+    document.getElementById('resumen-total').textContent    = '$' + formatMoney(subtotal + iva);
 }
 
 // ── ✅ CAMBIO 1: Cargar productos según categoría seleccionada ─────────────
@@ -313,9 +317,10 @@ function recalcularTotales() {
         // Sincronizar con el select oculto de Django
         prodHidden.value = this.value;
 
-        // Auto-llenar precio desde data-precio del option
+        // Auto-llenar precio desde data-precio del option (sin decimales)
         if (selectedOpt && selectedOpt.dataset.precio && precioInput) {
-            precioInput.value = selectedOpt.dataset.precio;
+            const precioValor = Math.round(parseFloat(selectedOpt.dataset.precio) || 0);
+            precioInput.value = precioValor;
             // Disparar el evento input para que recalcule el subtotal
             precioInput.dispatchEvent(new Event('input'));
         }
@@ -359,7 +364,7 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
     // Limpiar todos los valores
     newRow.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), select, textarea')
           .forEach(el => { el.value = ''; });
-    newRow.querySelectorAll('.item-subtotal').forEach(el => { el.textContent = '$0.00'; });
+    newRow.querySelectorAll('.item-subtotal').forEach(el => { el.textContent = '$0'; });
 
     // Resetear el select de productos a estado inicial
     const prodVisible = newRow.querySelector('.producto-visible-select');

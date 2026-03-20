@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(9w#_4phd&vc#+$h(-3-+nqkaj#-y3&w_8*3+!=8godz291rs4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -40,11 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     "core",
     "bootstrap5",
+    "django_recaptcha",
     "usuarios",
     "productos",   
     "proveedores",
     "ventas",
     "pedidos",
+    "copia_seguridad",
 ]
 
 MIDDLEWARE = [
@@ -82,17 +85,27 @@ WSGI_APPLICATION = 'pescaderia_huina.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# (PostgreSQL - Supabase)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.rmkckjjemybpxtombvjk',
-        'PASSWORD': 'pescaderiahuina123*', 
-        'HOST': 'aws-1-sa-east-1.pooler.supabase.com',
-        'PORT': '5432',
+# Configuración: PostgreSQL en producción, SQLite en tests
+if 'test' in sys.argv:
+    # Usar SQLite en memoria para tests (rápido y limpio)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
     }
-}
+else:
+    # PostgreSQL - Supabase (producción)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres.rmkckjjemybpxtombvjk',
+            'PASSWORD': 'pescaderiahuina123*', 
+            'HOST': 'aws-1-sa-east-1.pooler.supabase.com',
+            'PORT': '5432',
+        }
+    }
 
 
 
@@ -139,7 +152,7 @@ STATIC_URL = '/static/'
 
 # IMPORTANTE: Agregar esta configuración
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Django buscará archivos estáticos aquí
+    BASE_DIR / 'static',  # Django buscará archivos estáticos en desarrollo
 ]
 
 # Para producción (cuando uses collectstatic)
@@ -147,6 +160,20 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+# Google reCAPTCHA Keys
+# Obtén tus claves en: https://www.google.com/recaptcha/admin
+# ⚠️ IMPORTANTE: Reemplaza estas claves con las tuyas propias
+RECAPTCHA_PUBLIC_KEY = '6LfkcYwsAAAAAB2yxpH_7hxUWV_61dIIrx-RFon5'
+RECAPTCHA_PRIVATE_KEY = '6LfkcYwsAAAAAIJXl9YsJIzcZs86hCNZmJ4aQ4oi'
+
+# Notas:
+# - Para que funcione con localhost, ve a https://www.google.com/recaptcha/admin
+# - Selecciona tu proyecto y en Configuración agrega los dominios:
+#   * localhost
+#   * 127.0.0.1
+# - Luego guarda los cambios
+# - reCAPTCHA v2 Checkbox es el más compatible
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -162,8 +189,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = 'mf1382529@gmail.com'
-EMAIL_HOST_PASSWORD = 'teiw hwuf zjub ftal'
+EMAIL_HOST_USER = 'pescaderiahuina@gmail.com'
+EMAIL_HOST_PASSWORD = 'jkod fdnz jrie qszl'
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 

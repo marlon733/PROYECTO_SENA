@@ -5,10 +5,33 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+<style>
+/* Estilos del diseño base aplicados a pedidos */
+.header-blue { background: linear-gradient(135deg, #2C466B, #1f3554); }
+.btn-primary-custom { background: linear-gradient(135deg, #2C466B, #1f3554); border: none; }
+.btn-primary-custom:hover { background: linear-gradient(135deg, #1f3554, #16263d); transform: translateY(-2px); }
+.hover-scale:hover { transform: scale(1.02); transition: transform 0.2s; }
+.form-control:focus, .form-select:focus { box-shadow: none; border-color: #2C466B; }
+
+/* Estilos extra para el bloque de Total General */
+.gran-total-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+.gran-total-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #6c757d;
+    letter-spacing: 0.5px;
+}
+.gran-total-value {
+    font-size: 1.75rem;
+    color: #2C466B;
+}
+</style>
 {% endblock %}
 
 {% block content %}
-
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
@@ -31,7 +54,7 @@
                                 <i class="bi bi-building me-1"></i> Proveedor Asignado (NIT)
                             </label>
                             <div class="input-group shadow-sm">
-                                <span class="input-group-text bg-white"><i class="bi bi-shop"></i></span>
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-shop text-muted"></i></span>
                                 {{ form_pedido.proveedor }}
                             </div>
                             <div class="form-text mt-2">
@@ -39,63 +62,69 @@
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center mb-4">
-                            <h5 class="fw-bold text-dark mb-0 me-3">Detalles de Productos</h5>
-                            <div class="flex-grow-1 border-top" style="border-color: #e7f1ff !important;"></div>
-                        </div>
-
                         {{ formset.management_form }}
-
-                        <div id="detalles-container">
-                            {% for form in formset %}
-                            <div class="detalle-row p-4 mb-3 shadow-sm bg-light rounded-3 border border-light">
-                                {{ form.id }} 
-                                <div class="row g-3 align-items-end">
-                                    
-                                    <div class="col-lg-4 col-md-12">
-                                        <label class="form-label fw-semibold small text-muted">Producto</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-box-seam text-muted"></i></span>
-                                            {{ form.producto }}
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-lg-3 col-md-4">
-                                        <label class="form-label fw-semibold small text-muted">Cantidad y Unidad</label>
-                                        <div class="input-group">
-                                            {{ form.cantidad }}
-                                            {{ form.presentacion }}
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-lg-2 col-md-4">
-                                        <label class="form-label fw-semibold small text-muted">Precio Unit.</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-white border-end-0 text-muted">$</span>
-                                            {{ form.precio_unitario }}
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-lg-2 col-md-3">
-                                        <label class="form-label fw-semibold small text-muted">Subtotal</label>
-                                        <input type="text" class="form-control subtotal-field text-end fw-bold text-primary bg-white" readonly value="$ 0">
-                                    </div>
-
-                                    <div class="col-lg-1 col-md-1 text-center pb-1">
-                                        {% if formset.can_delete %}
-                                            <div class="delete-checkbox-wrapper d-none">
-                                                {{ form.DELETE }}
+                        <div class="table-responsive">
+                            <table class="table table-borderless align-middle" id="tabla-detalles">
+                                <thead class="border-bottom">
+                                    <tr class="text-uppercase small text-muted text-center">
+                                        <th style="width: 35%;" class="text-start">Producto</th>
+                                        <th style="width: 20%;">Cantidad y Unidad</th>
+                                        <th style="width: 20%;">Precio Unit.</th>
+                                        <th style="width: 20%;">Subtotal</th>
+                                        <th style="width: 5%;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detalles-container">
+                                    {% for form in formset %}
+                                    <tr class="detalle-row border-bottom border-light">
+                                        
+                                        <td class="p-2">
+                                            <div class="d-none">
+                                                {{ form.id }}
+                                                {% for hidden in form.hidden_fields %}
+                                                    {{ hidden }}
+                                                {% endfor %}
                                             </div>
-                                        {% endif %}
-                                        <button type="button" class="btn btn-outline-danger border-0 btn-eliminar-fila" title="Eliminar producto">
-                                            <i class="bi bi-trash fs-5"></i>
-                                        </button>
-                                    </div>
-                                    
-                                </div>
-                                {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
-                            </div>
-                            {% endfor %}
+                                            
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-box-seam text-muted"></i></span>
+                                                {{ form.producto }}
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="p-2">
+                                            <div class="input-group input-group-sm">
+                                                {{ form.cantidad }}
+                                                {{ form.presentacion }}
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="p-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-transparent border-end-0 text-muted">$</span>
+                                                {{ form.precio_unitario }}
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="p-2">
+                                            <input type="text" class="form-control form-control-sm subtotal-field text-end fw-bold text-primary bg-transparent" readonly value="$ 0">
+                                        </td>
+                                        
+                                        <td class="p-2 text-center">
+                                            {% if formset.can_delete %}
+                                                <div class="d-none">
+                                                    {{ form.DELETE }}
+                                                </div>
+                                            {% endif %}
+                                            <button type="button" class="btn btn-sm btn-outline-danger border-0 btn-eliminar-fila" title="Eliminar producto">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                        
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
 
                         <div class="text-center mt-3 mb-5">
@@ -105,19 +134,19 @@
                         </div>
 
                         <div class="row justify-content-end mb-4">
-                            <div class="col-md-6 col-lg-5">
-                                <div class="gran-total-box p-4 d-flex flex-column align-items-end justify-content-center">
-                                    <span class="gran-total-label mb-1">Total General</span>
-                                    <span class="gran-total-value" id="gran-total-display">$ 0</span>
+                            <div class="col-md-6 col-lg-4">
+                                <div class="gran-total-box rounded-3 p-3 d-flex flex-column align-items-end justify-content-center shadow-sm">
+                                    <span class="gran-total-label mb-1 fw-bold">Total General</span>
+                                    <span class="gran-total-value fw-bold" id="gran-total-display">$ 0</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center pt-4 border-top">
-                            <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-secondary-form rounded-pill px-4 fw-bold shadow-sm">
-                                <i class="bi bi-arrow-left me-2"></i> Cancelar
+                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                            <a href="{% url 'pedidos:lista_pedidos' %}" class="btn btn-light px-4 rounded-3 border fw-semibold">
+                                Cancelar
                             </a>
-                            <button type="submit" class="btn btn-primary-form btn-lg px-5 rounded-pill shadow fw-bold">
+                            <button type="submit" class="btn btn-primary-custom px-5 rounded-3 text-white shadow fw-bold">
                                 <i class="bi bi-save2 me-2"></i>Guardar Pedido
                             </button>
                         </div>
@@ -129,44 +158,44 @@
     </div>
 </div>
 
-<div id="empty-form-template" style="display: none;">
-    <div class="detalle-row p-4 mb-3 shadow-sm bg-light rounded-3 border border-light">
-        {{ formset.empty_form.id }}
-        <div class="row g-3 align-items-end">
-            <div class="col-lg-4 col-md-12">
-                <label class="form-label fw-semibold small text-muted">Producto</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-box-seam text-muted"></i></span>
+<table style="display:none;">
+    <tbody id="empty-form-template">
+        <tr class="detalle-row border-bottom border-light">
+            <td class="p-2">
+                <div class="d-none">
+                    {{ formset.empty_form.id }}
+                    {% for hidden in formset.empty_form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-box-seam text-muted"></i></span>
                     {{ formset.empty_form.producto }}
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-4">
-                <label class="form-label fw-semibold small text-muted">Cantidad y Unidad</label>
-                <div class="input-group">
+            </td>
+            <td class="p-2">
+                <div class="input-group input-group-sm">
                     {{ formset.empty_form.cantidad }}
                     {{ formset.empty_form.presentacion }}
                 </div>
-            </div>
-            <div class="col-lg-2 col-md-4">
-                <label class="form-label fw-semibold small text-muted">Precio Unit.</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted">$</span>
+            </td>
+            <td class="p-2">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted">$</span>
                     {{ formset.empty_form.precio_unitario }}
                 </div>
-            </div>
-            <div class="col-lg-2 col-md-3">
-                <label class="form-label fw-semibold small text-muted">Subtotal</label>
-                <input type="text" class="form-control subtotal-field text-end fw-bold text-primary bg-white" readonly value="$ 0">
-            </div>
-            <div class="col-lg-1 col-md-1 text-center pb-1">
-                <button type="button" class="btn btn-outline-danger border-0 btn-eliminar-fila" title="Eliminar producto">
-                    <i class="bi bi-trash fs-5"></i>
+            </td>
+            <td class="p-2">
+                <input type="text" class="form-control form-control-sm subtotal-field text-end fw-bold text-primary bg-transparent" readonly value="$ 0">
+            </td>
+            <td class="p-2 text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger border-0 btn-eliminar-fila" title="Eliminar producto">
+                    <i class="bi bi-trash"></i>
                 </button>
-            </div>
-        </div>
-    </div>
-</div>
-
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 {% endblock %}
 
@@ -227,7 +256,7 @@
             }
         }
 
-        // AGREGAR FILA (Adaptado al método del base.html)
+        // AGREGAR FILA 
         if (addButton) {
             addButton.addEventListener('click', function() {
                 let formIdx = totalFormsInput.value; 
@@ -240,7 +269,7 @@
             });
         }
 
-        // ELIMINAR FILA (Delegación de eventos unificada)
+        // ELIMINAR FILA
         container.addEventListener('click', function(e) {
             const btnEliminar = e.target.closest('.btn-eliminar-fila');
             if (btnEliminar) {
@@ -250,11 +279,9 @@
                 if (visibleRows.length > 1) {
                     const deleteCheck = row.querySelector('input[name$="-DELETE"]');
                     if (deleteCheck) {
-                        // Si existe checkbox de DELETE (instancia guardada), marcar y ocultar
                         deleteCheck.checked = true;
                         row.style.display = 'none';
                     } else {
-                        // Si es fila nueva, remover del DOM
                         row.remove();
                     }
                     calcularTotales();

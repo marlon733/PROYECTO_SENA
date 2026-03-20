@@ -1,6 +1,6 @@
 {% extends "core/panel_admin_base.html" %}
 {% load static %}
-{% block title %}Detalle Venta #{{ venta.id }}{% endblock %}
+{% block title %}Detalle Venta {{ venta.id }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -129,13 +129,13 @@
     {% endfor %}{% endif %}
 
     <div class="row g-4">
-
+        
         <!-- ── Columna izquierda: datos del cliente ── -->
         <div class="col-lg-4">
             <div class="card card-detail">
                 <div class="detail-header">
                     <div class="sale-icon"><i class="bi bi-receipt-cutoff"></i></div>
-                    <h3 class="fw-bold mb-1">Venta #{{ venta.id }}</h3>
+                    <h3 class="fw-bold mb-1">Venta {{ venta.id }}</h3>
                     <p class="mb-2 opacity-75 small">{{ venta.fecha_venta|date:"d/m/Y H:i" }}</p>
                     <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap">
                         {% if venta.estado == 'COMPLETADA' %}
@@ -193,14 +193,6 @@
                     </div>
                     {% endif %}
 
-                    {% if venta.estado != 'CANCELADA' %}
-                    <div class="mt-4 text-center">
-                        <a href="{% url 'ventas:cancelar_venta' venta.id %}"
-                           class="btn btn-sm btn-outline-danger rounded-pill px-4">
-                            <i class="bi bi-x-circle me-1"></i> Cancelar Venta
-                        </a>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -241,19 +233,19 @@
                                         {% endif %}
                                     </td>
                                     <td class="text-center fw-semibold">
-                                        {{ item.cantidad }}{% if item.tipo_presentacion == 'POR_LIBRA' %} lb{% else %} und{% endif %}
+                                        {{ item.cantidad|floatformat:0 }}{% if item.tipo_presentacion == 'POR_LIBRA' %} lb{% else %} unidades{% endif %}
                                     </td>
-                                    <td class="text-end text-muted">${{ item.precio_unitario|floatformat:2 }}</td>
-                                    <td class="text-end fw-bold text-success pe-4">${{ item.subtotal|floatformat:2 }}</td>
+                                    <td class="text-end text-muted">${{ item.precio_unitario|floatformat:0 }}</td>
+                                    <td class="text-end fw-bold text-success pe-4">${{ item.subtotal|floatformat:0 }}</td>
                                 </tr>
                                 {% empty %}
                                 {% if venta.producto %}
                                 <tr>
                                     <td class="fw-bold ps-4">{{ venta.producto.nombre }}</td>
                                     <td class="text-center">{{ venta.tipo_presentacion }}</td>
-                                    <td class="text-center fw-semibold">{{ venta.cantidad }}</td>
-                                    <td class="text-end text-muted">${{ venta.precio_unitario|floatformat:2 }}</td>
-                                    <td class="text-end fw-bold text-success pe-4">${{ venta.total|floatformat:2 }}</td>
+                                    <td class="text-center fw-semibold">{{ venta.cantidad|floatformat:0 }}</td>
+                                    <td class="text-end text-muted">${{ venta.precio_unitario|floatformat:0 }}</td>
+                                    <td class="text-end fw-bold text-success pe-4">${{ venta.total|floatformat:0 }}</td>
                                 </tr>
                                 {% else %}
                                 <tr>
@@ -278,15 +270,15 @@
                 <div class="totals-box">
                     <div class="totals-row">
                         <span class="text-muted">Subtotal</span>
-                        <span class="fw-semibold">${{ venta.subtotal|floatformat:2|default:"0.00" }}</span>
+                        <span class="fw-semibold">${{ venta.subtotal|floatformat:0|default:"0" }}</span>
                     </div>
                     <div class="totals-row">
                         <span class="text-muted">IVA (19%)</span>
-                        <span class="fw-semibold text-muted">${{ venta.iva_monto|floatformat:2|default:"0.00" }}</span>
+                        <span class="fw-semibold text-muted">${{ venta.iva_monto|floatformat:0|default:"0" }}</span>
                     </div>
                     <div class="totals-row total-final">
                         <span>Total</span>
-                        <span>${{ venta.total|floatformat:2|default:"0.00" }}</span>
+                        <span>${{ venta.total|floatformat:0|default:"0" }}</span>
                     </div>
                 </div>
             </div>
