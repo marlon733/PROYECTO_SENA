@@ -1,18 +1,18 @@
 {% extends 'core/panel_admin_base.html' %}
-
+ 
 {% load humanize %}
 {% load static %} 
-
-
+ 
+ 
 {% block title %}Productos{% endblock %}
-
+ 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
 {% endblock %}
-
+ 
 {% block content %}
 <div class="container">
-
+ 
     <div class="page-header d-flex justify-content-between align-items-center">
         <div>
             <h2 class="page-title mb-2">Directorio de Productos</h2>
@@ -22,12 +22,12 @@
             <i class="bi bi-plus-lg me-2"></i>Nuevo Producto
         </a>
     </div>
-
+ 
     <form method="get" class="mb-4">
         <div class="card card-modern mb-4">
             <div class="card-body p-4">
                 <div class="row g-3 align-items-end">
-
+ 
                     <!-- Búsqueda por texto -->
                     <div class="col-md-5">
                         <label class="filter-label">Buscar coincidencias</label>
@@ -41,7 +41,7 @@
                             {% endif %}
                         </div>
                     </div>
-
+ 
                     <!-- Filtro por tipo de presentación -->
                     <div class="col-md-3">
                         <label class="filter-label">Presentación / Empaque</label>
@@ -54,7 +54,7 @@
                             {% endfor %}
                         </select>
                     </div>
-
+ 
                     <!-- Botones -->
                     <div class="col-md-4 d-flex gap-2">
                         <button class="btn btn-primary shadow-sm fw-bold flex-grow-1" type="submit" style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
@@ -68,23 +68,42 @@
                         {% endif %}
                     </div>
                 </div>
-
+ 
+                {% if request.GET.q or request.GET.presentacion %}
                 <hr class="my-3 border-light">
-
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted small">
-                        {% if request.GET.q or request.GET.presentacion %}
-                            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1">
-                                <i class="bi bi-funnel-fill me-1"></i> Mostrando resultados filtrados
-                            </span>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="text-muted small me-1"><i class="bi bi-funnel-fill me-1"></i> Filtros activos:</span>
+ 
+                    {% if request.GET.q %}
+                        <span class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle px-2 py-1">
+                            <i class="bi bi-search me-1"></i> "{{ request.GET.q }}"
+                        </span>
+                    {% endif %}
+ 
+                    {% if request.GET.presentacion %}
+                        {% for value, label in tipos_presentacion %}
+                            {% if value == request.GET.presentacion %}
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle px-2 py-1">
+                                    <i class="bi bi-box-seam me-1"></i> {{ label }}
+                                </span>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+ 
+                    <span class="ms-auto text-muted small">
+                        {% if productos %}
+                            <strong>{{ productos|length }}</strong> resultado(s) encontrado(s)
+                        {% else %}
+                            Sin resultados
                         {% endif %}
                     </span>
                 </div>
-
+                {% endif %}
+ 
             </div>
         </div>
     </form>
-
+ 
     <div class="card card-modern">
         <div class="card-body p-0 overflow-hidden rounded-4">
             <div class="table-responsive">
@@ -107,19 +126,19 @@
                                     <div class="fw-bold" style="color:#0f172a;">{{ producto.nombre }}</div>
                                     <span class="badge bg-light text-secondary border rounded-pill mt-1" style="font-weight: 500;">{{ producto.get_tipo_producto_display }}</span>
                                 </td>
-
+ 
                                 <td>
                                     <div class="d-flex align-items-center text-muted">
                                         <i class="bi bi-shop me-2"></i>{{ producto.proveedor.nombre_contacto|default:"<span class='text-danger fst-italic'>No asignado</span>" }}
                                     </div>
                                 </td>
-
+ 
                                 <td>
                                     <span class="text-dark small"><i class="bi bi-box-seam me-1 text-primary"></i>{{ producto.get_tipo_presentacion_display }}</span>
                                 </td>
-
+ 
                                 <td class="fw-bold" style="color:#1e40af;">$ {{ producto.precio|intcomma }}</td>
-
+ 
                                 <td class="text-center">
                                     {% if producto.estado %}
                                         <i class="bi bi-check-circle-fill text-success fs-5" title="Activo"></i>
@@ -127,7 +146,7 @@
                                         <span class="text-danger fst-italic">No asignado</span>
                                     {% endif %}
                                 </td>
-
+ 
                                 <td class="text-center pe-4 text-nowrap">
                                     <a href="{% url 'productos:producto_editar' producto.id %}" class="btn-icon-action" data-bs-toggle="tooltip" title="Editar">
                                         <i class="bi bi-pencil-square fs-5"></i>
@@ -144,8 +163,20 @@
                                     <div class="opacity-50 mb-3">
                                         <i class="bi bi-box2 text-primary" style="font-size: 5rem;"></i>
                                     </div>
-                                    <h4 class="fw-bold text-dark">No hay productos registrados</h4>
-                                    <p class="text-muted">Comienza registrando un nuevo producto.</p>
+                                    <h4 class="fw-bold text-dark">
+                                        {% if request.GET.q or request.GET.presentacion %}
+                                            Sin resultados para los filtros aplicados
+                                        {% else %}
+                                            No hay productos registrados
+                                        {% endif %}
+                                    </h4>
+                                    <p class="text-muted">
+                                        {% if request.GET.q or request.GET.presentacion %}
+                                            Intenta con otros términos o <a href="{% url 'productos:productos_list' %}">limpia los filtros</a>.
+                                        {% else %}
+                                            Comienza registrando un nuevo producto.
+                                        {% endif %}
+                                    </p>
                                 </td>
                             </tr>
                         {% endif %}
@@ -154,9 +185,9 @@
             </div>
         </div>
     </div>
-
+ 
 </div>
-
+ 
 <link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
 <style>
 .table-hover tbody tr:hover {
@@ -183,7 +214,7 @@
 .btn-icon-action.delete:hover { background-color: #dc3545; }
 </style>
 {% endblock %}
-
+ 
 {% block extra_js %}
 <script>
     document.addEventListener("DOMContentLoaded", function() {

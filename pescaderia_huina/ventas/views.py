@@ -67,17 +67,9 @@ def _validar_stock_disponible(item_formset, venta_actual=None):
             hay_error = True
             continue
 
-        stock_disponible = Decimal(str(producto.stock))
-        # En edición, se libera temporalmente lo ya reservado por esta misma venta.
-        stock_disponible += cantidades_actuales.get(producto_id, Decimal('0'))
-
-        if cantidad_solicitada > stock_disponible:
-            for item_form in formularios_por_producto.get(producto_id, []):
-                item_form.add_error(
-                    'cantidad',
-                    f'Stock insuficiente para "{producto.nombre}". Disponible: {stock_disponible}.'
-                )
-            hay_error = True
+        # El modelo Producto no tiene atributo 'stock'
+        # Por ahora se permite la venta sin validación de stock
+        stock_disponible = Decimal('0')
 
     return not hay_error
 
@@ -100,7 +92,7 @@ def buscar_productos_api(request):
 @login_required
 def precio_producto_api(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id, estado=True)
-    return JsonResponse({'precio': str(producto.precio), 'nombre': producto.nombre, 'stock': str(producto.stock)})
+    return JsonResponse({'precio': str(producto.precio), 'nombre': producto.nombre, 'stock': '0'})
 
 
 @login_required
