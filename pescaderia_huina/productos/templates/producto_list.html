@@ -1,6 +1,8 @@
 {% extends 'core/panel_admin_base.html' %}
-{% load static %}
-{% load humanize %} 
+
+{% load humanize %}
+{% load static %} 
+
 
 {% block title %}Productos{% endblock %}
 
@@ -14,54 +16,74 @@
     <div class="page-header d-flex justify-content-between align-items-center">
         <div>
             <h2 class="page-title mb-2">Directorio de Productos</h2>
-            <p class="text-muted mb-0 fs-5">Catálogo general de referencias actual.</p>
+            <p class="text-muted mb-0 fs-5">Catálogo general de referencias actual</p>
         </div>
-        <a href="{% url 'productos:producto_crear' %}"
-           class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill px-4 py-2"
-           style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+        <a href="{% url 'productos:producto_crear' %}" class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill px-4 py-2" style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
             <i class="bi bi-plus-lg me-2"></i>Nuevo Producto
         </a>
     </div>
 
-    <div class="card card-modern mb-4">
-        <div class="card-body p-4">
-            <form method="get">
+    <form method="get" class="mb-4">
+        <div class="card card-modern mb-4">
+            <div class="card-body p-4">
                 <div class="row g-3 align-items-end">
-                    <div class="col-md-9">
+
+                    <!-- Búsqueda por texto -->
+                    <div class="col-md-5">
                         <label class="filter-label">Buscar coincidencias</label>
                         <div class="search-input-group input-group shadow-sm">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" name="q" id="searchInput" class="form-control"
-                                   placeholder="Nombre del producto..." value="{{ request.GET.q }}">
-                            <a href="?" class="btn-clear-search {% if not request.GET.q %}d-none{% endif %}" title="Limpiar texto">
+                            <input type="text" name="q" class="form-control {% if request.GET.q %}border-end-0{% endif %}" placeholder="Nombre del producto o proveedor..." value="{{ request.GET.q|default:'' }}">
+                            {% if request.GET.q %}
+                            <a href="{% url 'productos:productos_list' %}{% if request.GET.presentacion %}?presentacion={{ request.GET.presentacion }}{% endif %}" class="btn-clear-search" title="Limpiar texto">
                                 <i class="bi bi-x-circle-fill fs-5"></i>
                             </a>
+                            {% endif %}
                         </div>
                     </div>
-                    <div class="col-md-3 d-grid">
-                        <button type="submit"
-                                class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill px-4 py-2"
-                                style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
-                            <i class="bi bi-funnel-fill me-2"></i>Buscar
+
+                    <!-- Filtro por tipo de presentación -->
+                    <div class="col-md-3">
+                        <label class="filter-label">Presentación / Empaque</label>
+                        <select name="presentacion" class="form-select shadow-sm">
+                            <option value="">Todas las presentaciones</option>
+                            {% for value, label in tipos_presentacion %}
+                                <option value="{{ value }}" {% if request.GET.presentacion == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="col-md-4 d-flex gap-2">
+                        <button class="btn btn-primary shadow-sm fw-bold flex-grow-1" type="submit" style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+                            <i class="bi bi-funnel me-1"></i> Filtrar
                         </button>
+                        
+                        {% if request.GET.q or request.GET.presentacion %}
+                        <a href="{% url 'productos:productos_list' %}" class="btn btn-light border shadow-sm text-danger" title="Limpiar filtros" data-bs-toggle="tooltip">
+                            <i class="bi bi-eraser-fill"></i>
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
-            </form>
 
-            <hr class="my-3 border-light">
+                <hr class="my-3 border-light">
 
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="text-muted small">
-                    {% if request.GET.q %}
-                        <span id="filterStatus">Búsqueda aplicada: <strong>{{ request.GET.q }}</strong></span>
-                    {% else %}
-                        <span id="filterStatus">Mostrando todos los productos</span>
-                    {% endif %}
-                </span>
-                <span class="text-muted small">Total: <strong>{{ productos|length }}</strong></span>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted small">
+                        {% if request.GET.q or request.GET.presentacion %}
+                            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1">
+                                <i class="bi bi-funnel-fill me-1"></i> Mostrando resultados filtrados
+                            </span>
+                        {% endif %}
+                    </span>
+                </div>
+
             </div>
         </div>
-    </div>
+    </form>
 
     <div class="card card-modern">
         <div class="card-body p-0 overflow-hidden rounded-4">
@@ -80,51 +102,37 @@
                     <tbody>
                         {% if productos %}
                             {% for producto in productos %}
-                            <tr style="border-top:1px solid #eef2f7;">
+                            <tr>
                                 <td class="ps-4">
-                                    <div class="d-flex flex-column">
-                                        <span class="proveedor-name">{{ producto.nombre }}</span>
-                                        <span>
-                                            <small class="badge rounded-pill nit-badge">{{ producto.get_tipo_producto_display }}</small>
-                                        </span>
+                                    <div class="fw-bold" style="color:#0f172a;">{{ producto.nombre }}</div>
+                                    <span class="badge bg-light text-secondary border rounded-pill mt-1" style="font-weight: 500;">{{ producto.get_tipo_producto_display }}</span>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="bi bi-shop me-2"></i>{{ producto.proveedor.nombre_contacto|default:"<span class='text-danger fst-italic'>No asignado</span>" }}
                                     </div>
                                 </td>
 
-                                <td class="text-muted fw-semibold">
-                                    <i class="bi bi-shop me-1 text-primary"></i>
-                                    {% if producto.proveedor %}
-                                        {{ producto.proveedor.nombre_contacto }}
+                                <td>
+                                    <span class="text-dark small"><i class="bi bi-box-seam me-1 text-primary"></i>{{ producto.get_tipo_presentacion_display }}</span>
+                                </td>
+
+                                <td class="fw-bold" style="color:#1e40af;">$ {{ producto.precio|intcomma }}</td>
+
+                                <td class="text-center">
+                                    {% if producto.estado %}
+                                        <i class="bi bi-check-circle-fill text-success fs-5" title="Activo"></i>
                                     {% else %}
                                         <span class="text-danger fst-italic">No asignado</span>
                                     {% endif %}
                                 </td>
 
-                                <td class="text-muted fw-semibold">
-                                    <i class="bi bi-box-seam me-1 text-primary"></i>
-                                    {{ producto.get_tipo_presentacion_display }}
-                                </td>
-
-                                <td class="fw-bold" style="color: var(--primary-blue); font-size: 1.05rem;">
-                                    $ {{ producto.precio|intcomma }}
-                                </td>
-
-                                <td class="text-center">
-                                    {% if producto.estado %}
-                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold">
-                                            <i class="bi bi-check-circle-fill me-1"></i> Activo
-                                        </span>
-                                    {% else %}
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fw-bold">
-                                            <i class="bi bi-x-circle-fill me-1"></i> Inactivo
-                                        </span>
-                                    {% endif %}
-                                </td>
-
                                 <td class="text-center pe-4 text-nowrap">
-                                    <a href="{% url 'productos:producto_editar' producto.id %}" class="btn-icon-action" title="Editar">
+                                    <a href="{% url 'productos:producto_editar' producto.id %}" class="btn-icon-action" data-bs-toggle="tooltip" title="Editar">
                                         <i class="bi bi-pencil-square fs-5"></i>
                                     </a>
-                                    <a href="{% url 'productos:producto_eliminar' producto.id %}" class="btn-icon-action delete" title="Eliminar">
+                                    <a href="{% url 'productos:producto_eliminar' producto.id %}" class="btn-icon-action delete" data-bs-toggle="tooltip" title="Eliminar">
                                         <i class="bi bi-trash fs-5"></i>
                                     </a>
                                 </td>
@@ -148,4 +156,41 @@
     </div>
 
 </div>
+
+<link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+<style>
+.table-hover tbody tr:hover {
+    background-color: #f8fafc;
+    transition: background-color 0.2s ease;
+}
+.btn-light {
+    background-color: #f1f5f9;
+}
+.btn-light:hover {
+    background-color: #e2e8f0;
+    transform: translateY(-1px);
+}
+.input-group:focus-within {
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15) !important;
+}
+.btn-icon-action {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background-color: rgba(15, 57, 118, 0.08); color: #0f3976;
+    transition: all 0.2s; border: none; margin: 0 2px;
+}
+.btn-icon-action:hover { background-color: #0f3976; color: white; transform: translateY(-2px); }
+.btn-icon-action.delete:hover { background-color: #dc3545; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
 {% endblock %}

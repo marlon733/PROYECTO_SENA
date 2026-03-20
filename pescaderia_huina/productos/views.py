@@ -10,6 +10,7 @@ from .forms import ProductoForm, ProveedorSelectForm, ProductoItemForm
 @login_required
 def productos_list(request):
     query = request.GET.get('q')
+    presentacion = request.GET.get('presentacion')
     
     # .select_related('proveedor') optimiza la consulta para traer el nombre del proveedor de una vez
     productos = Producto.objects.select_related('proveedor').all().order_by('-id')
@@ -20,8 +21,12 @@ def productos_list(request):
             Q(proveedor__nombre_contacto__icontains=query) # También busca por nombre del proveedor
         )
 
+    if presentacion:
+        productos = productos.filter(tipo_presentacion=presentacion)
+
     context = {
-        'productos': productos
+        'productos': productos,
+        'tipos_presentacion': Producto.TIPO_PRESENTACION,
     }
 
     return render(request, "producto_list.html", context)
