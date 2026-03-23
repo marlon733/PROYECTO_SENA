@@ -211,17 +211,6 @@
             font-size: 1.1rem;
         }
 
-        /* Botón Admin destacado */
-        .nav-link[href*="panel_admin"] {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .nav-link[href*="panel_admin"]:hover {
-            background: var(--ocean-cyan);
-            color: var(--ocean-dark) !important;
-            border-color: var(--ocean-cyan);
-        }
-
     </style>
 </head>
 <body>
@@ -255,6 +244,7 @@
                     </li>
                     <li class="nav-item d-none d-lg-block mx-2 text-white-50">|</li>
 
+
                         {% if user.is_authenticated %}
                             {% if user.is_staff %}  
                                 <li class="nav-item">
@@ -264,12 +254,13 @@
                                 </li>
                             {% endif %}
                             
+
                             <li class="nav-item dropdown ms-2">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" 
                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {% if user.perfil.foto_perfil %}
-                                        <img src="{{ user.perfil.foto_perfil.url }}" 
-                                             alt="{{ user.get_full_name }}" 
+                                    {% if request.user.perfil.foto_perfil %}
+                                        <img src="{{ request.user.perfil.foto_perfil.url }}" 
+                                             alt="{{ request.user.get_full_name }}" 
                                              class="rounded-circle border border-2 border-light me-2" 
                                              width="35" height="35" style="object-fit: cover;">
                                     {% else %}
@@ -277,15 +268,17 @@
                                             <i class="bi bi-person"></i>
                                         </div>
                                     {% endif %}
-                                    <span class="fw-normal">{{ user.get_full_name|default:user.username }}</span>
+                                    <span class="fw-normal">{{ request.user.get_full_name|default:request.user.username }}</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end animate slideIn" aria-labelledby="userDropdown">
-                                     <li>
-                                        <a class="dropdown-item" href="{% url 'core:dashboard' %}">
-                                            <i class="bi bi-grid-fill me-2"></i> Administración
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
+                                    {% if request.user.is_authenticated %}
+                                        <li>
+                                            <a href="{% url 'core:dashboard' %}" class="dropdown-item">
+                                                <i class="bi bi-gear-fill"></i> Administración
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    {% endif %}
                                     <li>
                                         <form method="POST" action="{% url 'usuarios:logout' %}">
                                             {% csrf_token %}

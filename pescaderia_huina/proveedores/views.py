@@ -1,7 +1,7 @@
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -9,6 +9,10 @@ from django.utils import timezone
 from xhtml2pdf import pisa
 from .models import Proveedor
 from .forms import ProveedorForm
+
+# Decorador para verificar que el usuario sea staff
+def is_staff(user):
+    return user.is_staff
 
 # 1. LISTA DE PROVEEDORES
 @login_required
@@ -29,6 +33,7 @@ def lista_proveedores(request):
 
 # 2. AGREGAR PROVEEDOR
 @login_required
+@user_passes_test(is_staff)
 def agregar_proveedor(request):
     if request.method == 'POST':
         form = ProveedorForm(request.POST)
@@ -49,6 +54,7 @@ def detalle_proveedor(request, id):
 
 # 4. MODIFICAR PROVEEDOR
 @login_required
+@user_passes_test(is_staff)
 def modificar_proveedor(request, id):
     proveedor = get_object_or_404(Proveedor, id=id)
     
@@ -188,6 +194,7 @@ def export_proveedores_excel(request):
 
 # 5. ELIMINAR PROVEEDOR (ELIMINACIÓN DEFINITIVA)
 @login_required
+@user_passes_test(is_staff)
 def eliminar_proveedor(request, id):
     proveedor = get_object_or_404(Proveedor, id=id)
     

@@ -430,18 +430,48 @@
         transform: scale(1.1);
     }
 
-    /* Section title */
-    .section-title {
-        font-size: 0.7rem; font-weight: 800;
-        color: var(--muted);
-        letter-spacing: 2.2px;
-        text-transform: uppercase;
-        display: flex; align-items: center; gap: 8px;
-        margin-bottom: 1rem;
+    .btn-action-sm.is-danger {
+        background: rgba(255,23,68,0.08);
+        border-color: rgba(255,23,68,0.18);
+        color: #d01030;
     }
-    .section-title::after {
-        content: ''; flex: 1; height: 1px;
-        background: linear-gradient(90deg, rgba(0,97,255,0.15) 0%, transparent 100%);
+    .btn-action-sm.is-danger:hover {
+        background: #ff1744;
+        border-color: #ff1744;
+        color: #fff;
+        box-shadow: 0 6px 16px rgba(255,23,68,0.25);
+        transform: scale(1.1);
+    }
+
+    .actions-inline {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .actions-inline form {
+        display: inline;
+        margin: 0;
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 50px;
+        color: white;
+    }
+
+    .role-admin {
+        background-color: #6d28d9;
+    }
+
+    .role-employee {
+        background-color: #0061ff;
     }
 </style>
 {% endblock %}
@@ -509,7 +539,7 @@
                 <i class="bi bi-shield-fill-check kpi-icon"></i>
                 <div>
                     <p class="kpi-label mb-1">Administradores</p>
-                    <h2 class="kpi-value">1</h2>
+                    <h2 class="counter kpi-value" data-target="{{ total_administradores|default:0 }}">0</h2>
                     <span class="kpi-trend"><i class="bi bi-shield-check"></i> Con acceso total</span>
                 </div>
             </div>
@@ -610,6 +640,7 @@
                         <th>Usuario</th>
                         <th>Documento</th>
                         <th>Correo</th>
+                        <th>Rol</th>
                         <th>Registro</th>
                         <th>Estado</th>
                         <th style="text-align:center;">Acción</th>
@@ -646,6 +677,16 @@
                             </div>
                         </td>
                         <td>
+                           
+                            
+                                {% if usuario.is_staff %}
+                                    <i class="bi bi-shield-fill me-1"></i>Administrador
+                                {% else %}
+                                    <i class="bi bi-person-fill me-1"></i>Empleado
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
                             <span class="text-muted" style="font-size:0.82rem;">{{ usuario.date_joined|date:"d M, Y" }}</span>
                         </td>
                         <td>
@@ -660,14 +701,38 @@
                             {% endif %}
                         </td>
                         <td style="text-align:center;">
-                            <a href="{% url 'usuarios:editar_perfil_usuario' usuario.id %}" class="btn-action-sm" title="Editar perfil">
-                                <i class="bi bi-pencil-fill"></i>
-                            </a>
+                            {% if request.user.is_staff %}
+                                <span class="actions-inline">
+                                    <a href="{% url 'usuarios:editar_perfil_usuario' usuario.id %}" class="btn-action-sm" title="Editar perfil">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+
+                                    {% if not usuario.is_superuser and usuario != request.user %}
+                                        <form method="post" action="{% url 'usuarios:eliminar_usuario' usuario.id %}" onsubmit="return confirm('¿Desactivar este usuario?');">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="next" value="{{ request.path }}">
+                                            <button type="submit" class="btn-action-sm is-danger" title="Desactivar usuario" aria-label="Desactivar usuario">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </span>
+                            {% else %}
+                                {% if usuario == request.user %}
+                                    <a href="{% url 'usuarios:editar_perfil_usuario' usuario.id %}" class="btn-action-sm" title="Editar mi perfil">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                {% else %}
+                                    <span style="color: #94a3b8; font-size: 0.85rem;">
+                                        <i class="bi bi-eye"></i> Solo lectura
+                                    </span>
+                                {% endif %}
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">
+                        <td colspan="7" class="text-center py-5 text-muted">
                             <i class="bi bi-inbox fs-2 d-block mb-2 opacity-25"></i>
                             No hay registros recientes.
                         </td>

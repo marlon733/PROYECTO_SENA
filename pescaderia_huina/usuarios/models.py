@@ -71,6 +71,10 @@ class PerfilUsuario(models.Model):
     def get_nombre_completo(self):
         """Retorna el nombre completo del usuario"""
         return f"{self.user.first_name} {self.user.last_name}"
+    
+    def get_rol(self):
+        """Retorna el rol del usuario: 'Administrador' o 'Empleado'"""
+        return 'Administrador' if self.user.is_staff else 'Empleado'
 
 
 # Señales para crear/actualizar perfil automáticamente
