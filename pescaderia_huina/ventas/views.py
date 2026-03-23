@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Sum
 from django.db import transaction
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from decimal import Decimal
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -119,6 +120,16 @@ def ventas(request):
 
     total_ventas = Venta.objects.filter(estado='COMPLETADA').count()
     total_ingresos = Venta.objects.filter(estado='COMPLETADA').aggregate(total=Sum('total'))['total'] or 0
+
+    # OPTIMIZACIÓN: Paginación para no cargar todas las ventas
+    paginator = Paginator(lista_ventas, 20)
+    page = request.GET.get('page', 1)
+    try:
+        lista_ventas = paginator.page(page)
+    except PageNotAnInteger:
+        lista_ventas = paginator.page(1)
+    except EmptyPage:
+        lista_ventas = paginator.page(paginator.num_pages)
 
     context = {
         'lista_ventas': lista_ventas,

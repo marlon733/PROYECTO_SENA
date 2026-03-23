@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.forms import modelformset_factory # <--- Necesario para la tabla de productos
+from django.forms import modelformset_factory
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Producto
-# Importamos los 3 formularios que definimos en forms.py
 from .forms import ProductoForm, ProveedorSelectForm, ProductoItemForm
 
 # 1. LISTA DE PRODUCTOS
@@ -23,6 +23,16 @@ def productos_list(request):
 
     if presentacion:
         productos = productos.filter(tipo_presentacion=presentacion)
+
+    # OPTIMIZACIÓN: Paginación para no cargar todos los productos
+    paginator = Paginator(productos, 25)
+    page = request.GET.get('page', 1)
+    try:
+        productos = paginator.page(page)
+    except PageNotAnInteger:
+        productos = paginator.page(1)
+    except EmptyPage:
+        productos = paginator.page(paginator.num_pages)
 
     context = {
         'productos': productos,

@@ -6,10 +6,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.forms import inlineformset_factory
-from django.db.models import Sum, Q, F
+from django.db.models import Sum, Q, F, Prefetch
 from django.template.loader import get_template
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from xhtml2pdf import pisa
 from decimal import Decimal
 
@@ -33,7 +34,8 @@ DetallePedidoFormSet = inlineformset_factory(
 # ==========================================
 @login_required
 def lista_pedidos(request):
-    pedidos = Pedido.objects.annotate(
+    # OPTIMIZACIÓN: select_related() para evitar N+1 queries en proveedor
+    pedidos = Pedido.objects.select_related('proveedor').annotate(
         cantidad_total_calculada=Sum('detalles__cantidad') 
     ).order_by('-fecha')
 
@@ -159,6 +161,16 @@ def lista_pedidos(request):
         wb.save(response)
         return response
 
+    # OPTIMIZACIÓN: Paginación para evitar cargar todos los pedidos
+    paginator = Paginator(pedidos, 20)
+    page = request.GET.get('page', 1)
+    try:
+        pedidos = paginator.page(page)
+    except PageNotAnInteger:
+        pedidos = paginator.page(1)
+    except EmptyPage:
+        pedidos = paginator.page(paginator.num_pages)
+
     return render(request, 'lista_pedidos.html', {'pedidos': pedidos})
 
 
@@ -246,7 +258,12 @@ def eliminar_pedido(request, id):
 # ==========================================
 @login_required
 def detalle_pedido(request, id):
-    pedido = get_object_or_404(Pedido, id=id)
+    # OPTIMIZACIÓN: prefetch_related para evitar N+1 queries en detalles
+    detalle_prefetch = Prefetch('detalles', DetallePedido.objects.select_related('producto'))
+    pedido = get_object_or_404(
+        Pedido.objects.select_related('proveedor').prefetch_related(detalle_prefetch),
+        id=id
+    )
     if request.GET.get('export') == 'pdf':
         detalles_con_subtotal = []
         for d in pedido.detalles.all():
@@ -270,8 +287,9 @@ def detalle_pedido(request, id):
 def cargar_productos_proveedor(request):
     proveedor_id = request.GET.get('proveedor_id')
     if proveedor_id:
-        productos = Producto.objects.filter(proveedor_id=proveedor_id).order_by('nombre')
-        data = list(productos.values('id', 'nombre'))
+        # OPTIMIZACIÓN: Solo traer campos necesarios
+        productos = Producto.objects.filter(proveedor_id=proveedor_id).values('id', 'nombre').order_by('nombre')
+        data = list(productos)
     else:
         data = []
     return JsonResponse(data, safe=False)

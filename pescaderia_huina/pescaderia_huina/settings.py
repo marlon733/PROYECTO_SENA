@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import sys
+from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(9w#_4phd&vc#+$h(-3-+nqkaj#-y3&w_8*3+!=8godz291rs4'
+# OPTIMIZACIÓN: Usar variable de entorno para SECRET_KEY
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-(9w#_4phd&vc#+$h(-3-+nqkaj#-y3&w_8*3+!=8godz291rs4')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# OPTIMIZACIÓN: DEBUG debe ser False en producción
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
 
 # Application definition
@@ -58,7 +61,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'pescaderia_huina.middleware.ServeStaticFilesMiddleware',
+    # OPTIMIZACIÓN: Quitar ServeStaticFilesMiddleware
+    # Django sirve archivos estáticos automáticamente en DEBUG=True
+    # En producción, usar Nginx o WhiteNoise
 ]
 
 ROOT_URLCONF = 'pescaderia_huina.urls'
@@ -95,15 +100,20 @@ if 'test' in sys.argv:
         }
     }
 else:
-    # PostgreSQL - Supabase (producción)
+    # PostgreSQL - Supabase (producción) - OPTIMIZACIÓN: Variables de entorno
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres.rmkckjjemybpxtombvjk',
-            'PASSWORD': 'pescaderiahuina123*', 
-            'HOST': 'aws-1-sa-east-1.pooler.supabase.com',
-            'PORT': '5432',
+            'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
+            'NAME': config('DB_NAME', default='postgres'),
+            'USER': config('DB_USER', default='postgres.rmkckjjemybpxtombvjk'),
+            'PASSWORD': config('DB_PASSWORD', default='pescaderiahuina123*'),
+            'HOST': config('DB_HOST', default='aws-1-sa-east-1.pooler.supabase.com'),
+            'PORT': config('DB_PORT', default='5432'),
+            # OPTIMIZACIÓN: Connection pooling para mejor performance
+            'CONN_MAX_AGE': 600,
+            'OPTIONS': {
+                'connect_timeout': 10,
+            }
         }
     }
 
@@ -161,11 +171,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-# Google reCAPTCHA Keys
+# Google reCAPTCHA Keys - OPTIMIZACIÓN: Variables de entorno
 # Obtén tus claves en: https://www.google.com/recaptcha/admin
 # ⚠️ IMPORTANTE: Reemplaza estas claves con las tuyas propias
-RECAPTCHA_PUBLIC_KEY = '6LfkcYwsAAAAAB2yxpH_7hxUWV_61dIIrx-RFon5'
-RECAPTCHA_PRIVATE_KEY = '6LfkcYwsAAAAAIJXl9YsJIzcZs86hCNZmJ4aQ4oi'
+RECAPTCHA_PUBLIC_KEY = config('RECAPTCHA_PUBLIC_KEY', default='6LfkcYwsAAAAAB2yxpH_7hxUWV_61dIIrx-RFon5')
+RECAPTCHA_PRIVATE_KEY = config('RECAPTCHA_PRIVATE_KEY', default='6LfkcYwsAAAAAIJXl9YsJIzcZs86hCNZmJ4aQ4oi')
 
 # Notas:
 # - Para que funcione con localhost, ve a https://www.google.com/recaptcha/admin
@@ -185,12 +195,12 @@ LOGIN_REDIRECT_URL = 'core:dashboard'  # A dónde ir después de login exitoso
 LOGOUT_REDIRECT_URL = 'core:dashboard'  # A dónde ir después de logout
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 
-EMAIL_HOST_USER = 'pescaderiahuina@gmail.com'
-EMAIL_HOST_PASSWORD = 'jkod fdnz jrie qszl'
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='pescaderiahuina@gmail.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='jkod fdnz jrie qszl')
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
@@ -219,3 +229,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Configuración de Cache - SEGURIDAD: Rate limiting para login
+# Usa cache en memoria (LocMemCache) para rate limiting de intentos de login
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000
+        }
+    }
+}

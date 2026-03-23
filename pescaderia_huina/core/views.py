@@ -4,6 +4,7 @@ from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def index(request):
     return render(request, 'core/index.html')
@@ -31,7 +32,8 @@ def pagina_inventario(request):
     # procesar formulario de búsqueda/filtrado
     form = BusquedaProductoForm(request.GET or None)
 
-    productos = Producto.objects.all()
+    # OPTIMIZACIÓN: select_related para traer proveedor en una sola query
+    productos = Producto.objects.select_related('proveedor')
     if form.is_valid():
         buscar = form.cleaned_data.get('buscar')
         tipo = form.cleaned_data.get('tipo_producto')
@@ -40,15 +42,27 @@ def pagina_inventario(request):
         if tipo:
             productos = productos.filter(tipo_producto=tipo)
 
-    pescados = productos.filter(tipo_producto='PE')
-    mariscos = productos.filter(tipo_producto='MA')
-    pollos   = productos.filter(tipo_producto='PO')
+    # OPTIMIZACIÓN: Paginación para cada categoría
+    paginator = Paginator(productos, 50)
+    page = request.GET.get('page', 1)
+    try:
+        productos_page = paginator.page(page)
+    except PageNotAnInteger:
+        productos_page = paginator.page(1)
+    except EmptyPage:
+        productos_page = paginator.page(paginator.num_pages)
+
+    # Filtrar por categorías desde la página paginada
+    pescados = [p for p in productos_page if p.tipo_producto == 'PE']
+    mariscos = [p for p in productos_page if p.tipo_producto == 'MA']
+    pollos = [p for p in productos_page if p.tipo_producto == 'PO']
 
     context = {
         'pescados': pescados,
         'mariscos': mariscos,
         'pollos': pollos,
         'form_busqueda': form,
+        'productos': productos_page,
     }
 
     return render(request, 'core/inventario.html', context)
