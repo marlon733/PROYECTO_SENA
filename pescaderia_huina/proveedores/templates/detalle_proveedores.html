@@ -1,22 +1,59 @@
 {% extends 'core/panel_admin_base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Detalle y Catálogo{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* --- Estilos Existentes (Optimizados) --- */
+    :root {
+        --primary-dark: #0f2c59;
+        --primary-blue: #2C466B;
+        --secondary-blue: #3e78b2;
+        --accent-gold: #d4af37;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --bg-light: #f5f8fc;
+        --border-light: #e0e7ff;
+        --text-muted: #6b7d8f;
+        --text-dark: #1e293b;
+    }
+
+    /* === HEADER === */
+    .page-breadcrumb {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .page-breadcrumb h4 {
+        color: var(--text-dark);
+        font-weight: 800;
+        font-size: 1.3rem;
+        letter-spacing: -0.5px;
+    }
+
+    /* === CARD PRINCIPAL (Proveedor) === */
     .card-ocean-detail {
         border: none;
-        border-radius: 24px;
+        border-radius: 1.5rem;
         overflow: hidden;
-        box-shadow: 0 20px 60px rgba(15, 57, 118, 0.15);
+        box-shadow: 0 20px 60px rgba(15, 44, 89, 0.12);
         height: 100%;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .card-ocean-detail:hover {
+        box-shadow: 0 25px 70px rgba(15, 44, 89, 0.18);
     }
 
     .detail-header {
-        background: linear-gradient(135deg, #2C466B 0%, #0f3976 100%);
-        padding: 2rem 1rem 3rem;
+        background: linear-gradient(135deg, #0f2c59 0%, #2C466B 50%, #3e78b2 100%);
+        padding: 2.5rem 1.5rem 3.5rem;
         position: relative;
         text-align: center;
         color: white;
@@ -28,120 +65,389 @@
         bottom: 0;
         left: 0;
         right: 0;
-        height: 40px;
+        height: 50px;
         background: white;
-        border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+        border-radius: 50% 50% 0 0 / 25px 25px 0 0;
     }
 
     .provider-icon-large {
-        width: 80px;
-        height: 80px;
-        /* Un poco más pequeño para ajustar al layout */
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(5px);
+        width: 90px;
+        height: 90px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 1rem;
-        border: 2px solid rgba(255, 255, 255, 0.4);
-        font-size: 2.5rem;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        font-size: 3.5rem;
         color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
 
+    .detail-header h3 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin-bottom: 0;
+        letter-spacing: -0.5px;
+    }
+
+    /* === INFO ITEMS === */
     .info-item {
-        background-color: #f8fbff;
-        border-radius: 12px;
-        padding: 1rem;
+        background: linear-gradient(135deg, #f8fbff 0%, #f0f7ff 100%);
+        border-radius: 1rem;
+        padding: 1.1rem;
         display: flex;
         align-items: center;
-        /* Centrado vertical */
         margin-bottom: 1rem;
-        border: 1px solid #eef2f6;
+        border: 1.5px solid var(--border-light);
+        transition: all 0.2s ease;
+    }
+
+    .info-item:hover {
+        border-color: var(--secondary-blue);
+        box-shadow: 0 4px 16px rgba(62, 120, 178, 0.1);
+        transform: translateX(4px);
     }
 
     .info-icon {
-        background: linear-gradient(135deg, #2C466B 0%, #0f3976 100%);
-        width: 35px;
-        height: 35px;
-        border-radius: 10px;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 1rem;
-        margin-right: 0.8rem;
+        font-size: 1.2rem;
+        margin-right: 1rem;
         flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(44, 70, 107, 0.25);
     }
 
-    /* --- NUEVOS ESTILOS PARA PRODUCTOS --- */
+    .info-item .lh-1 {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .info-item small {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .info-item span {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    /* === NIT BADGE === */
+    .nit-display {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 2;
+        top: -15px;
+    }
+
+    .nit-display span {
+        background: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 2rem;
+        box-shadow: 0 6px 20px rgba(15, 44, 89, 0.15);
+        border: 2px solid var(--accent-gold);
+        font-weight: 800;
+        color: var(--primary-blue);
+        font-size: 1.1rem;
+        display: inline-block;
+    }
+
+    /* === BOTONES PROVEEDOR === */
+    .btn-edit-provider {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 0.9rem 1.8rem;
+        border-radius: 2rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 8px 20px rgba(44, 70, 107, 0.2);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .btn-edit-provider:hover {
+        background: linear-gradient(135deg, var(--secondary-blue) 0%, #2c5aa0 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(44, 70, 107, 0.35);
+        color: white;
+    }
+
+    /* === PRODUCTOS SECTION === */
+    .products-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 3px solid var(--accent-gold);
+    }
+
+    .products-header h5 {
+        margin: 0;
+        color: var(--text-dark);
+        font-weight: 900;
+        font-size: 1.4rem;
+        letter-spacing: -0.5px;
+    }
+
+    .products-header i {
+        font-size: 1.8rem;
+        margin-right: 0.8rem;
+        color: var(--secondary-blue);
+    }
+
+    /* === PRODUCT CARDS === */
     .product-card {
         background: white;
-        border: 1px solid #eef2f6;
-        border-radius: 16px;
+        border: 2px solid var(--border-light);
+        border-radius: 1.2rem;
         padding: 1.5rem;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
     }
 
     .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        border-color: #60efff;
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        border-color: var(--secondary-blue);
+    }
+
+    .product-type-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
     }
 
     .product-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 20px;
+        padding: 0.5rem 0.9rem;
+        border-radius: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
     }
 
-    .badge-mariscos {
-        background-color: #ffe0e6;
-        color: #ff4757;
+    .badge-marisco {
+        background: linear-gradient(135deg, #ffe0e6 0%, #ffc9d0 100%);
+        color: #dc3545;
+        border: 1px solid #f08899;
     }
 
     .badge-pescado {
-        background-color: #e0f2fe;
-        color: #0ea5e9;
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        color: #0284c7;
+        border: 1px solid #7dd3fc;
     }
 
     .badge-pollo {
-        background-color: #fff7ed;
+        background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
         color: #ea580c;
+        border: 1px solid #fdba74;
+    }
+
+    .product-card h5 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.3px;
+    }
+
+    .product-card p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    /* === PRESENTACIÓN SECTION === */
+    .presentation-section {
+        margin-bottom: 1.2rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .presentation-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .presentation-value {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .presentation-value i {
+        color: var(--secondary-blue);
+        font-size: 1.2rem;
+    }
+
+    /* === PRECIO Y ACCIONES === */
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1.5px solid var(--border-light);
+        gap: 0.8rem;
+    }
+
+    .price-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .price-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
     }
 
     .price-tag {
-        font-size: 1.2rem;
-        font-weight: 800;
-        color: #0f3976;
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--secondary-blue);
+        margin-top: 0.2rem;
     }
 
-    .stock-indicator {
+    .actions-cell {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .badge {
+        font-weight: 700;
+        padding: 0.5rem 0.9rem !important;
+        border-radius: 0.5rem !important;
         font-size: 0.8rem;
-        font-weight: 600;
-        color: #64748b;
     }
 
+    .badge-success {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+        color: #065f46 !important;
+        border: 1px solid #6ee7b7 !important;
+    }
+
+    .badge-secondary {
+        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%) !important;
+        color: #374151 !important;
+    }
+
+    /* === BOTÓN ELIMINAR === */
+    .btn-delete-product {
+        border: 1.5px solid var(--danger-color) !important;
+        color: var(--danger-color) !important;
+        font-weight: 700;
+        padding: 0.55rem 1rem !important;
+        border-radius: 0.6rem !important;
+        font-size: 0.85rem !important;
+        transition: all 0.2s ease !important;
+        background: white !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 0.4rem;
+        white-space: nowrap;
+        text-decoration: none;
+    }
+
+    .btn-delete-product:hover {
+        background-color: var(--danger-color) !important;
+        color: white !important;
+        border-color: var(--danger-color) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(220, 53, 69, 0.35) !important;
+        text-decoration: none;
+    }
+
+    .btn-delete-product:active {
+        transform: translateY(0);
+    }
+
+    .btn-delete-product i {
+        font-size: 0.9rem;
+    }
+
+    /* === EMPTY STATE === */
     .empty-state {
         text-align: center;
-        padding: 3rem;
-        background: #f8fbff;
-        border-radius: 16px;
-        border: 2px dashed #cbd5e1;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, #f8fbff 0%, #f0f7ff 100%);
+        border-radius: 1.2rem;
+        border: 2px dashed var(--border-light);
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--secondary-blue);
+        margin-bottom: 1rem;
+        opacity: 0.6;
+    }
+
+    .empty-state h5 {
+        color: var(--text-dark);
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 1rem;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4 py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-secondary">Gestión de Proveedores</h4>
+<div class="container-fluid px-4 py-5" style="background: var(--bg-light); min-height: 100vh;">
+    <div class="page-breadcrumb">
+        <h4><i class="bi bi-building me-2"></i>Gestión de Proveedores</h4>
         <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
             <i class="bi bi-arrow-left me-1"></i> Volver
         </a>
@@ -159,17 +465,17 @@
                         <i class="bi bi-building"></i>
                         {% endif %}
                     </div>
-                    <h3 class="fw-bold mb-1">{{ proveedor.nombre_contacto }}</h3>
+                    <h3>{{ proveedor.nombre_contacto }}</h3>
                     <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap">
-                        <span class="badge bg-white bg-opacity-25 border border-white border-opacity-50 px-3 py-1 rounded-pill" style="color:#fff;">
-                            {{ proveedor.get_tipo_persona_display }}
+                        <span class="badge bg-white bg-opacity-25 border border-white border-opacity-50 px-3 py-2 rounded-pill" style="color:#fff; font-weight: 700;">
+                            {{ proveedor.get_tipo_persona_display|upper }}
                         </span>
                         {% if proveedor.estado %}
-                        <span class="badge px-3 py-1 rounded-pill" style="background-color:#38bdf8; color:#0f3976;">
+                        <span class="badge px-3 py-2 rounded-pill" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); color:#065f46; font-weight: 700;">
                             <i class="bi bi-check-circle-fill me-1"></i>Activo
                         </span>
                         {% else %}
-                        <span class="badge bg-danger px-3 py-1 rounded-pill">
+                        <span class="badge px-3 py-2 rounded-pill" style="background: linear-gradient(135deg, #fee2e2, #fecaca); color:#991b1b; font-weight: 700;">
                             <i class="bi bi-x-circle-fill me-1"></i>Inactivo
                         </span>
                         {% endif %}
@@ -177,125 +483,117 @@
                 </div>
 
                 <div class="card-body px-4 pb-4 pt-1">
-                    <div class="text-center mb-4 position-relative" style="top: -20px; z-index: 2;">
-                        <span class="bg-white px-3 py-2 rounded-3 shadow-sm border fw-bold text-primary">
-                            {{ proveedor.nit }}
-                        </span>
+                    <div class="nit-display">
+                        <span>{{ proveedor.nit }}</span>
                     </div>
 
                     <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-envelope"></i></div>
+                        <div class="info-icon"><i class="bi bi-envelope-fill"></i></div>
                         <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Correo</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.correo }}</span>
+                            <small>Correo</small>
+                            <span>{{ proveedor.correo }}</span>
                         </div>
                     </div>
 
                     <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-telephone"></i></div>
+                        <div class="info-icon"><i class="bi bi-telephone-fill"></i></div>
                         <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Teléfono</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.telefono }}</span>
+                            <small>Teléfono</small>
+                            <span>{{ proveedor.telefono }}</span>
                         </div>
                     </div>
 
                     <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-map"></i></div>
+                        <div class="info-icon"><i class="bi bi-flag-fill"></i></div>
                         <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Departamento</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">
-                                {% if proveedor.departamento %}{{ proveedor.departamento }}{% else %}<span class="text-muted fst-italic">No registrado</span>{% endif %}
-                            </span>
+                            <small>Departamento</small>
+                            <span>{% if proveedor.departamento %}{{ proveedor.departamento }}{% else %}<span class="text-muted">No registrado</span>{% endif %}</span>
                         </div>
                     </div>
 
                     <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-buildings"></i></div>
+                        <div class="info-icon"><i class="bi bi-geo-alt-fill"></i></div>
                         <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Ciudad</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.ciudad }}</span>
+                            <small>Ciudad</small>
+                            <span>{{ proveedor.ciudad }}</span>
                         </div>
                     </div>
 
                     <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
+                        <div class="info-icon"><i class="bi bi-house-fill"></i></div>
                         <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Dirección</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.direccion }}</span>
+                            <small>Dirección</small>
+                            <span>{{ proveedor.direccion }}</span>
                         </div>
                     </div>
 
                     <div class="info-item">
-                        <div class="info-icon"><i class="bi bi-calendar-check"></i></div>
+                        <div class="info-icon"><i class="bi bi-calendar-event-fill"></i></div>
                         <div class="lh-1">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Fecha de Registro</small>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ proveedor.fecha_registro|date:"d/m/Y" }}</span>
+                            <small>Fecha de Registro</small>
+                            <span>{{ proveedor.fecha_registro|date:"d/m/Y" }}</span>
                         </div>
                     </div>
 
-                    <div class="mt-4 d-flex gap-2">
-                        <a href="{% url 'proveedores:modificar_proveedores' proveedor.id %}"
-                            class="btn w-100 rounded-pill py-2 shadow-sm fw-semibold text-white"
-                            style="background: linear-gradient(135deg, #2C466B, #0f3976);">
-                            <i class="bi bi-pencil-square me-2"></i>Editar Datos
-                        </a>
-                    </div>
+                    <a href="{% url 'proveedores:modificar_proveedores' proveedor.id %}" class="btn-edit-provider w-100 mt-4">
+                        <i class="bi bi-pencil-square"></i>Editar Datos
+                    </a>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-8">
-            <div class="d-flex align-items-center mb-4 border-bottom pb-3">
-                <h5 class="fw-bold text-dark mb-0">
-                    <i class="bi bi-box-seam me-2 text-primary"></i>Catálogo de Productos del Proveedor
-                </h5>
+            <div class="products-header">
+                <i class="bi bi-box-seam"></i>
+                <h5>Catálogo de Productos</h5>
             </div>
 
             <div class="row g-3">
                 {% for producto in proveedor.productos.all %}
                 <div class="col-md-6 col-xl-4">
-                    <div class="product-card h-100">
-                        <div class="d-flex gap-1 flex-wrap mb-2">
+                    <div class="product-card">
+                        <div class="product-type-badges">
                             {% if producto.tipo_producto == 'MA' %}
-                            <span
-                                class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill">Marisco</span>
+                            <span class="product-badge badge-marisco">🦐 Marisco</span>
                             {% elif producto.tipo_producto == 'PE' %}
-                            <span
-                                class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill">Pescado</span>
+                            <span class="product-badge badge-pescado">🐟 Pescado</span>
                             {% else %}
-                            <span
-                                class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill">Pollo</span>
+                            <span class="product-badge badge-pollo">🐓 Pollo</span>
                             {% endif %}
                         </div>
 
-                        <h5 class="fw-bold text-dark mb-1">{{ producto.nombre }}</h5>
+                        <h5>{{ producto.nombre }}</h5>
 
-                        <p class="text-muted small mb-2 text-truncate">{{ producto.descripcion }}</p>
-
-                        <div class="mb-3">
-                            <small class="text-uppercase fw-bold text-secondary"
-                                style="font-size: 0.65rem;">Presentación</small>
-                            <div class="d-flex align-items-center mt-1">
-                                <i class="bi bi-box2 text-primary me-2"></i>
-                                <span class="text-dark fw-medium small">
-                                    {{ producto.get_tipo_presentacion_display }}
-                                </span>
+                        <div class="presentation-section">
+                            <span class="presentation-label">Presentación</span>
+                            <div class="presentation-value">
+                                <i class="bi bi-box2"></i>
+                                {{ producto.get_tipo_presentacion_display }}
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-end mt-auto pt-2 border-top">
-                            <div>
-                                <small class="text-muted d-block text-uppercase"
-                                    style="font-size: 0.65rem; font-weight: 700;">Precio</small>
-                                <span class="price-tag">${{ producto.precio }}</span>
+                        <div class="product-footer">
+                            <div class="price-section">
+                                <span class="price-label">Precio</span>
+                                <span class="price-tag">${{ producto.precio|floatformat:0|intcomma }}</span>
                             </div>
 
-                            <div class="text-end">
+                            <div class="actions-cell">
                                 {% if producto.estado %}
-                                <span class="badge bg-success"><i class="bi bi-check-lg"></i> Activo</span>
+                                <span class="badge badge-success">
+                                    <i class="bi bi-check-lg me-1"></i>Activo
+                                </span>
                                 {% else %}
-                                <span class="badge bg-secondary">Inactivo</span>
+                                <span class="badge badge-secondary">
+                                    <i class="bi bi-dash-lg me-1"></i>Inactivo
+                                </span>
                                 {% endif %}
+                                
+                                <a href="{% url 'productos:producto_eliminar' producto.id %}" 
+                                   class="btn btn-delete-product">
+                                    <i class="bi bi-trash3"></i>
+                                    <span>Eliminar</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -303,13 +601,14 @@
                 {% empty %}
                 <div class="col-12">
                     <div class="empty-state">
-                        <i class="bi bi-basket3 display-4 text-muted mb-3 d-block"></i>
-                        <h5 class="fw-bold text-secondary">Este proveedor no tiene productos asociados</h5>
-                        <p class="text-muted">Ve al módulo de <strong>Productos</strong> para registrar mercancía.</p>
+                        <i class="bi bi-basket3"></i>
+                        <h5>No hay productos asociados</h5>
+                        <p>Ve al módulo de <strong>Productos</strong> para registrar mercancía de este proveedor.</p>
                     </div>
                 </div>
                 {% endfor %}
             </div>
+
         </div>
 
     </div>
