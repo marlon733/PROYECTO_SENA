@@ -60,13 +60,13 @@
 
         /* Logo y Marca */
         .navbar-brand img {
-            height: 100px;
+            height: 125px;
             width: auto;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
             transition: transform 0.3s;
         }
         .navbar-brand:hover img {
-            transform: scale(1.05);
+            transform: scale(1.25);
         }
 
         .brand-text {
@@ -219,8 +219,9 @@
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="{% url 'core:index' %}">
-                    <span class="brand-text">PESCADERÍA HUINA</span>
                     <img src="{% static 'img/LGO.png' %}" alt="logo" class="d-inline-block me-3">
+                    <span class="brand-text">PESCADERÍA HUINA</span>
+                    
                 </a>
                 
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -249,7 +250,7 @@
                             {% if user.is_staff %}  
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url 'core:dashboard' %}">
-                                        <i class="bi bi-speedometer2"></i> Admin
+                                        <i class="bi bi-speedometer2"></i>  Admin
                                     </a>
                                 </li>
                             {% endif %}
