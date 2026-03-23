@@ -118,7 +118,7 @@
                                     <span class="text-dark small"><i class="bi bi-box-seam me-1 text-primary"></i>{{ producto.get_tipo_presentacion_display }}</span>
                                 </td>
 
-                                <td class="fw-bold" style="color:#1e40af;">$ {{ producto.precio|intcomma }}</td>
+                                <td class="fw-bold" style="color:#1e40af;">$ {{ producto.precio|floatformat:0|intcomma }}</td>
 
                                 <td class="text-center">
                                     {% if producto.estado %}
