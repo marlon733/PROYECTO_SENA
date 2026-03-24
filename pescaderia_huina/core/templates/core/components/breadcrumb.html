@@ -1,0 +1,119 @@
+{% comment %}
+Componente de Breadcrumb reutilizable
+Muestra las migas de pan (breadcrumbs) de navegación de forma elegante
+Está diseñado para integrarse con el panel_admin_base.html
+{% endcomment %}
+
+{% load static %}
+
+{% if breadcrumb_items %}
+<nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+    <ol class="breadcrumb breadcrumb-modern">
+        {% for item in breadcrumb_items %}
+            <li class="breadcrumb-item {% if item.active %}active{% endif %}">
+                {% if item.active %}
+                    {% if item.icon %}
+                        <i class="bi {{ item.icon }} me-1"></i>
+                    {% endif %}
+                    <span class="breadcrumb-text-active">{{ item.label }}</span>
+                {% else %}
+                    {% if item.url %}
+                        <a href="{{ item.url }}" class="breadcrumb-link">
+                            {% if item.icon %}
+                                <i class="bi {{ item.icon }} me-1"></i>
+                            {% endif %}
+                            {{ item.label }}
+                        </a>
+                    {% else %}
+                        {{ item.label }}
+                    {% endif %}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+</nav>
+
+<style>
+    .breadcrumb-nav {
+        padding: 0;
+        background: none;
+    }
+
+    .breadcrumb-modern {
+        margin: 0;
+        padding: 0.75rem 0;
+        background: linear-gradient(135deg, rgba(0, 97, 255, 0.04) 0%, rgba(96, 239, 255, 0.02) 100%);
+        border-radius: 12px;
+        border: 1px solid rgba(0, 97, 255, 0.08);
+        padding: 0.75rem 1rem;
+        list-style: none;
+    }
+
+    .breadcrumb-item {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: var(--text-muted, #6b7d8f);
+        margin: 0;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        display: inline-block;
+        padding: 0 0.5rem;
+        color: var(--text-muted, #6b7d8f);
+        content: '/';
+        font-weight: 600;
+        opacity: 0.5;
+    }
+
+    .breadcrumb-item.active {
+        font-weight: 600;
+        color: var(--text-strong, #001233);
+    }
+
+    .breadcrumb-text-active {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .breadcrumb-link {
+        color: var(--ocean-primary, #0061ff);
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        letter-spacing: 0.2px;
+    }
+
+    .breadcrumb-link:hover {
+        color: var(--ocean-cyan, #60efff);
+        transform: translateX(2px);
+        text-decoration: underline;
+        text-decoration-color: var(--ocean-primary, #0061ff);
+        text-underline-offset: 4px;
+    }
+
+    .breadcrumb-link i {
+        margin-right: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .breadcrumb-link:hover i {
+        transform: scale(1.1);
+    }
+
+    .breadcrumb-item.active i {
+        color: var(--ocean-primary, #0061ff);
+    }
+
+    @media (max-width: 768px) {
+        .breadcrumb-modern {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            padding: 0 0.35rem;
+        }
+    }
+</style>
+{% endif %}
