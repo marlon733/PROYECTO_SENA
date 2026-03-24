@@ -8,7 +8,8 @@ class ProveedorSelectForm(forms.Form):
     proveedor = forms.ModelChoiceField(
         queryset=Proveedor.objects.filter(estado=True).order_by('nombre_contacto'),
         empty_label="Seleccione el Proveedor...",
-        widget=forms.Select(attrs={'class': 'form-select form-select-lg fw-bold border-primary'})
+        widget=forms.Select(attrs={'class': 'form-select form-select-lg fw-bold border-primary'}),
+        required=True
     )
 
 # Formulario 2: Para cada FILA de producto (Sin proveedor, sin stock)
@@ -18,7 +19,6 @@ class ProductoItemForm(forms.ModelForm):
         fields = [
             "tipo_producto",
             "nombre",
-            "descripcion",
             "tipo_presentacion",
             "precio",
             "estado",
@@ -26,18 +26,19 @@ class ProductoItemForm(forms.ModelForm):
         widgets = {
             "tipo_producto": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "nombre": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Nombre del producto"}),
-            "descripcion": forms.Textarea(attrs={"class": "form-control form-control-sm", "rows": 1, "placeholder": "Detalles..."}),
             "tipo_presentacion": forms.Select(attrs={"class": "form-select form-select-sm"}),
-            "precio": forms.NumberInput(attrs={"class": "form-control form-control-sm", "placeholder": "0.00"}),
+            "precio": forms.NumberInput(attrs={"class": "form-control form-control-sm", "placeholder": "0.00", "step": "0.01", "min": "0"}),
             "estado": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
-        
-    # Opcional: Personalizar las etiquetas si quieres que se vean diferente al modelo
-    def _init_(self, *args, **kwargs):
-        super(ProductoForm, self)._init_(*args, **kwargs)
-        # Esto hace que el dropdown de proveedores tenga una opción vacía al inicio
-        self.fields['proveedor'].empty_label = "Seleccione un Proveedor..."
+    def __init__(self, *args, **kwargs):
+        super(ProductoItemForm, self).__init__(*args, **kwargs)
+        # Asegurar que los campos requeridos sean validados
+        self.fields['tipo_producto'].required = True
+        self.fields['nombre'].required = True
+        self.fields['tipo_presentacion'].required = True
+        self.fields['precio'].required = True
+        self.fields['estado'].required = False
 
 
 # Mantenemos tu formulario original para la edición individual

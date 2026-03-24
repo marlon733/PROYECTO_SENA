@@ -370,9 +370,11 @@ def editar_usuario_view(request, user_id):
 
 @login_required
 @user_passes_test(es_staff, login_url='usuarios:login')
+@login_required
+@user_passes_test(es_staff, login_url='usuarios:login')
 def eliminar_usuario_view(request, user_id):
     """
-    Vista para eliminar (desactivar) un usuario
+    Vista para eliminar (desactivar) un usuario - SOLO STAFF
     """
     usuario = get_object_or_404(User, id=user_id)
     
@@ -450,16 +452,17 @@ def perfil_view(request):
 
 
 @login_required
+@login_required
+@user_passes_test(es_staff, login_url='usuarios:login')
 def editar_perfil_view(request, user_id=None):
     """Vista para editar perfil en una página separada.
 
-    - Sin `user_id`: el usuario edita su propio perfil.
-    - Con `user_id`: solo staff puede editar el perfil de otro usuario (uso desde dashboard).
+    - Solo ADMINISTRADORES pueden editar perfiles (propios o ajenos).
+    - Con `user_id`: editar el perfil de otro usuario.
+    - Sin `user_id`: editar el perfil del usuario autenticado (solo si es staff).
     """
 
     if user_id is not None:
-        if not request.user.is_staff:
-            raise PermissionDenied
         usuario = get_object_or_404(User, id=user_id)
     else:
         usuario = request.user
