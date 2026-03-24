@@ -299,14 +299,22 @@ def cargar_productos_proveedor(request):
 def cambiar_estado_pedido(request, pedido_id):
     try:
         data = json.loads(request.body)
-        nuevo_estado = data.get('estado')
+        nuevo_estado = data.get('estado', '').upper()
         pedido = get_object_or_404(Pedido, id=pedido_id)
-        estados_validos = ['recibido', 'cancelado', 'pendiente', 'REC', 'CAN', 'PEN']
         
-        if nuevo_estado in estados_validos:
-            pedido.estado = nuevo_estado
+        # Mapear estados largos a códigos cortos
+        mapeo_estados = {
+            'RECIBIDO': 'REC', 'REC': 'REC',
+            'CANCELADO': 'CAN', 'CAN': 'CAN',
+            'PENDIENTE': 'PEN', 'PEN': 'PEN',
+        }
+        
+        estado_normalizado = mapeo_estados.get(nuevo_estado)
+        
+        if estado_normalizado:
+            pedido.estado = estado_normalizado
             pedido.save()
-            return JsonResponse({'success': True, 'estado': nuevo_estado})
+            return JsonResponse({'success': True, 'estado': estado_normalizado})
         else:
             return JsonResponse({'success': False, 'error': 'Estado no válido'})
     except Exception as e:
@@ -322,9 +330,9 @@ def inventario_pedidos(request):
     
     def calcular_stock_y_pedidos(queryset):
         for p in queryset:
-            # El modelo Producto no tiene atributo 'stock'
-            # Se establece stock_disponible como referencia
-            p.stock_disponible = 0  # Sin stock definido en el modelo
+            # Usar la propiedad stock del modelo que calcula: 
+            # stock = recibido (estado REC) - vendido (estado COMPLETADA o PENDIENTE)
+            p.stock_disponible = p.stock
         return queryset
     
     pescados = calcular_stock_y_pedidos(productos.filter(tipo_producto='PE'))
