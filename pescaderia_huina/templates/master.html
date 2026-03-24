@@ -247,15 +247,6 @@
 
 
                         {% if user.is_authenticated %}
-                            {% if user.is_staff %}  
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'core:dashboard' %}">
-                                        <i class="bi bi-speedometer2"></i>  Admin
-                                    </a>
-                                </li>
-                            {% endif %}
-                            
-
                             <li class="nav-item dropdown ms-2">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" 
                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
