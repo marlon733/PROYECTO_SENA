@@ -310,9 +310,15 @@
                         </div>
                     </div>
 
-                    <a href="{% url 'usuarios:editar_perfil' %}" class="btn-soft-gold">
-                        <i class="bi bi-pencil-square"></i> Editar perfil
-                    </a>
+                    {% if request.user.is_staff %}
+                        <a href="{% url 'usuarios:editar_perfil' %}" class="btn-soft-gold">
+                            <i class="bi bi-pencil-square"></i> Editar perfil
+                        </a>
+                    {% else %}
+                        <div style="padding: 0.75rem 1.25rem; background: rgba(100, 116, 139, 0.12); border-radius: 14px; color: var(--huina-muted); font-size: 0.9rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <i class="bi bi-lock-fill"></i> Solo admins pueden editar
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="card-body-profile">

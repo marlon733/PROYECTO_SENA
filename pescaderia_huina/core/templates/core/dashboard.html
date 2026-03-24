@@ -718,15 +718,9 @@
                                     {% endif %}
                                 </span>
                             {% else %}
-                                {% if usuario == request.user %}
-                                    <a href="{% url 'usuarios:editar_perfil_usuario' usuario.id %}" class="btn-action-sm" title="Editar mi perfil">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </a>
-                                {% else %}
-                                    <span style="color: #94a3b8; font-size: 0.85rem;">
-                                        <i class="bi bi-eye"></i> Solo lectura
-                                    </span>
-                                {% endif %}
+                                <span style="color: #94a3b8; font-size: 0.85rem;">
+                                    <i class="bi bi-eye"></i> Solo lectura
+                                </span>
                             {% endif %}
                         </td>
                     </tr>
