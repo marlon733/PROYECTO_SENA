@@ -36,7 +36,7 @@ class Producto(models.Model):
     )
     
     nombre = models.CharField(max_length=100, verbose_name="Nombre Comercial")
-    descripcion = models.CharField(max_length=255, verbose_name="Descripción")
+    descripcion = models.CharField(max_length=255, blank=True, default="", verbose_name="Descripción")
     
     precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio de Venta")
     

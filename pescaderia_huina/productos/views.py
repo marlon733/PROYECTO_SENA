@@ -72,10 +72,29 @@ def producto_crear(request):
             
             # 3. A cada producto le asignamos el proveedor y guardamos
             for producto in nuevos_productos:
-                producto.proveedor = proveedor
-                producto.save()
+                if producto.nombre.strip():  # Solo guardar si tiene nombre
+                    producto.proveedor = proveedor
+                    producto.save()
+            
+            # Mensaje de éxito
+            from django.contrib import messages
+            cantidad_guardada = len([p for p in nuevos_productos if p.nombre.strip()])
+            messages.success(request, f'✓ {cantidad_guardada} producto(s) guardado(s) exitosamente.')
             
             return redirect("productos:productos_list")
+        else:
+            # Mostrar errores
+            from django.contrib import messages
+            if not proveedor_form.is_valid():
+                messages.error(request, f'Error en proveedor: {proveedor_form.errors}')
+            if not formset.is_valid():
+                # Errores del formset
+                errores_msg = []
+                for i, form_errors in enumerate(formset.errors):
+                    if form_errors:
+                        errores_msg.append(f"Fila {i+1}: {form_errors}")
+                if errores_msg:
+                    messages.error(request, f'Errores en productos: {" | ".join(errores_msg)}')
     else:
         # GET: Formularios vacíos
         proveedor_form = ProveedorSelectForm()
