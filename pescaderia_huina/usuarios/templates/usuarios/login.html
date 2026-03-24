@@ -298,6 +298,50 @@
     color: rgba(0, 97, 255, 0.4);
   }
 
+  /* Password Toggle Eye */
+  .password-input-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 10;
+  }
+
+  .toggle-password:hover {
+    color: var(--ocean-primary);
+    background: rgba(0, 97, 255, 0.08);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .toggle-password:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .toggle-password i {
+    transition: all 0.3s ease;
+  }
+
+  .password-input-wrapper .form-control-modern {
+    padding-right: 50px;
+  }
+
   .input-error {
     color: #ff1744;
     font-size: 0.8rem;
@@ -536,7 +580,12 @@
           <label for="{{ form.password.id_for_label }}">
             <i class="bi bi-lock" style="margin-right: 4px;"></i>Contraseña
           </label>
-          {{ form.password }}
+          <div class="password-input-wrapper">
+            {{ form.password }}
+            <button type="button" class="toggle-password" id="togglePassword" title="Mostrar/Ocultar contraseña">
+              <i class="bi bi-eye-fill"></i>
+            </button>
+          </div>
           {% if form.password.errors %}
             <div class="input-error">
               <i class="bi bi-x-circle"></i> {{ form.password.errors.0 }}
@@ -589,6 +638,35 @@
         input.setAttribute("placeholder", " ");
       }
     });
+
+    // Toggle Password Visibility
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordInput = document.querySelector('input[type="password"]');
+
+    if (togglePasswordBtn && passwordInput) {
+      togglePasswordBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const icon = togglePasswordBtn.querySelector('i');
+        const isPassword = passwordInput.type === 'password';
+        
+        if (isPassword) {
+          // Mostrar contraseña
+          passwordInput.type = 'text';
+          icon.classList.remove('bi-eye-fill');
+          icon.classList.add('bi-eye-slash-fill');
+          togglePasswordBtn.style.color = '#0061ff';
+          togglePasswordBtn.title = 'Ocultar contraseña';
+        } else {
+          // Ocultar contraseña
+          passwordInput.type = 'password';
+          icon.classList.remove('bi-eye-slash-fill');
+          icon.classList.add('bi-eye-fill');
+          togglePasswordBtn.style.color = 'var(--text-muted)';
+          togglePasswordBtn.title = 'Mostrar contraseña';
+        }
+      });
+    }
   });
 </script>
 {% endblock %}

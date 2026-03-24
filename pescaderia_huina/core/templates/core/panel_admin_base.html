@@ -658,7 +658,29 @@
         /* ============================================================
            RESPONSIVE
         ============================================================ */
-        @media (max-width: 992px) {
+        /* ============================================================
+           DESKTOP — SIDEBAR VISIBLE
+        ============================================================ */
+        @media (min-width: 1201px) {
+            .sidebar { 
+                left: 0 !important;
+                width: var(--sidebar-width) !important;
+            }
+            .sidebar.mobile-active { left: 0; }
+            .main-content { 
+                margin-left: var(--sidebar-width) !important; 
+                width: calc(100% - var(--sidebar-width)) !important; 
+            }
+            .main-content.expanded { 
+                margin-left: var(--sidebar-collapsed) !important;
+                width: calc(100% - var(--sidebar-collapsed)) !important; 
+            }
+        }
+
+        /* ============================================================
+           MOBILE — SIDEBAR HIDDEN (OVERLAY)
+        ============================================================ */
+        @media (max-width: 1200px) {
             .sidebar { left: -100%; width: var(--sidebar-width); }
             .sidebar.mobile-active { left: 0; }
             .main-content { margin-left: 0 !important; width: 100% !important; }
@@ -937,7 +959,7 @@
 
             // --- A. Restaurar estado desde LocalStorage (Solo Desktop) ---
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-            if (window.innerWidth > 992 && isCollapsed) {
+            if (window.innerWidth > 1200 && isCollapsed) {
                 sidebar.classList.add('collapsed');
                 mainContent.classList.add('expanded');
             }
@@ -946,7 +968,7 @@
             sidebarToggle.addEventListener('click', (e) => {
                 e.stopPropagation(); // Prevenir burbujeo
                 
-                if (window.innerWidth > 992) {
+                if (window.innerWidth > 1200) {
                     // Modo Desktop: Colapsar/Expandir
                     sidebar.classList.toggle('collapsed');
                     mainContent.classList.toggle('expanded');
@@ -961,7 +983,7 @@
 
             // --- C. Cerrar al hacer click fuera (Solo Móvil) ---
             document.addEventListener('click', (e) => {
-                if (window.innerWidth <= 992 && 
+                if (window.innerWidth <= 1200 && 
                     sidebar.classList.contains('mobile-active') &&
                     !sidebar.contains(e.target) && 
                     !sidebarToggle.contains(e.target)) {
@@ -972,7 +994,7 @@
 
             // --- D. Manejo de Resize (Limpieza de clases) ---
             window.addEventListener('resize', () => {
-                if (window.innerWidth > 992) {
+                if (window.innerWidth > 1200) {
                     // Si pasamos a desktop, quitamos la clase móvil
                     sidebar.classList.remove('mobile-active');
                     

@@ -30,6 +30,8 @@ class PerfilUsuario(models.Model):
     documento = models.CharField(
         max_length=20, 
         unique=True,
+        blank=True,
+        null=True,
         help_text="Número de documento de identidad"
     )
     
@@ -84,7 +86,10 @@ def crear_perfil_usuario(sender, instance, created, **kwargs):
     Crea automáticamente un perfil cuando se crea un usuario
     """
     if created:
-        PerfilUsuario.objects.create(user=instance)
+        try:
+            PerfilUsuario.objects.create(user=instance)
+        except Exception as e:
+            print(f"Error creando perfil para {instance.username}: {e}")
 
 @receiver(post_save, sender=User)
 def guardar_perfil_usuario(sender, instance, **kwargs):
@@ -92,5 +97,8 @@ def guardar_perfil_usuario(sender, instance, **kwargs):
     Guarda el perfil cuando se guarda el usuario
     """
     if hasattr(instance, 'perfil'):
-        instance.perfil.save()
+        try:
+            instance.perfil.save()
+        except Exception as e:
+            print(f"Error guardando perfil de {instance.username}: {e}")
         

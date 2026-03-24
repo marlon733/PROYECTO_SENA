@@ -370,8 +370,6 @@ def editar_usuario_view(request, user_id):
 
 @login_required
 @user_passes_test(es_staff, login_url='usuarios:login')
-@login_required
-@user_passes_test(es_staff, login_url='usuarios:login')
 def eliminar_usuario_view(request, user_id):
     """
     Vista para eliminar (desactivar) un usuario - SOLO STAFF
