@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Q
+from django.core.cache import cache
+from django.utils import timezone
 from .forms import (
     LoginForm,
     RegistroForm,
@@ -32,6 +34,69 @@ from django.template.loader import render_to_string
 def es_staff(user):
     """Función auxiliar para verificar si el usuario es staff."""
     return bool(user and getattr(user, 'is_staff', False))
+
+
+def _get_client_ip(request):
+    """Obtiene la IP del cliente."""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def _get_lock_duration(attempts):
+    """Calcula el tiempo de bloqueo basado en intentos fallidos.
+    4 intentos = 10 min
+    5 intentos = 15 min
+    6 intentos = 20 min, etc.
+    """
+    if attempts < 4:
+        return 0
+    return (attempts - 3) * 5  # En minutos
+
+
+def _check_login_lock(username, ip):
+    """Verifica si el usuario está bloqueado por rate limiting.
+    Retorna (está_bloqueado, minutos_restantes)
+    """
+    cache_key = f"login_lock:{username}:{ip}"
+    lock_time = cache.get(cache_key)
+    if lock_time:
+        minutos_restantes = lock_time - timezone.now().timestamp()
+        if minutos_restantes > 0:
+            return True, int(minutos_restantes / 60)
+    return False, 0
+
+
+def _increment_login_attempts(username, ip):
+    """Incrementa los intentos fallidos de login."""
+    cache_key = f"login_attempts:{username}:{ip}"
+    attempts = cache.get(cache_key, 0)
+    attempts += 1
+    
+    # Mantener el contador por 30 minutos
+    cache.set(cache_key, attempts, 30 * 60)
+    
+    return attempts
+
+
+def _apply_login_lock(username, ip, attempts):
+    """Aplica bloqueo temporal si se alcanza el límite de intentos."""
+    duration_minutes = _get_lock_duration(attempts)
+    if duration_minutes > 0:
+        cache_key = f"login_lock:{username}:{ip}"
+        lock_time = timezone.now().timestamp() + (duration_minutes * 60)
+        cache.set(cache_key, lock_time, duration_minutes * 60 + 60)
+        return True
+    return False
+
+
+def _reset_login_attempts(username, ip):
+    """Limpia los intentos después de login exitoso."""
+    cache_key = f"login_attempts:{username}:{ip}"
+    cache.delete(cache_key)
 
 
 def _build_form_error_message(form):
@@ -68,25 +133,40 @@ def _build_form_error_message(form):
 def login_view(request):
     """
     Vista para el inicio de sesión de usuarios
+    Incluye rate limiting: después de 4 intentos fallidos se bloquea 10 min, 15 min, etc.
     """
     # Si el usuario ya está autenticado, redirigir al dashboard
     if request.user.is_authenticated:
         return redirect('core:dashboard')
     
+    cliente_ip = _get_client_ip(request)
+    
     if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
         
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            remember_me = form.cleaned_data.get('remember_me')
-            
-            # Autenticar usuario
+        # PRIMERO: Verificar si hay bloqueo por rate limiting (ANTES de cualquier otra validación)
+        esta_bloqueado, minutos_restantes = _check_login_lock(username, cliente_ip)
+        if esta_bloqueado:
+            messages.error(
+                request, 
+                f'🔒 Demasiados intentos fallidos. Intenta de nuevo en {minutos_restantes} minutos.'
+            )
+            form = LoginForm()
+            context = {'form': form, 'titulo': 'Iniciar Sesión'}
+            return render(request, 'usuarios/login.html', context)
+        
+        # SEGUNDO: Intentar autenticar con credenciales simples (sin validar formulario completo aún)
+        if username and password:
             user = authenticate(request, username=username, password=password)
             
-            if user is not None:
-                if user.is_active:
+            if user is not None and user.is_active:
+                # Las credenciales son correctas, ahora validar todo el formulario
+                form = LoginForm(request, data=request.POST)
+                if form.is_valid():
+                    remember_me = form.cleaned_data.get('remember_me')
                     login(request, user)
+                    _reset_login_attempts(username, cliente_ip)
                     
                     # Configurar duración de la sesión
                     if not remember_me:
@@ -101,11 +181,34 @@ def login_view(request):
                     else:
                         return redirect('core:dashboard')
                 else:
-                    messages.error(request, 'Esta cuenta ha sido desactivada.')
+                    # Las credenciales eran correctas pero reCAPTCHA u otro campo falló
+                    messages.error(request, 'Por favor completa la verificación de seguridad.')
+            elif user is not None and not user.is_active:
+                messages.error(request, 'Esta cuenta ha sido desactivada.')
             else:
-                messages.error(request, 'Documento o contraseña incorrectos.')
+                # Credenciales incorrectas - aplicar rate limiting
+                attempts = _increment_login_attempts(username, cliente_ip)
+                esta_bloqueado_ahora = _apply_login_lock(username, cliente_ip, attempts)
+                
+                if esta_bloqueado_ahora:
+                    duration = _get_lock_duration(attempts)
+                    messages.error(
+                        request,
+                        f'❌ Documento o contraseña incorrectos. Tu cuenta se ha bloqueado por {duration} minutos.'
+                    )
+                else:
+                    intentos_restantes = 4 - attempts
+                    if intentos_restantes > 0:
+                        messages.error(
+                            request,
+                            f'❌ Documento o contraseña incorrectos. Te quedan {intentos_restantes} intentos.'
+                        )
+                    else:
+                        messages.error(request, '🔒 Tu cuenta ha sido bloqueada temporalmente por seguridad.')
         else:
-            messages.error(request, 'Por favor corrige los errores en el formulario.')
+            messages.error(request, 'Por favor ingresa documento y contraseña.')
+        
+        form = LoginForm()
     else:
         form = LoginForm()
     
