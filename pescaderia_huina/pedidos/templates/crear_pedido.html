@@ -211,6 +211,7 @@
         const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]'); 
         const granTotalDisplay = document.getElementById('gran-total-display');
         const emptyTemplate = document.getElementById('empty-form-template').innerHTML;
+        let productosProveedorActual = [];
 
         const formatter = new Intl.NumberFormat('es-CO', {
             style: 'currency', currency: 'COP', minimumFractionDigits: 0
@@ -263,6 +264,17 @@
                 let newRowHtml = emptyTemplate.replace(/__prefix__/g, formIdx);
                 
                 container.insertAdjacentHTML('beforeend', newRowHtml);
+                const nuevaFila = container.lastElementChild;
+                const selectProducto = nuevaFila ? nuevaFila.querySelector('select[id$="-producto"]') : null;
+
+                if (selectProducto) {
+                    if (proveedorSelect && proveedorSelect.value && productosProveedorActual.length > 0) {
+                        actualizarSelectProductos(selectProducto, productosProveedorActual);
+                    } else {
+                        selectProducto.innerHTML = '<option value="">---------</option>';
+                    }
+                }
+
                 totalFormsInput.value = parseInt(formIdx) + 1;
                 
                 calcularTotales(); 
@@ -335,28 +347,40 @@
             });
         }
 
+        function cargarProductosProveedor(proveedorId) {
+            if (!proveedorId) {
+                productosProveedorActual = [];
+                const selectsProductos = container.querySelectorAll('select[id$="-producto"]');
+                selectsProductos.forEach(select => {
+                    select.innerHTML = '<option value="">---------</option>';
+                });
+                return;
+            }
+
+            fetch(`${urlBase}?proveedor_id=${proveedorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    productosProveedorActual = data;
+                    const selectsProductos = container.querySelectorAll('select[id$="-producto"]');
+                    selectsProductos.forEach(select => {
+                        actualizarSelectProductos(select, data);
+                    });
+                })
+                .catch(error => console.error('Error cargando productos:', error));
+        }
+
         if (proveedorSelect) {
             proveedorSelect.addEventListener('change', function() {
                 const proveedorId = this.value;
-                
-                if (proveedorId) {
-                    fetch(`${urlBase}?proveedor_id=${proveedorId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const selectsProductos = container.querySelectorAll('select[id$="-producto"]');
-                            selectsProductos.forEach(select => {
-                                actualizarSelectProductos(select, data);
-                            });
-                        })
-                        .catch(error => console.error('Error cargando productos:', error));
-                } else {
-                    const selectsProductos = container.querySelectorAll('select[id$="-producto"]');
-                    selectsProductos.forEach(select => {
-                        select.innerHTML = '<option value="">---------</option>';
-                    });
-                }
+                cargarProductosProveedor(proveedorId);
             });
+
+            // Si la página abre con proveedor ya seleccionado, sincroniza los selects.
+            if (proveedorSelect.value) {
+                cargarProductosProveedor(proveedorSelect.value);
+            }
         }
+
     });
 </script>
 {% endblock %}

@@ -152,14 +152,14 @@
                         <td class="text-center">{{ p.proveedor }}</td>
                         <td class="text-center">
                             {% if p.stock_disponible <= 0 %}
-                                <span class="badge badge-danger">{{ p.stock_disponible }}</span>
+                                <span class="badge badge-danger">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                             {% elif p.stock_disponible <= 10 %}
-                                <span class="badge badge-warning">{{ p.stock_disponible }}</span>
+                                <span class="badge badge-warning">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                             {% else %}
-                                <span class="badge badge-success">{{ p.stock_disponible }}</span>
+                                <span class="badge badge-success">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                             {% endif %}
                         </td>
-                        <td class="text-center">{{ p.get_tipo_presentacion_display }}</td>
+                        <td class="text-center">{% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -189,14 +189,14 @@
                         <td class="text-center">{{ p.proveedor }}</td>
                         <td class="text-center">
                             {% if p.stock_disponible <= 0 %}
-                                <span class="badge badge-danger">{{ p.stock_disponible }}</span>
+                                <span class="badge badge-danger">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                             {% elif p.stock_disponible <= 10 %}
-                                <span class="badge badge-warning">{{ p.stock_disponible }}</span>
+                                <span class="badge badge-warning">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                             {% else %}
-                                <span class="badge badge-success">{{ p.stock_disponible }}</span>
+                                <span class="badge badge-success">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                             {% endif %}
                         </td>
-                        <td class="text-center">{{ p.get_tipo_presentacion_display }}</td>
+                        <td class="text-center">{% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -226,14 +226,14 @@
                         <td class="text-center">{{ p.proveedor }}</td>
                         <td class="text-center">
                             {% if p.stock_disponible <= 0 %}
-                                <span class="badge badge-danger">{{ p.stock_disponible }}</span>
+                                <span class="badge badge-danger">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                             {% elif p.stock_disponible <= 10 %}
-                                <span class="badge badge-warning">{{ p.stock_disponible }}</span>
+                                <span class="badge badge-warning">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                             {% else %}
-                                <span class="badge badge-success">{{ p.stock_disponible }}</span>
+                                <span class="badge badge-success">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                             {% endif %}
                         </td>
-                        <td class="text-center">{{ p.get_tipo_presentacion_display }}</td>
+                        <td class="text-center">{% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</td>
                     </tr>
                     {% empty %}
                     <tr>

@@ -43,13 +43,24 @@ class DetallePedidoForm(forms.ModelForm):
         })
     )
 
+    precio_unitario = forms.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'min': '0',
+            'step': '1',
+            'placeholder': '0'
+        })
+    )
+
     class Meta:
         model = DetallePedido
         fields = ['producto', 'cantidad', 'presentacion', 'precio_unitario'] 
         
         widgets = {
             'producto': forms.Select(attrs={'class': 'form-select'}),
-            'precio_unitario': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': 'any'}),
         }
         
     def clean_cantidad(self):

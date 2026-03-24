@@ -91,7 +91,6 @@
                             <div class="col-md-1">
                                 <label class="form-label fw-semibold">Cantidad</label>
                                 {{ item_form.cantidad }}
-                                {% if item_form.cantidad.errors %}<div class="text-danger small">{{ item_form.cantidad.errors }}</div>{% endif %}
                             </div>
 
                             <!-- Precio heredado -->
@@ -110,6 +109,16 @@
 
                         </div>
 
+                        {% if item_form.cantidad.errors %}
+                        <div class="stock-alert mt-3" role="alert">
+                            <div class="stock-alert-icon">!</div>
+                            <div class="stock-alert-content">
+                                <div class="stock-alert-title">Verifica la cantidad solicitada</div>
+                                {{ item_form.cantidad.errors }}
+                            </div>
+                        </div>
+                        {% endif %}
+
                         <!-- Botón eliminar (esquina superior derecha) -->
                         <button type="button"
                                 class="btn btn-outline-danger btn-sm btn-remove-item position-absolute"
@@ -121,7 +130,7 @@
 
                 <!-- Botón agregar -->
                 <button type="button" id="btn-add-item" class="btn btn-outline-primary mb-4">
-                    + Agregar otro producto
+                    Agregar otro producto
                 </button>
 
                 <!-- Resumen IVA -->
@@ -238,6 +247,50 @@
     font-size: 0.75rem;
     margin-top: 3px;
     line-height: 1.2;
+}
+
+.stock-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #fecaca;
+    background: #fff5f5;
+    color: #991b1b;
+}
+
+.stock-alert-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.stock-alert-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.stock-alert .errorlist {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.82rem;
+    line-height: 1.35;
+}
+
+.stock-alert .errorlist li {
+    margin: 0;
 }
 </style>
 
@@ -365,6 +418,7 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
     newRow.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), select, textarea')
           .forEach(el => { el.value = ''; });
     newRow.querySelectorAll('.item-subtotal').forEach(el => { el.textContent = '$0'; });
+        newRow.querySelectorAll('.stock-alert').forEach(el => el.remove());
 
     // Resetear el select de productos a estado inicial
     const prodVisible = newRow.querySelector('.producto-visible-select');

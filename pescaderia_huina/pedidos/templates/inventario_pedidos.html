@@ -108,14 +108,14 @@
                             {% endif %}
                                 <td class="ps-4"><strong>{{ p.nombre }}</strong></td>
                                 <td>{{ p.proveedor }}</td>
-                                <td>{{ p.get_tipo_presentacion_display }}</td>
+                                <td>{% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</td>
                                 <td class="text-end pe-4 fw-bold">
                                     {% if p.stock_disponible <= 0 %}
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                                     {% elif p.stock_disponible <= 10 %}
-                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                                     {% else %}
-                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -165,14 +165,14 @@
                             {% endif %}
                                 <td class="ps-4"><strong>{{ p.nombre }}</strong></td>
                                 <td>{{ p.proveedor }}</td>
-                                <td>{{ p.get_tipo_presentacion_display }}</td>
+                                <td>{% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</td>
                                 <td class="text-end pe-4 fw-bold">
                                     {% if p.stock_disponible <= 0 %}
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                                     {% elif p.stock_disponible <= 10 %}
-                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                                     {% else %}
-                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -222,14 +222,14 @@
                             {% endif %}
                                 <td class="ps-4"><strong>{{ p.nombre }}</strong></td>
                                 <td>{{ p.proveedor }}</td>
-                                <td>{{ p.get_tipo_presentacion_display }}</td>
+                                <td>{% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</td>
                                 <td class="text-end pe-4 fw-bold">
                                     {% if p.stock_disponible <= 0 %}
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                                     {% elif p.stock_disponible <= 10 %}
-                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                                     {% else %}
-                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ p.stock_disponible }}</span>
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">{{ p.stock_disponible|floatformat:0 }} {% if p.tipo_presentacion == 'LIB' %}Libras{% else %}Unidades{% endif %}</span>
                                     {% endif %}
                                 </td>
                             </tr>

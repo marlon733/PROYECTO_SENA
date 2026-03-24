@@ -1,212 +1,156 @@
 {% extends 'core/panel_admin_base.html' %}
-{% block title %}Registro Masivo de Productos{% endblock %}
+{% load static %}
+
+{% block title %}Nuevo Producto{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-5 px-3 px-md-5" style="background: linear-gradient(180deg, #f5f8fc 0%, #ffffff 100%); min-height: 100vh;">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-12 col-xl-11">
-            
-            <!-- Breadcrumb -->
-            <div class="mb-4">
-                <small class="text-muted">
-                    <i class="bi bi-house me-2"></i>Panel Admin 
-                    <i class="bi bi-chevron-right mx-2"></i>
-                    <strong class="text-dark">Registro de Productos</strong>
-                </small>
-            </div>
-
+        <div class="col-12 col-xl-11">
             <form method="post" id="form-productos" novalidate>
                 {% csrf_token %}
 
-                <!-- Alertas de Mensajes Django -->
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show mb-4" role="alert">
-                            <i class="bi bi-{% if message.tags == 'error' %}exclamation-circle-fill{% elif message.tags == 'success' %}check-circle-fill{% else %}info-circle-fill{% endif %} me-2"></i>
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                    <div class="card-header header-blue text-white py-4 px-5 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-semibold mb-1">Nuevo Producto</h3>
+                            <p class="small mb-0 opacity-75">Completa la informacion para registrar los productos</p>
                         </div>
-                    {% endfor %}
-                {% endif %}
-
-                <!-- Errores del Formset -->
-                {% if formset.non_form_errors %}
-                    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <strong>Errores en el formulario:</strong>
-                        <ul class="mb-0 mt-2">
-                            {% for error in formset.non_form_errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endif %}
-
-                <!-- Card Principal -->
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border-top: 5px solid #d4af37; position: relative;">
-                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #d4af37 0%, #d4af37 50%, #0f2c59 100%);"></div>
-                    
-                    <!-- Header -->
-                    <div class="card-header" style="background: linear-gradient(135deg, #0f2c59 0%, #2C466B 50%, #3e78b2 100%); border-bottom: none; padding: 2.5rem 3rem;">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h3 class="fw-bold mb-2 text-white" style="font-size: 2rem; letter-spacing: -0.5px;">
-                                    <i class="bi bi-box-seam me-2"></i>Registro de Catálogo
-                                </h3>
-                                <p class="small text-white-50 m-0" style="font-size: 0.95rem; font-weight: 500;">
-                                    Agrega múltiples productos a un mismo proveedor de forma rápida y eficiente
-                                </p>
-                            </div>
-                            <i class="bi bi-graph-up text-white opacity-50" style="font-size: 3.5rem;"></i>
-                        </div>
+                        <i class="bi bi-box-seam-fill display-6 opacity-50"></i>
                     </div>
 
-                    <!-- Body -->
-                    <div class="card-body px-3 px-md-5 py-5">
-                        
-                        <!-- Sección: Selección de Proveedor -->
-                        <div class="mb-5 pb-4 border-bottom">
-                            <h6 class="fw-bold text-uppercase text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 0.5px;">
-                                <i class="bi bi-hourglass-split me-2" style="color: #2C466B;"></i>Paso 1: Selecciona Proveedor
-                            </h6>
-                            
-                            <div class="bg-white p-4 rounded-3 border" style="border-color: #e0e7ff;">
-                                <label class="form-label fw-semibold mb-3" style="color: #2C466B; font-size: 0.95rem;">
-                                    <i class="bi bi-building me-2"></i>Proveedor Asignado
-                                </label>
-                                
-                                <div class="mb-2">
-                                    {{ proveedor_form.proveedor }}
+                    <div class="card-body px-4 px-md-5 pt-5">
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show mb-4" role="alert">
+                                    <i class="bi bi-{% if message.tags == 'error' %}exclamation-circle-fill{% elif message.tags == 'success' %}check-circle-fill{% else %}info-circle-fill{% endif %} me-2"></i>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
-                                
-                                <small class="text-muted d-block">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    Todos los productos que agregues serán asociados a este proveedor.
-                                </small>
-                                
-                                {% if proveedor_form.proveedor.errors %}
-                                    <div class="alert alert-danger alert-sm mt-3 mb-0">
-                                        <i class="bi bi-exclamation-circle me-2"></i>
-                                        {{ proveedor_form.proveedor.errors.0 }}
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if formset.non_form_errors %}
+                        <div class="alert alert-danger rounded-3 border-0 shadow-sm mb-4" role="alert">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-exclamation-octagon-fill fs-5 me-2"></i>
+                                <h6 class="alert-heading mb-0 fw-bold">Corrige los siguientes errores</h6>
+                            </div>
+                            <ul class="mb-0 ps-3 small">
+                                {% for error in formset.non_form_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        <div class="bg-light p-4 rounded-3 border mb-4">
+                            <label class="form-label text-primary fw-bold text-uppercase small mb-3">
+                                <i class="bi bi-card-heading me-1"></i> Identificacion de Registro
+                            </label>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label text-muted small fw-semibold">Proveedor Asignado</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text border-end-0 bg-transparent text-muted">
+                                            <i class="bi bi-building"></i>
+                                        </span>
+                                        {{ proveedor_form.proveedor }}
                                     </div>
-                                {% endif %}
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Todos los productos que agregues quedaran asociados al proveedor seleccionado.
+                                    </small>
+                                    {% if proveedor_form.proveedor.errors %}
+                                        <div class="alert alert-danger alert-sm mt-3 mb-0">
+                                            <i class="bi bi-exclamation-circle me-2"></i>
+                                            {{ proveedor_form.proveedor.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Formularios Ocultos de Management -->
                         {{ formset.management_form }}
 
-                        <!-- Sección: Productos -->
-                        <h6 class="fw-bold text-uppercase text-muted mb-4" style="font-size: 0.85rem; letter-spacing: 0.5px;">
-                            <i class="bi bi-bookmark-check me-2" style="color: #2C466B;"></i>Paso 2: Agrega Productos
-                        </h6>
+                        <div class="bg-light p-4 rounded-3 border mb-5">
+                            <label class="form-label text-primary fw-bold text-uppercase small mb-3">
+                                <i class="bi bi-geo-alt me-1"></i> Productos a Registrar
+                            </label>
 
-                        <!-- Tabla de Productos -->
-                        <div class="table-responsive mb-4" style="border-radius: 0.85rem; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); background: #fff;">
-                            <table class="table table-hover align-middle m-0" id="tabla-productos">
-                                <thead style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-                                    <tr class="fw-bold small text-uppercase" style="color: #495057; font-size: 0.8rem; letter-spacing: 0.3px;">
-                                        <th class="text-center">Tipo</th>
-                                        <th>Nombre Producto</th>
-                                        <th class="text-center">Presentación</th>
-                                        <th class="text-end">Precio</th>
-                                        <th class="text-center">Activo</th>
-                                        <th class="text-center">Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="formset-container" style="background-color: #fff;">
-                                    {% for form in formset %}
-                                        <tr class="producto-row border-bottom" style="border-color: #e9ecef; transition: all 0.2s ease;">
+                            <div class="table-responsive mb-3">
+                                <table class="table table-borderless align-middle m-0" id="tabla-productos">
+                                    <thead class="border-bottom">
+                                        <tr class="text-uppercase small text-muted text-center">
+                                            <th style="width: 18%;">Tipo</th>
+                                            <th style="width: 30%;" class="text-start">Nombre Producto</th>
+                                            <th style="width: 22%;">Presentacion</th>
+                                            <th style="width: 16%;" class="text-end">Precio</th>
+                                            <th style="width: 7%;">Activo</th>
+                                            <th style="width: 7%;">Accion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="formset-container">
+                                        {% for form in formset %}
+                                        <tr class="producto-row border-bottom border-light">
                                             {% for hidden in form.hidden_fields %}
                                                 {{ hidden }}
                                             {% endfor %}
-                                            
-                                            <!-- Tipo -->
-                                            <td class="text-center">
-                                                <div>
-                                                    {{ form.tipo_producto }}
-                                                </div>
-                                                {% if form.tipo_producto.errors %}
-                                                    <small class="text-danger d-block mt-1">{{ form.tipo_producto.errors.0 }}</small>
-                                                {% endif %}
+
+                                            <td class="p-2 text-center">
+                                                {{ form.tipo_producto }}
+                                                {% if form.tipo_producto.errors %}<small class="text-danger d-block mt-1">{{ form.tipo_producto.errors.0 }}</small>{% endif %}
                                             </td>
-                                            
-                                            <!-- Nombre -->
-                                            <td>
-                                                <div>
-                                                    {{ form.nombre }}
-                                                </div>
-                                                {% if form.nombre.errors %}
-                                                    <small class="text-danger d-block mt-1">{{ form.nombre.errors.0 }}</small>
-                                                {% endif %}
+                                            <td class="p-2">
+                                                {{ form.nombre }}
+                                                {% if form.nombre.errors %}<small class="text-danger d-block mt-1">{{ form.nombre.errors.0 }}</small>{% endif %}
                                             </td>
-                                            
-                                            <!-- Presentación -->
-                                            <td class="text-center">
-                                                <div>
-                                                    {{ form.tipo_presentacion }}
-                                                </div>
-                                                {% if form.tipo_presentacion.errors %}
-                                                    <small class="text-danger d-block mt-1">{{ form.tipo_presentacion.errors.0 }}</small>
-                                                {% endif %}
+                                            <td class="p-2 text-center">
+                                                {{ form.tipo_presentacion }}
+                                                {% if form.tipo_presentacion.errors %}<small class="text-danger d-block mt-1">{{ form.tipo_presentacion.errors.0 }}</small>{% endif %}
                                             </td>
-                                            
-                                            <!-- Precio -->
-                                            <td class="text-end">
-                                                <div class="input-group input-group-sm">
-                                                    <span class="input-group-text bg-white">$</span>
+                                            <td class="p-2 text-end">
+                                                <div class="input-group input-group-sm precio-group">
+                                                    <span class="input-group-text bg-transparent border-end-0">$</span>
                                                     {{ form.precio }}
                                                 </div>
-                                                {% if form.precio.errors %}
-                                                    <small class="text-danger d-block mt-1">{{ form.precio.errors.0 }}</small>
-                                                {% endif %}
+                                                {% if form.precio.errors %}<small class="text-danger d-block mt-1">{{ form.precio.errors.0 }}</small>{% endif %}
                                             </td>
-                                            
-                                            <!-- Estado -->
-                                            <td class="text-center">
+                                            <td class="p-2 text-center">
                                                 <div class="form-check d-flex justify-content-center">
                                                     {{ form.estado }}
                                                 </div>
                                             </td>
-                                            
-                                            <!-- Eliminar -->
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-fila" 
-                                                        title="Eliminar esta fila" data-bs-toggle="tooltip">
+                                            <td class="p-2 text-center">
+                                                <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-fila" title="Eliminar esta fila" data-bs-toggle="tooltip">
                                                     <i class="bi bi-trash3"></i>
                                                 </button>
                                             </td>
                                         </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="alert alert-info alert-sm mb-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong><span id="contador-filas">0</span> fila(s)</strong> listas para registrar
+                            </div>
+
+                            <div class="text-center">
+                                <button type="button" id="add-row" class="btn btn-outline-primary px-4 rounded-pill fw-bold">
+                                    <i class="bi bi-plus-circle me-2"></i>Agregar Producto
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Información de Filas -->
-                        <div class="alert alert-info alert-sm mb-4" style="background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(62, 120, 178, 0.1)); border-left: 4px solid #0d6efd; color: #0d6efd;">
-                            <i class="bi bi-info-circle me-2" style="font-size: 1.1rem;"></i>
-                            <strong><span id="contador-filas">0</span> fila(s)</strong> listas para registrar
-                        </div>
-
-                        <!-- Botón Agregar Fila -->
-                        <div class="text-center mb-4 py-2">
-                            <button type="button" id="add-row" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow hover-lift" 
-                                    style="font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.5rem;">
-                                <i class="bi bi-plus-circle" style="font-size: 1rem;"></i>
-                                <span>Agregar Referencia</span>
-                            </button>
-                        </div>
-
-                        <!-- Botones de Acción -->
-                        <div class="d-flex justify-content-between gap-3 pt-5 border-top" style="border-color: #e9ecef;">
-                            <a href="{% url 'productos:productos_list' %}" class="btn btn-light btn-lg rounded-pill px-5 py-2 fw-bold" 
-                               style="font-size: 0.95rem; min-width: 160px;">
-                                <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                            <a href="{% url 'productos:productos_list' %}" class="btn btn-light px-4 rounded-3 border">
+                                Cancelar
                             </a>
-                            <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 py-2 text-white fw-bold hover-lift"
-                                    style="font-size: 0.95rem; min-width: 220px; border: none; transition: all 0.3s ease;">
-                                <i class="bi bi-check-circle me-2"></i>Guardar Productos
+                            <button type="submit" class="btn btn-primary-custom px-5 rounded-3 text-white shadow fw-bold">
+                                <i class="bi bi-save2 me-2"></i>Guardar Registro
                             </button>
                         </div>
 
@@ -217,27 +161,28 @@
     </div>
 </div>
 
-<!-- Template Oculto para Nueva Fila -->
 <table style="display:none;">
     <tbody id="empty-form-template">
-        <tr class="producto-row border-bottom" style="border-color: #e9ecef;">
-            <td class="text-center">{{ formset.empty_form.tipo_producto }}</td>
-            <td>{{ formset.empty_form.nombre }}</td>
-            <td class="text-center">{{ formset.empty_form.tipo_presentacion }}</td>
-            <td class="text-end">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white">$</span>
+        <tr class="producto-row border-bottom border-light">
+            {% for hidden in formset.empty_form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            <td class="p-2 text-center">{{ formset.empty_form.tipo_producto }}</td>
+            <td class="p-2">{{ formset.empty_form.nombre }}</td>
+            <td class="p-2 text-center">{{ formset.empty_form.tipo_presentacion }}</td>
+            <td class="p-2 text-end">
+                <div class="input-group input-group-sm precio-group">
+                    <span class="input-group-text bg-transparent border-end-0">$</span>
                     {{ formset.empty_form.precio }}
                 </div>
             </td>
-            <td class="text-center">
+            <td class="p-2 text-center">
                 <div class="form-check d-flex justify-content-center">
                     {{ formset.empty_form.estado }}
                 </div>
             </td>
-            <td class="text-center">
-                <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-fila" 
-                        title="Eliminar esta fila" data-bs-toggle="tooltip">
+            <td class="p-2 text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-fila" title="Eliminar esta fila" data-bs-toggle="tooltip">
                     <i class="bi bi-trash3"></i>
                 </button>
             </td>
@@ -245,708 +190,342 @@
     </tbody>
 </table>
 
+<div id="custom-validation-alert" class="custom-validation-alert d-none" role="alert" aria-live="assertive">
+    <div class="custom-validation-card">
+        <div class="custom-validation-header">
+            <div class="custom-validation-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div>
+                <h6 id="custom-validation-title" class="mb-0">Revisa la informacion del formulario</h6>
+                <small class="text-muted">Corrige los campos marcados para continuar</small>
+            </div>
+            <button type="button" id="custom-validation-close" class="btn-close ms-auto" aria-label="Cerrar"></button>
+        </div>
+        <ul id="custom-validation-list" class="custom-validation-list mb-0"></ul>
+    </div>
+</div>
+
 <style>
-    /* ============================================================
-       ESTILOS GENERALES & VARIABLES
-    ============================================================ */
     :root {
-        --primary-dark: #0f2c59;
-        --primary-blue: #2C466B;
-        --secondary-blue: #3e78b2;
-        --accent-gold: #d4af37;
-        --success-color: #28a745;
-        --danger-color: #dc3545;
-        --bg-light: #f5f8fc;
-        --border-light: #e0e7ff;
-        --text-muted: #6b7d8f;
-        --text-dark: #1e293b;
+        --form-text-color: #334155;
+        --form-title-color: #1e3a8a;
+        --form-text-size: 1rem;
     }
 
-    * {
-        box-sizing: border-box;
+    .header-blue { background: linear-gradient(135deg, #2C466B, #1f3554); }
+    .btn-primary-custom { background: linear-gradient(135deg, #2C466B, #1f3554); border: none; }
+    .btn-primary-custom:hover { background: linear-gradient(135deg, #1f3554, #16263d); transform: translateY(-2px); }
+
+    #form-productos .card-body {
+        color: var(--form-text-color);
+        font-size: var(--form-text-size);
     }
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(180deg, var(--bg-light) 0%, #ffffff 100%);
+    #form-productos .card-body .text-muted,
+    #form-productos .card-body .text-primary {
+        color: var(--form-text-color) !important;
     }
 
-    /* ============================================================
-       CONTAINER & LAYOUT
-    ============================================================ */
-    .container-fluid {
-        max-width: 1400px;
-        margin: 0 auto;
+    #form-productos .card-body .form-label,
+    #form-productos .card-body small,
+    #form-productos .card-body .input-group-text,
+    #form-productos .card-body .btn,
+    #form-productos .card-body .alert {
+        font-size: var(--form-text-size);
     }
 
-    /* ============================================================
-       INPUTS Y SELECTS - MEJORADOS
-    ============================================================ */
-    .form-select, .form-control {
-        border: 2px solid var(--border-light) !important;
-        border-radius: 0.75rem;
-        font-size: 0.95rem;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: #fff;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-        font-weight: 500;
-        color: var(--text-dark);
+    #form-productos .card-body .form-label.fw-bold.text-uppercase {
+        color: var(--form-title-color) !important;
+        font-size: 1.05rem;
     }
 
-    .form-select:focus, .form-control:focus {
-        border-color: var(--accent-gold) !important;
-        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
-        outline: none;
-        transform: translateY(-2px);
-    }
-
-    .form-select:hover:not(:focus), 
-    .form-control:hover:not(:focus) {
-        border-color: var(--secondary-blue);
-        box-shadow: 0 4px 12px rgba(44, 70, 107, 0.1);
-    }
-
-    /* ============================================================
-       TABLA - MEJORADA
-    ============================================================ */
-    .table {
-        font-size: 0.95rem;
-        margin-bottom: 0;
-    }
-
-    .table thead {
-        background: linear-gradient(135deg, #f0f4f8 0%, #e8ecf1 100%) !important;
-    }
-
-    .table thead th {
-        border-bottom: 2px solid var(--border-light);
+    #tabla-productos thead th {
+        color: var(--form-text-color) !important;
+        font-size: 0.95rem !important;
         font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        letter-spacing: 0.5px;
-        padding: 1.2rem 0.75rem !important;
+        letter-spacing: 0.02em;
     }
 
-    .table tbody tr {
-        border-bottom: 1px solid #f0f0f0;
-        transition: all 0.2s ease;
+    #tabla-productos tbody td {
+        color: var(--form-text-color);
     }
 
-    .table tbody tr:hover {
-        background-color: #f8fafc !important;
-        box-shadow: inset 0 1px 3px rgba(44, 70, 107, 0.05);
-    }
-
-    /* Inputs en Tabla */
     #tabla-productos .form-control,
     #tabla-productos .form-select {
-        width: 100%;
-        max-width: 100%;
-        font-size: 0.98rem;
-        padding: 0.95rem 1.1rem;
-        min-height: 2.8rem;
-        border: 1.5px solid var(--border-light);
-        border-radius: 0.65rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    #tabla-productos .form-control:focus,
-    #tabla-productos .form-select:focus {
-        border-color: var(--accent-gold) !important;
-        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
-        transform: translateY(-1px);
-    }
-
-    /* Columnas de Tabla - Ancho proporcional */
-    #tabla-productos td {
-        padding: 1rem 0.7rem !important;
-        vertical-align: middle;
-    }
-
-    #tabla-productos td:nth-child(1) { min-width: 110px; } /* Tipo */
-    #tabla-productos td:nth-child(2) { min-width: 200px; } /* Nombre */
-    #tabla-productos td:nth-child(3) { min-width: 150px; } /* Presentación */
-    #tabla-productos td:nth-child(4) { min-width: 140px; } /* Precio */
-    #tabla-productos td:nth-child(5) { min-width: 80px; }  /* Activo */
-    #tabla-productos td:nth-child(6) { min-width: 80px; }  /* Acción */
-
-    /* Input Group en Tabla */
-    #tabla-productos .input-group {
+        min-height: 50px;
+        font-size: 1rem;
+        padding: 0.7rem 0.85rem;
         width: 100%;
     }
 
-    #tabla-productos .input-group-text {
-        border: 1.5px solid var(--border-light) !important;
-        background-color: #fff !important;
-        color: var(--text-muted) !important;
-        font-weight: 600;
-        padding: 0.85rem 0.8rem !important;
-        font-size: 0.95rem;
+    #tabla-productos td,
+    #tabla-productos th {
+        white-space: normal;
+    }
+
+    #tabla-productos .precio-group { flex-wrap: nowrap; }
+
+    #tabla-productos .precio-group .input-group-text {
         border-right: none;
     }
 
-    #tabla-productos .input-group .form-control {
+    #tabla-productos .precio-group .form-control {
         border-left: none;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
     }
 
-    /* Checkbox en Tabla */
-    #tabla-productos .form-check-input {
-        width: 1.3rem;
-        height: 1.3rem;
-        cursor: pointer;
-        border: 2px solid var(--border-light);
-        border-radius: 0.35rem;
+    .form-control:focus,
+    .form-select:focus,
+    .form-check-input:focus {
+        box-shadow: none;
+        border-color: #2C466B;
     }
 
-    #tabla-productos .form-check-input:checked {
-        background-color: var(--success-color) !important;
-        border-color: var(--success-color) !important;
-    }
-
-    #tabla-productos .form-check-input:focus {
-        border-color: var(--accent-gold) !important;
-        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
-    }
-
-    #tabla-productos td {
-        overflow: visible;
-        padding: 1rem 0.7rem !important;
-        vertical-align: middle;
-    }
-
-    #tabla-productos td > div {
-        display: flex;
-        align-items: center;
-    }
-
-    #tabla-productos .form-check {
-        margin-bottom: 0;
-    }
-
-    /* ============================================================
-       BOTONES - MEJORADOS
-    ============================================================ */
-    .btn {
-        border-radius: 0.75rem;
-        font-weight: 700;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        border: none;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 0.75rem 1.6rem;
-        font-size: 0.9rem;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%) !important;
-        border: none !important;
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-primary::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s ease;
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(135deg, var(--secondary-blue) 0%, #2c5aa0 100%) !important;
-        transform: translateY(-3px);
-        box-shadow: 0 12px 28px rgba(44, 70, 107, 0.3) !important;
-    }
-
-    .btn-primary:hover::before {
-        left: 100%;
-    }
-
-    .btn-primary:active {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(44, 70, 107, 0.2) !important;
-    }
-
-    .btn-success {
-        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
-        border: none !important;
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-success::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s ease;
-    }
-
-    .btn-success:hover {
-        background: linear-gradient(135deg, #1e7e34 0%, #155724 100%) !important;
-        transform: translateY(-3px);
-        box-shadow: 0 12px 28px rgba(40, 167, 69, 0.3) !important;
-    }
-
-    .btn-success:hover::before {
-        left: 100%;
-    }
-
-    .btn-success:active {
-        transform: translateY(-1px);
-    }
-
-    .btn-light {
-        background-color: #ffffff !important;
-        color: var(--text-muted) !important;
-        border: 2px solid #d1d5db !important;
-        font-weight: 700;
-    }
-
-    .btn-light:hover {
-        background-color: #f8fafc !important;
-        border-color: var(--text-muted) !important;
-        color: var(--text-dark) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
-    }
-
-    .btn-outline-danger {
-        border: 2px solid var(--danger-color) !important;
-        color: var(--danger-color) !important;
-        transition: all 0.2s ease;
-        font-size: 0.9rem;
-        padding: 0.5rem 0.75rem;
-        font-weight: 700;
-    }
-
-    .btn-outline-danger:hover {
-        background-color: var(--danger-color) !important;
-        color: white !important;
-        transform: scale(1.1) translateY(-2px);
-        border-color: var(--danger-color) !important;
-        box-shadow: 0 8px 16px rgba(220, 53, 69, 0.3) !important;
-    }
-
-    .btn-lg {
-        padding: 0.9rem 2.2rem !important;
-        font-size: 0.95rem;
-        border-radius: 0.85rem;
-    }
-
-    .hover-lift {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .hover-lift:hover {
-        transform: translateY(-4px) !important;
-        box-shadow: 0 16px 36px rgba(44, 70, 107, 0.25) !important;
-    }
-
-    /* ============================================================
-       CARD - MEJORADA
-    ============================================================ */
-    .card {
-        border-radius: 1rem;
-        transition: all 0.3s ease;
-        border: none;
-        overflow: hidden;
-        box-shadow: 0 8px 24px rgba(15, 44, 89, 0.1);
-    }
-
-    .card-header {
-        padding: 2.5rem 3rem !important;
-        border-bottom: none;
-    }
-
-    .card-body {
-        padding: 3rem !important;
-        background: #ffffff;
-    }
-
-    /* ============================================================
-       ALERTAS - MEJORADAS
-    ============================================================ */
     .alert-sm {
-        padding: 1rem 1.4rem;
-        font-size: 0.95rem;
-        border-radius: 0.75rem;
-        border: 2px solid;
+        padding: 0.85rem 1rem;
+        border-radius: 0.65rem;
+    }
+
+    .custom-validation-alert {
+        position: fixed;
+        top: 90px;
+        right: 24px;
+        z-index: 2000;
+        width: min(520px, calc(100vw - 32px));
+    }
+
+    .custom-validation-card {
+        background: #fff;
+        border: 1px solid #f2b8bf;
+        border-left: 5px solid #dc3545;
+        border-radius: 14px;
+        box-shadow: 0 14px 32px rgba(15, 44, 89, 0.18);
+        padding: 0.9rem 1rem;
+    }
+
+    .custom-validation-header {
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-weight: 600;
+        gap: 0.65rem;
+        margin-bottom: 0.45rem;
     }
 
-    .alert-info {
-        background: rgba(13, 110, 253, 0.08) !important;
-        border-color: #0d6efd !important;
-        color: #0d6efd;
+    .custom-validation-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #fdecee;
+        color: #dc3545;
+        flex-shrink: 0;
     }
 
-    .alert-danger {
-        background: rgba(220, 53, 69, 0.08) !important;
-        border-color: var(--danger-color) !important;
-        color: var(--danger-color);
+    .custom-validation-list {
+        margin-left: 0.35rem;
+        padding-left: 1.25rem;
+        color: #7a2430;
+        font-size: 0.92rem;
+        line-height: 1.45;
+        max-height: 260px;
+        overflow-y: auto;
     }
 
-    /* ============================================================
-       SECCIONES
-    ============================================================ */
-    .bg-white {
-        background: white !important;
-        border: 2px solid var(--border-light) !important;
-        border-radius: 0.75rem;
-    }
-
-    .border-bottom {
-        border-bottom: 1px solid #e5e7eb !important;
-    }
-
-    /* ============================================================
-       TEXTOS Y TIPOGRAFÍA
-    ============================================================ */
-    h3, .h3 {
-        color: var(--text-dark);
-        font-weight: 800;
-        letter-spacing: -0.5px;
-    }
-
-    h6 {
-        color: var(--text-muted);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    label {
-        color: var(--text-dark);
-        font-weight: 700;
-        margin-bottom: 0.8rem;
-    }
-
-    small {
-        font-weight: 500;
-    }
-
-    /* ============================================================
-       BREADCRUMB
-    ============================================================ */
-    .mb-4 small {
-        font-size: 0.95rem;
-    }
-
-    /* ============================================================
-       ESPACIADO MEJORADO
-    ============================================================ */
-    .mb-5 {
-        margin-bottom: 2.5rem !important;
-    }
-
-    .pb-4 {
-        padding-bottom: 2rem !important;
-    }
-
-    .pt-5 {
-        padding-top: 2.5rem !important;
-    }
-
-    .p-4 {
-        padding: 1.5rem !important;
-    }
-
-    .px-3 {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-
-    @media (min-width: 768px) {
-        .px-md-5 {
-            padding-left: 3rem !important;
-            padding-right: 3rem !important;
-        }
-    }
-
-    /* ============================================================
-       RESPONSIVE
-    ============================================================ */
-    @media (max-width: 768px) {
-        .card-header {
-            padding: 1.5rem !important;
-        }
-
-        .card-body {
-            padding: 1.5rem !important;
-        }
-
-        #tabla-productos {
-            font-size: 0.85rem;
-        }
-
-        #tabla-productos th,
-        #tabla-productos td {
-            padding: 0.75rem 0.5rem !important;
-        }
-
-        .btn-lg {
-            padding: 0.8rem 1.6rem !important;
-            font-size: 0.9rem;
-        }
-
-        .btn {
-            padding: 0.75rem 1.2rem;
-            font-size: 0.85rem;
-        }
-
-        .d-flex.justify-content-between {
-            flex-direction: column;
-            gap: 1rem !important;
-        }
-
-        .d-flex.justify-content-between .btn {
-            width: 100%;
-        }
-
-        h3 {
-            font-size: 1.4rem !important;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .container-fluid {
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
-        }
-
-        .card-header {
-            padding: 1.2rem !important;
-        }
-
-        .card-body {
-            padding: 1rem !important;
-        }
-
-        .btn-lg {
-            padding: 0.7rem 1.4rem !important;
-            font-size: 0.8rem;
-        }
-
-        #tabla-productos {
-            font-size: 0.8rem;
-        }
-    }
+    .custom-validation-list li { margin-bottom: 0.2rem; }
 </style>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const addBtn = document.getElementById('add-row');
-    const container = document.getElementById('formset-container');
-    const totalFormsInput = document.getElementById('id_form-TOTAL_FORMS');
-    const emptyFormTemplate = document.getElementById('empty-form-template');
-    const contadorFilas = document.getElementById('contador-filas');
+    document.addEventListener('DOMContentLoaded', function() {
+        const addBtn = document.getElementById('add-row');
+        const container = document.getElementById('formset-container');
+        const totalFormsInput = document.getElementById('id_form-TOTAL_FORMS');
+        const emptyFormTemplate = document.getElementById('empty-form-template');
+        const contadorFilas = document.getElementById('contador-filas');
+        const customAlert = document.getElementById('custom-validation-alert');
+        const customAlertTitle = document.getElementById('custom-validation-title');
+        const customAlertList = document.getElementById('custom-validation-list');
+        const customAlertClose = document.getElementById('custom-validation-close');
+        const formProductos = document.getElementById('form-productos');
 
-    if (!addBtn || !container || !totalFormsInput || !emptyFormTemplate) {
-        console.error('❌ No se encontraron elementos necesarios del formulario');
-        return;
-    }
+        if (!addBtn || !container || !totalFormsInput || !emptyFormTemplate || !formProductos) {
+            return;
+        }
 
-    // Inicializar tooltips de Bootstrap
-    function initTooltips() {
-        if (typeof bootstrap !== 'undefined') {
-            const tooltipElements = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-            tooltipElements.forEach(el => {
+        function hideCustomAlert() {
+            if (customAlert) customAlert.classList.add('d-none');
+        }
+
+        function showCustomAlert(title, items) {
+            if (!customAlert || !customAlertTitle || !customAlertList) {
+                return;
+            }
+
+            customAlertTitle.textContent = title;
+            customAlertList.innerHTML = '';
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                customAlertList.appendChild(li);
+            });
+            customAlert.classList.remove('d-none');
+        }
+
+        if (customAlertClose) {
+            customAlertClose.addEventListener('click', hideCustomAlert);
+        }
+
+        function initTooltips() {
+            if (typeof bootstrap === 'undefined') return;
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
                 const existing = bootstrap.Tooltip.getInstance(el);
                 if (existing) existing.dispose();
                 new bootstrap.Tooltip(el);
             });
         }
-    }
 
-    // Actualizar el contador de filas
-    function actualizarContador() {
-        const filasActivas = container.querySelectorAll('tr.producto-row:not([style*="display: none"])').length;
-        contadorFilas.textContent = filasActivas;
-    }
+        function actualizarContador() {
+            const filasActivas = container.querySelectorAll('tr.producto-row:not([style*="display: none"])').length;
+            contadorFilas.textContent = filasActivas;
+        }
 
-    // Adjuntar listener de eliminar a un botón
-    function attachDeleteListener(deleteBtn) {
-        if (!deleteBtn) return;
-
-        deleteBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const row = deleteBtn.closest('tr');
-            if (!row) return;
-
-            // Marcar para eliminar
-            const deleteCheckbox = row.querySelector('input[name*="DELETE"][type="hidden"]');
+        function marcarFilaEliminada(row, deleteBtn) {
+            const deleteCheckbox = row.querySelector('input[name*="DELETE"]');
             if (deleteCheckbox) {
                 deleteCheckbox.checked = true;
             }
 
-            // Animar
-            row.style.transition = 'opacity 0.3s ease, background-color 0.3s ease';
-            row.style.opacity = '0.5';
+            row.style.transition = 'opacity 0.25s ease, background-color 0.25s ease';
+            row.style.opacity = '0.55';
             row.style.backgroundColor = '#f8d7da';
             row.style.pointerEvents = 'none';
 
-            // Cambiar botón
-            deleteBtn.disabled = true;
-            deleteBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
-            deleteBtn.classList.remove('btn-outline-danger');
-            deleteBtn.classList.add('btn-success');
+            if (deleteBtn) {
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+                deleteBtn.classList.remove('btn-outline-danger');
+                deleteBtn.classList.add('btn-success');
+            }
 
-            // Esconder
             setTimeout(() => {
                 row.style.display = 'none';
                 actualizarContador();
-            }, 300);
-        });
-    }
-
-    // Agregar nueva fila
-    addBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const currentIndex = parseInt(totalFormsInput.value);
-        const templateRow = emptyFormTemplate.querySelector('tr');
-
-        if (!templateRow) {
-            console.error('❌ No se encontró la fila template');
-            return;
+            }, 260);
         }
 
-        // Clonar la fila template
-        const newRow = templateRow.cloneNode(true);
-
-        // Reemplazar __prefix__ en todos los atributos
-        const allElements = newRow.querySelectorAll('*');
-        allElements.forEach(el => {
-            // Reemplazar atributos
-            Array.from(el.attributes).forEach(attr => {
-                if (attr.value.includes('__prefix__')) {
-                    attr.value = attr.value.replace(/__prefix__/g, currentIndex);
-                }
+        function attachDeleteListener(deleteBtn) {
+            if (!deleteBtn) return;
+            deleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const row = deleteBtn.closest('tr.producto-row');
+                if (!row) return;
+                marcarFilaEliminada(row, deleteBtn);
             });
-        });
-
-        // Insertar la fila en la tabla
-        container.appendChild(newRow);
-
-        // Actualizar contador de formularios
-        totalFormsInput.value = currentIndex + 1;
-
-        // Adjuntar listener al nuevo botón eliminar
-        const newDeleteBtn = newRow.querySelector('.btn-eliminar-fila');
-        if (newDeleteBtn) {
-            attachDeleteListener(newDeleteBtn);
         }
 
-        // Inicializar tooltips
-        initTooltips();
+        addBtn.addEventListener('click', function(e) {
+            e.preventDefault();
 
-        // Actualizar contador
+            const currentIndex = parseInt(totalFormsInput.value, 10);
+            const templateRow = emptyFormTemplate.querySelector('tr.producto-row');
+            if (!templateRow) return;
+
+            const newRow = templateRow.cloneNode(true);
+            newRow.querySelectorAll('*').forEach(el => {
+                Array.from(el.attributes).forEach(attr => {
+                    if (attr.value.includes('__prefix__')) {
+                        attr.value = attr.value.replace(/__prefix__/g, currentIndex);
+                    }
+                });
+            });
+
+            container.appendChild(newRow);
+            totalFormsInput.value = currentIndex + 1;
+
+            attachDeleteListener(newRow.querySelector('.btn-eliminar-fila'));
+            initTooltips();
+            actualizarContador();
+
+            const firstInput = newRow.querySelector('select, input[type="text"], input[type="number"]');
+            if (firstInput) firstInput.focus();
+        });
+
+        container.querySelectorAll('.btn-eliminar-fila').forEach(btn => {
+            attachDeleteListener(btn);
+        });
+
+        initTooltips();
         actualizarContador();
 
-        // Scroll suave
-        setTimeout(() => {
-            newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
+        formProductos.addEventListener('submit', function(e) {
+            hideCustomAlert();
 
-        // Focus en primer input
-        const firstInput = newRow.querySelector('select, input[type="text"], input[type="number"]');
-        if (firstInput) {
-            setTimeout(() => firstInput.focus(), 150);
-        }
-
-        console.log(`✓ Fila ${currentIndex} agregada. Total: ${currentIndex + 1}`);
-    });
-
-    // Adjuntar listeners a botones de eliminar existentes
-    container.querySelectorAll('.btn-eliminar-fila').forEach(btn => {
-        attachDeleteListener(btn);
-    });
-
-    // Inicializar tooltips al cargar
-    initTooltips();
-
-    // Actualizar contador inicial
-    actualizarContador();
-
-    // Validación antes de enviar
-    document.getElementById('form-productos').addEventListener('submit', function(e) {
-        const filasActivas = container.querySelectorAll('tr.producto-row:not([style*="display: none"])').length;
-
-        if (filasActivas === 0) {
-            e.preventDefault();
-            alert('⚠️ Debes agregar al menos un producto antes de guardar.');
-            return false;
-        }
-
-        const selectProveedor = document.querySelector('select[name="proveedor"]');
-        if (!selectProveedor || !selectProveedor.value) {
-            e.preventDefault();
-            alert('⚠️ Debes seleccionar un proveedor antes de guardar.');
-            selectProveedor?.focus();
-            return false;
-        }
-
-        // Validar que todos los productos visibles tengan datos completos
-        let productosValidos = 0;
-        let erroresValidacion = [];
-
-        container.querySelectorAll('tr.producto-row:not([style*="display: none"])').forEach((row, idx) => {
-            const delCheckbox = row.querySelector('input[name*="DELETE"]');
-            if (delCheckbox && delCheckbox.checked) {
-                return; // Saltar filas marcadas para eliminar
+            const filasActivas = container.querySelectorAll('tr.producto-row:not([style*="display: none"])');
+            if (filasActivas.length === 0) {
+                e.preventDefault();
+                showCustomAlert('Agrega al menos un producto', ['Debes agregar al menos un producto antes de guardar.']);
+                return;
             }
 
-            const selectTipo = row.querySelector('select[name*="tipo_producto"]');
-            const inputNombre = row.querySelector('input[name*="nombre"]');
-            const selectPresentacion = row.querySelector('select[name*="tipo_presentacion"]');
-            const inputPrecio = row.querySelector('input[name*="precio"]');
+            const selectProveedor = document.querySelector('select[name="proveedor"]');
+            if (!selectProveedor || !selectProveedor.value) {
+                e.preventDefault();
+                showCustomAlert('Selecciona un proveedor', ['Debes seleccionar un proveedor antes de guardar.']);
+                if (selectProveedor) selectProveedor.focus();
+                return;
+            }
 
-            // Validar campos
-            if (!selectTipo?.value) erroresValidacion.push(`Fila ${idx + 1}: Falta el tipo de producto`);
-            if (!inputNombre?.value?.trim()) erroresValidacion.push(`Fila ${idx + 1}: Nombre vacío`);
-            if (!selectPresentacion?.value) erroresValidacion.push(`Fila ${idx + 1}: Falta la presentación`);
-            if (!inputPrecio?.value) erroresValidacion.push(`Fila ${idx + 1}: Falta el precio`);
-            if (inputPrecio?.value && isNaN(parseFloat(inputPrecio.value))) erroresValidacion.push(`Fila ${idx + 1}: Precio no válido`);
+            const erroresValidacion = [];
+            let productosValidos = 0;
 
-            if (!erroresValidacion.length) {
-                productosValidos++;
+            filasActivas.forEach((row, idx) => {
+                const delCheckbox = row.querySelector('input[name*="DELETE"]');
+                if (delCheckbox && delCheckbox.checked) return;
+
+                const selectTipo = row.querySelector('select[name*="tipo_producto"]');
+                const inputNombre = row.querySelector('input[name*="nombre"]');
+                const selectPresentacion = row.querySelector('select[name*="tipo_presentacion"]');
+                const inputPrecio = row.querySelector('input[name*="precio"]');
+
+                let filaConError = false;
+
+                if (!selectTipo || !selectTipo.value) {
+                    erroresValidacion.push(`Fila ${idx + 1}: Falta el tipo de producto`);
+                    filaConError = true;
+                }
+                if (!inputNombre || !inputNombre.value.trim()) {
+                    erroresValidacion.push(`Fila ${idx + 1}: Nombre vacio`);
+                    filaConError = true;
+                }
+                if (!selectPresentacion || !selectPresentacion.value) {
+                    erroresValidacion.push(`Fila ${idx + 1}: Falta la presentacion`);
+                    filaConError = true;
+                }
+                if (!inputPrecio || !inputPrecio.value) {
+                    erroresValidacion.push(`Fila ${idx + 1}: Falta el precio`);
+                    filaConError = true;
+                }
+                if (inputPrecio && inputPrecio.value && isNaN(parseFloat(inputPrecio.value))) {
+                    erroresValidacion.push(`Fila ${idx + 1}: Precio no valido`);
+                    filaConError = true;
+                }
+
+                if (!filaConError) productosValidos++;
+            });
+
+            if (erroresValidacion.length > 0) {
+                e.preventDefault();
+                showCustomAlert('Errores de validacion', erroresValidacion);
+                return;
+            }
+
+            if (productosValidos === 0) {
+                e.preventDefault();
+                showCustomAlert('Formulario incompleto', ['Debes completar al menos un producto correctamente.']);
             }
         });
-
-        if (erroresValidacion.length > 0) {
-            e.preventDefault();
-            alert('❌ Errores de validación:\n\n' + erroresValidacion.join('\n'));
-            return false;
-        }
-
-        if (productosValidos === 0) {
-            e.preventDefault();
-            alert('⚠️ Debes completar al menos un producto correctamente.');
-            return false;
-        }
     });
-
-    console.log('✓ Script de productos cargado');
-});
 </script>
-
 {% endblock %}

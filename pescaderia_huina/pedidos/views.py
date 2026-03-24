@@ -29,6 +29,23 @@ DetallePedidoFormSet = inlineformset_factory(
     can_delete=True
 )
 
+
+def _asignar_productos_por_proveedor(formset, proveedor_id):
+    """Reduce el peso del render del formset limitando productos al proveedor seleccionado."""
+    if proveedor_id:
+        productos_qs = Producto.objects.filter(proveedor_id=proveedor_id).select_related('proveedor').order_by('nombre')
+    else:
+        productos_qs = Producto.objects.none()
+
+    for form in formset.forms:
+        if 'producto' in form.fields:
+            form.fields['producto'].queryset = productos_qs
+
+    # Importante: el empty_form se usa para crear filas dinámicas en frontend.
+    # Si no se limita aquí, el select de "Añadir otro producto" puede mostrar todo el catálogo.
+    if 'producto' in formset.empty_form.fields:
+        formset.empty_form.fields['producto'].queryset = productos_qs
+
 # ==========================================
 # 1. LISTA DE PEDIDOS
 # ==========================================
@@ -182,6 +199,9 @@ def crear_pedido(request):
     if request.method == 'POST':
         form_pedido = PedidoForm(request.POST)
         formset = DetallePedidoFormSet(request.POST) 
+
+        proveedor_id = request.POST.get('proveedor')
+        _asignar_productos_por_proveedor(formset, proveedor_id)
         
         if form_pedido.is_valid() and formset.is_valid():
             try:
@@ -210,6 +230,7 @@ def crear_pedido(request):
     else:
         form_pedido = PedidoForm()
         formset = DetallePedidoFormSet()
+        _asignar_productos_por_proveedor(formset, None)
 
     return render(request, 'crear_pedido.html', {'form_pedido': form_pedido, 'formset': formset})
 
@@ -222,6 +243,9 @@ def editar_pedido(request, id):
     if request.method == 'POST':
         form_pedido = PedidoForm(request.POST, instance=pedido)
         formset = DetallePedidoFormSet(request.POST, instance=pedido)
+
+        proveedor_id = request.POST.get('proveedor') or pedido.proveedor_id
+        _asignar_productos_por_proveedor(formset, proveedor_id)
 
         if form_pedido.is_valid() and formset.is_valid():
             pedido_obj = form_pedido.save(commit=False)
@@ -240,6 +264,7 @@ def editar_pedido(request, id):
     else:
         form_pedido = PedidoForm(instance=pedido)
         formset = DetallePedidoFormSet(instance=pedido)
+        _asignar_productos_por_proveedor(formset, pedido.proveedor_id)
 
     return render(request, 'editar_pedido.html', {'form_pedido': form_pedido, 'formset': formset, 'pedido': pedido})
 
@@ -422,10 +447,11 @@ def inventario_pedidos(request):
             
             # Datos
             for p in productos_list:
+                unidad_texto = 'Libras' if p.tipo_presentacion == 'LIB' else 'Unidades'
                 ws[f'A{row_num}'] = p.nombre
                 ws[f'B{row_num}'] = p.proveedor.nombre_contacto if p.proveedor else "N/A"
-                ws[f'C{row_num}'] = p.stock_disponible
-                ws[f'D{row_num}'] = p.get_tipo_presentacion_display()
+                ws[f'C{row_num}'] = int(round(float(p.stock_disponible or 0)))
+                ws[f'D{row_num}'] = unidad_texto
                 
                 # Determinación de color para stock
                 if p.stock_disponible <= 0:
@@ -445,6 +471,7 @@ def inventario_pedidos(request):
                         cell.fill = stock_fill
                         cell.font = stock_font
                         cell.alignment = center_align
+                        cell.number_format = '0'
                     elif col == 1:
                         cell.alignment = left_align
                     else:

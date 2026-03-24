@@ -45,6 +45,17 @@ class VentaForm(forms.ModelForm):
 
 
 class VentaItemForm(forms.ModelForm):
+    precio_unitario = forms.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control precio-input',
+            'step': '1',
+            'min': '0',
+            'placeholder': 'Precio unitario'
+        })
+    )
 
     class Meta:
         model = VentaItem
@@ -61,13 +72,6 @@ class VentaItemForm(forms.ModelForm):
                 'step': '1',
                 'min': '1',
                 'placeholder': 'Cantidad'
-            }),
-            #  precio_unitario se hereda del producto via JS, pero editable
-            'precio_unitario': forms.NumberInput(attrs={
-                'class': 'form-control precio-input',
-                'step': '1',
-                'min': '0',
-                'placeholder': 'Precio unitario'
             }),
         }
         labels = {

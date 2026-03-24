@@ -89,6 +89,36 @@
     .table-products tbody tr:hover { background-color: var(--light-blue-bg); }
     .table-products td { padding: 0.9rem 0.75rem; vertical-align: middle; }
 
+    .products-scroll-area {
+        max-height: min(58vh, 520px);
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+    .products-scroll-area thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+    .products-scroll-area::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    .products-scroll-area::-webkit-scrollbar-thumb {
+        background: #9bb5d8;
+        border-radius: 999px;
+        border: 2px solid #eef3fa;
+    }
+    .products-scroll-area::-webkit-scrollbar-track {
+        background: #eef3fa;
+        border-radius: 999px;
+    }
+
+    @media (max-width: 991.98px) {
+        .products-scroll-area {
+            max-height: 48vh;
+        }
+    }
+
     /* Totales */
     .totals-box {
         background: var(--light-blue-bg);
@@ -136,7 +166,7 @@
             <div class="card card-detail">
                 <div class="detail-header">
                     <div class="order-icon"><i class="bi bi-clipboard2-check"></i></div>
-                    <h3 class="fw-bold mb-1">Pedido #{{ pedido.id }}</h3>
+                    <h3 class="fw-bold mb-1">Pedido {{ pedido.id }}</h3>
                     <p class="mb-2 opacity-75 small">{{ pedido.fecha|date:"d/m/Y" }}</p>
                     <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap">
                         {% if pedido.estado == 'REC' or pedido.estado == 'recibido' %}
@@ -199,7 +229,7 @@
                             <i class="bi bi-box-seam-fill me-2"></i>Productos Solicitados
                         </h6>
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive products-scroll-area">
                         <table class="table table-products align-middle mb-0">
                             <thead>
                                 <tr>
@@ -220,7 +250,7 @@
                                     </td>
                                     <td class="text-end text-muted fw-semibold money-format"
                                         data-value="{{ detalle.precio_unitario|stringformat:'f' }}">
-                                        {{ detalle.precio_unitario }}
+                                        {{ detalle.precio_unitario|floatformat:0 }}
                                     </td>
                                     <td class="text-end pe-4 fw-bold text-success calc-subtotal"
                                         data-qty="{{ detalle.cantidad|stringformat:'f' }}"
@@ -251,7 +281,7 @@
                     <div class="totals-row total-final">
                         <span>Total</span>
                         <span class="money-format" data-value="{{ pedido.valor_total|stringformat:'f' }}">
-                            {{ pedido.valor_total }}
+                            {{ pedido.valor_total|floatformat:0 }}
                         </span>
                     </div>
                 </div>

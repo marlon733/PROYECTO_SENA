@@ -793,7 +793,7 @@
                         <li><h6 class="dropdown-header-notify">Notificaciones</h6></li>
                         {% if low_stock_count > 0 %}
                             {% if low_stock_critical %}
-                                <li><small class="dropdown-header text-danger fw-bold ps-3 py-2">Stock Crítico (0 unidades)</small></li>
+                                <li><small class="dropdown-header text-danger fw-bold ps-3 py-2">Stock Crítico (0 o menos)</small></li>
                                 {% for producto in low_stock_critical %}
                                     <li>
                                         <a class="dropdown-item p-3 border-bottom" >
@@ -803,10 +803,10 @@
                                                 </div>
                                                 <div>
                                                     <p class="mb-0 small fw-bold text-dark">
-                                                        {{ producto.nombre }} en stock: {{ producto.stock }}
+                                                        {{ producto.nombre }} en stock: {{ producto.stock_notif }} {{ producto.unidad_stock }}
                                                     </p>
                                                     <small class="text-muted" style="font-size: 0.7rem;">
-                                                        Umbral: {{ low_stock_threshold }}
+                                                        Requiere reposición inmediata
                                                     </small>
                                                 </div>
                                             </div>
@@ -815,7 +815,7 @@
                                 {% endfor %}
                             {% endif %}
                             {% if low_stock_warning %}
-                                <li><small class="dropdown-header text-warning fw-bold ps-3 py-2">Stock Bajo (10-15 unidades)</small></li>
+                                <li><small class="dropdown-header text-warning fw-bold ps-3 py-2">Stock Bajo (1 a {{ low_stock_threshold }})</small></li>
                                 {% for producto in low_stock_warning %}
                                     <li>
                                         <a class="dropdown-item p-3 border-bottom" >
@@ -825,10 +825,10 @@
                                                 </div>
                                                 <div>
                                                     <p class="mb-0 small fw-bold text-dark">
-                                                        {{ producto.nombre }} en stock: {{ producto.stock }}
+                                                        {{ producto.nombre }} en stock: {{ producto.stock_notif }} {{ producto.unidad_stock }}
                                                     </p>
                                                     <small class="text-muted" style="font-size: 0.7rem;">
-                                                        Umbral: {{ low_stock_threshold }}
+                                                        Umbral de alerta: {{ low_stock_threshold }}
                                                     </small>
                                                 </div>
                                             </div>

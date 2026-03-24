@@ -14,6 +14,18 @@ class ProveedorSelectForm(forms.Form):
 
 # Formulario 2: Para cada FILA de producto (Sin proveedor, sin stock)
 class ProductoItemForm(forms.ModelForm):
+    precio = forms.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            "class": "form-control form-control-sm",
+            "placeholder": "0",
+            "step": "1",
+            "min": "0"
+        })
+    )
+
     class Meta:
         model = Producto
         fields = [
@@ -27,7 +39,6 @@ class ProductoItemForm(forms.ModelForm):
             "tipo_producto": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "nombre": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Nombre del producto"}),
             "tipo_presentacion": forms.Select(attrs={"class": "form-select form-select-sm"}),
-            "precio": forms.NumberInput(attrs={"class": "form-control form-control-sm", "placeholder": "0.00", "step": "0.01", "min": "0"}),
             "estado": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
@@ -43,6 +54,13 @@ class ProductoItemForm(forms.ModelForm):
 
 # Mantenemos tu formulario original para la edición individual
 class ProductoForm(forms.ModelForm):
+    precio = forms.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        min_value=0,
+        widget=forms.NumberInput(attrs={"class": "form-control", "step": "1", "min": "0", "placeholder": "0"})
+    )
+
     # ... (Tu código anterior del ProductoForm se queda igual) ...
     class Meta:
         model = Producto
@@ -53,7 +71,6 @@ class ProductoForm(forms.ModelForm):
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
             "descripcion": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
             "tipo_presentacion": forms.Select(attrs={"class": "form-select"}),
-            "precio": forms.NumberInput(attrs={"class": "form-control"}),
             "estado": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
     

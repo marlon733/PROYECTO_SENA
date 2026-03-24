@@ -18,6 +18,14 @@ from .forms import VentaForm, VentaItemFormSet, CancelarVentaForm, BusquedaVenta
 from productos.models import Producto
 
 
+def _formatear_numero_alerta(valor):
+    """Muestra enteros sin .00 y conserva decimales solo cuando existen."""
+    numero = Decimal(str(valor))
+    if numero == numero.to_integral_value():
+        return str(int(numero))
+    return format(numero.normalize(), 'f').rstrip('0').rstrip('.')
+
+
 def _acumular_cantidades_formset(item_formset):
     """Suma cantidades solicitadas por producto excluyendo filas marcadas para eliminar."""
     cantidades_por_producto = {}
@@ -84,7 +92,7 @@ def _validar_stock_disponible(item_formset, venta_actual=None):
             for item_form in formularios_por_producto.get(producto_id, []):
                 item_form.add_error(
                     'cantidad',
-                    f'⚠️ {producto.nombre}: NO HAY STOCK DISPONIBLE (Stock actual: {stock_disponible}). '
+                    f'⚠️ {producto.nombre}: NO HAY STOCK DISPONIBLE (Stock actual: {_formatear_numero_alerta(stock_disponible)}). '
                     f'Debe registrar un pedido del proveedor primero.'
                 )
             hay_error = True
@@ -94,7 +102,8 @@ def _validar_stock_disponible(item_formset, venta_actual=None):
                 item_form.add_error(
                     'cantidad',
                     f'⚠️ {producto.nombre}: Stock insuficiente. '
-                    f'Disponible: {stock_ajustado}, Solicitado: {cantidad_solicitada}'
+                    f'Disponible: {_formatear_numero_alerta(stock_ajustado)}, '
+                    f'Solicitado: {_formatear_numero_alerta(cantidad_solicitada)}'
                 )
             hay_error = True
 

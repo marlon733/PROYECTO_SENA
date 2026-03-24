@@ -14,7 +14,7 @@ class Producto(models.Model):
     TIPO_PRESENTACION = [
         ('VAC', 'Empacado al Vacío (Unidades)'),
         ('BAN', 'Bandeja (Unidades)'),
-        ('LIB', 'A granel (Libras)'),
+        ('LIB', 'Libras'),
     ]
 
     # --- RELACIÓN CON PROVEEDOR (Protegida) ---

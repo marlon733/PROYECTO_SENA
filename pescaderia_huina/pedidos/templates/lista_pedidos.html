@@ -127,7 +127,7 @@
                             </td>
                             
                             <td class="fw-bolder text-end total-value money-format pe-3" data-value="{{ p.valor_total|stringformat:'f' }}">
-                                {{ p.valor_total }}
+                                {{ p.valor_total|floatformat:0 }}
                             </td>
                             
                             <td class="text-center">
