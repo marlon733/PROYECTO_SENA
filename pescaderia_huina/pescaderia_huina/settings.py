@@ -79,6 +79,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.low_stock_notifications',
+                'core.breadcrumbs.get_breadcrumb_items',
             ],
         },
     },
