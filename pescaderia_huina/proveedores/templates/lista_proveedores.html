@@ -92,13 +92,18 @@
                 <span class="text-muted small">
                     <span id="filterStatus">Mostrando todos los registros</span>
                 </span>
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
                     <span class="text-muted small fw-bold text-uppercase me-1">Exportar:</span>
-                    <a href="{% url 'proveedores:export_excel' %}" class="btn btn-export excel text-decoration-none">
+                    
+                    <a href="{% url 'proveedores:export_pdf' %}" class="btn btn-export pdf text-decoration-none" title="Descargar en PDF">
+                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                    </a>
+                    
+                    <a href="{% url 'proveedores:export_excel' %}" class="btn btn-export excel text-decoration-none" title="Descargar en Excel">
                         <i class="bi bi-file-earmark-excel-fill"></i> Excel
                     </a>
                     
-                    <button id="clearFilters" class="btn btn-light border shadow-sm text-danger btn-sm d-none" title="Limpiar todos los filtros">
+                    <button id="clearFilters" class="btn btn-light border shadow-sm text-danger btn-sm d-none ms-2" title="Limpiar todos los filtros">
                         <i class="bi bi-eraser-fill me-1"></i> Limpiar filtros
                     </button>
                 </div>

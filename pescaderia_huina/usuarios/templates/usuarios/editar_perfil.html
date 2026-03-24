@@ -331,6 +331,20 @@
                             </div>
 
                             <div class="col-md-6">
+                                <label class="form-label fw-semibold small text-muted">Tipo de usuario</label>
+                                {% if is_admin_edit %}
+                                    {{ form_usuario.rol }}
+                                    {% if form_usuario.rol.errors %}
+                                        <div class="text-danger small mt-1">{{ form_usuario.rol.errors|striptags }}</div>
+                                    {% endif %}
+                                    <div class="form-text">Define si el usuario es Administrador o Empleado.</div>
+                                {% else %}
+                                    <input type="text" class="form-control" value="{% if usuario_obj.is_staff %}Administrador{% else %}Empleado{% endif %}" readonly>
+                                    <div class="form-text">Solo un administrador puede cambiar este dato.</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
                                 <label class="form-label fw-semibold small text-muted">Teléfono</label>
                                 {{ form_perfil.telefono }}
                                 {% if form_perfil.telefono.errors %}
@@ -356,8 +370,16 @@
 
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small text-muted">Documento</label>
-                                <input type="text" class="form-control" value="{{ perfil_usuario.documento|default:usuario_obj.username }}" readonly>
-                                <div class="form-text">Este dato no se puede editar desde aquí.</div>
+                                {% if is_admin_edit %}
+                                    {{ form_perfil.documento }}
+                                    {% if form_perfil.documento.errors %}
+                                        <div class="text-danger small mt-1">{{ form_perfil.documento.errors|striptags }}</div>
+                                    {% endif %}
+                                    <div class="form-text">Este valor se usa para iniciar sesión.</div>
+                                {% else %}
+                                    <input type="text" class="form-control" value="{{ perfil_usuario.documento|default:usuario_obj.username }}" readonly>
+                                    <div class="form-text">Solo un administrador puede cambiar este dato.</div>
+                                {% endif %}
                             </div>
                         </div>
 

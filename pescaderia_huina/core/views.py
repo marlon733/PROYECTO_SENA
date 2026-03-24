@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 def index(request):
     return render(request, 'core/index.html')
@@ -58,10 +59,13 @@ def dashboard_view(request):
     Vista principal del panel de administración
     """
     # Estadísticas generales
+    now = timezone.now()
     total_usuarios = User.objects.count()
     usuarios_activos = User.objects.filter(is_active=True).count()
+    total_administradores = User.objects.filter(is_staff=True).count()
     nuevos_usuarios_mes = User.objects.filter(
-        date_joined__month=request.user.date_joined.month
+        date_joined__year=now.year,
+        date_joined__month=now.month,
     ).count()
     
     # Últimos usuarios registrados
@@ -71,6 +75,7 @@ def dashboard_view(request):
         'titulo': 'Panel de Administración',
         'total_usuarios': total_usuarios,
         'usuarios_activos': usuarios_activos,
+        'total_administradores': total_administradores,
         'nuevos_usuarios_mes': nuevos_usuarios_mes,
         'ultimos_usuarios': ultimos_usuarios,
     }
