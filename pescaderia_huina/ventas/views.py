@@ -54,7 +54,10 @@ def _cantidades_actuales_venta(venta):
 
 
 def _validar_stock_disponible(item_formset, venta_actual=None):
-    """Valida que cada producto tenga stock suficiente para la cantidad solicitada."""
+    """
+    Valida que cada producto tenga stock POSITIVO y suficiente.
+    No permite vender productos con stock negativo o insuficiente.
+    """
     solicitadas, formularios_por_producto = _acumular_cantidades_formset(item_formset)
     cantidades_actuales = _cantidades_actuales_venta(venta_actual)
     hay_error = False
@@ -67,9 +70,32 @@ def _validar_stock_disponible(item_formset, venta_actual=None):
             hay_error = True
             continue
 
-        # El modelo Producto no tiene atributo 'stock'
-        # Por ahora se permite la venta sin validación de stock
-        stock_disponible = Decimal('0')
+        # Obtener stock disponible usando la propiedad del modelo
+        stock_disponible = producto.stock
+        
+        # Si es edición, restar las cantidades antiguas para permitir cambios sin penalidad
+        cantidad_antigua = cantidades_actuales.get(producto_id, Decimal('0'))
+        stock_ajustado = stock_disponible + cantidad_antigua
+        
+        # ✅ VALIDACIÓN ESTRICTA: Solo permitir si hay stock positivo y suficiente
+        if stock_ajustado <= 0:
+            # No hay stock disponible
+            for item_form in formularios_por_producto.get(producto_id, []):
+                item_form.add_error(
+                    'cantidad',
+                    f'⚠️ {producto.nombre}: NO HAY STOCK DISPONIBLE (Stock actual: {stock_disponible}). '
+                    f'Debe registrar un pedido del proveedor primero.'
+                )
+            hay_error = True
+        elif cantidad_solicitada > stock_ajustado:
+            # No hay suficiente stock
+            for item_form in formularios_por_producto.get(producto_id, []):
+                item_form.add_error(
+                    'cantidad',
+                    f'⚠️ {producto.nombre}: Stock insuficiente. '
+                    f'Disponible: {stock_ajustado}, Solicitado: {cantidad_solicitada}'
+                )
+            hay_error = True
 
     return not hay_error
 
@@ -92,7 +118,11 @@ def buscar_productos_api(request):
 @login_required
 def precio_producto_api(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id, estado=True)
-    return JsonResponse({'precio': str(producto.precio), 'nombre': producto.nombre, 'stock': '0'})
+    return JsonResponse({
+        'precio': str(producto.precio), 
+        'nombre': producto.nombre, 
+        'stock': str(producto.stock)  # Usar la propiedad stock real
+    })
 
 
 @login_required

@@ -78,7 +78,7 @@ class Producto(models.Model):
     def stock(self):
         """
         Stock = cantidad recibida en pedidos (estado REC)
-                − cantidad vendida en ventas no canceladas
+                − cantidad vendida en ventas COMPLETADA
         """
         from django.db.models import Sum
 
@@ -87,9 +87,10 @@ class Producto(models.Model):
             pedido__estado='REC'
         ).aggregate(total=Sum('cantidad'))['total'] or 0
 
-        # ✅ Total vendido en ventas no canceladas
+        # ✅ Total vendido SOLO en ventas COMPLETADA (confirmadas)
+        # PENDIENTE no se resta porque aún no están confirmadas
         vendido = self.ventaitem_set.filter(
-            venta__estado__in=['COMPLETADA', 'PENDIENTE']
+            venta__estado='COMPLETADA'
         ).aggregate(total=Sum('cantidad'))['total'] or 0
 
         return recibido - vendido
