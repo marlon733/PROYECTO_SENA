@@ -10,8 +10,8 @@ from .forms import ProductoForm, ProveedorSelectForm, ProductoItemForm
 # 1. LISTA DE PRODUCTOS
 @login_required
 def productos_list(request):
-    query = request.GET.get('q')
-    presentacion = request.GET.get('presentacion')
+    query = (request.GET.get('q') or '').strip()
+    presentacion = (request.GET.get('presentacion') or '').strip()
     
     # .select_related('proveedor') optimiza la consulta para traer el nombre del proveedor de una vez
     productos = Producto.objects.select_related('proveedor').all().order_by('-id')
@@ -24,6 +24,10 @@ def productos_list(request):
 
     if presentacion:
         productos = productos.filter(tipo_presentacion=presentacion)
+
+    presentacion_label = ''
+    if presentacion:
+        presentacion_label = dict(Producto.TIPO_PRESENTACION).get(presentacion, '')
 
     # OPTIMIZACIÓN: Paginación para no cargar todos los productos
     paginator = Paginator(productos, 25)
@@ -38,6 +42,10 @@ def productos_list(request):
     context = {
         'productos': productos,
         'tipos_presentacion': Producto.TIPO_PRESENTACION,
+        'query': query,
+        'presentacion': presentacion,
+        'presentacion_label': presentacion_label,
+        'has_active_filters': bool(query or presentacion),
     }
 
     return render(request, "producto_list.html", context)

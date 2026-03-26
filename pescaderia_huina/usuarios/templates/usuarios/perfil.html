@@ -295,7 +295,11 @@
                     <div class="d-flex align-items-end gap-3 flex-wrap">
                         <div class="avatar-container">
                             <div class="avatar-ring"></div>
-                            {% if request.user.perfil.foto_perfil %}
+                            {% if request.user.perfil.foto_perfil and request.user.perfil.es_video_perfil %}
+                                <video class="profile-avatar" autoplay muted loop playsinline>
+                                    <source src="{{ request.user.perfil.foto_perfil.url }}">
+                                </video>
+                            {% elif request.user.perfil.foto_perfil %}
                                 <img src="{{ request.user.perfil.foto_perfil.url }}" alt="Foto de perfil" class="profile-avatar">
                             {% else %}
                                 <div class="profile-avatar d-flex align-items-center justify-content-center bg-light">

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django_recaptcha.fields import ReCaptchaField
 from .models import PerfilUsuario
 
@@ -11,6 +12,41 @@ ROL_CHOICES = (
     (ROL_ADMIN, 'Administrador'),
     (ROL_EMPLEADO, 'Empleado'),
 )
+
+ALLOWED_PROFILE_MEDIA_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.gif', '.mp4', '.webm', '.mov', '.m4v'}
+MAX_PROFILE_MEDIA_SIZE = 25 * 1024 * 1024  # 25MB
+
+
+def _clean_telefono_value(raw_value):
+    """Normaliza y valida que el telefono contenga solo digitos."""
+    telefono = (raw_value or '').strip()
+    if not telefono:
+        return telefono
+
+    if not telefono.isdigit():
+        raise ValidationError('El teléfono debe contener solo números.')
+
+    if not (7 <= len(telefono) <= 15):
+        raise ValidationError('El teléfono debe tener entre 7 y 15 dígitos.')
+
+    return telefono
+
+
+def _clean_profile_photo(uploaded_file):
+    """Valida tamaño y extensión de archivo de perfil (imagen/video)."""
+    if not uploaded_file:
+        return uploaded_file
+
+    import os
+
+    extension = os.path.splitext(uploaded_file.name)[1].lower()
+    if extension not in ALLOWED_PROFILE_MEDIA_EXTENSIONS:
+        raise ValidationError('Formato no permitido. Usa JPG, PNG, WEBP, GIF, MP4, WEBM o MOV.')
+
+    if uploaded_file.size > MAX_PROFILE_MEDIA_SIZE:
+        raise ValidationError('El archivo de perfil no puede superar 25MB.')
+
+    return uploaded_file
 
 class LoginForm(AuthenticationForm):
     """
@@ -114,7 +150,11 @@ class RegistroForm(UserCreationForm):
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Teléfono (opcional)'
+            'placeholder': 'Teléfono (opcional)',
+            'inputmode': 'numeric',
+            'pattern': r'\d{7,15}',
+            'maxlength': '15',
+            'autocomplete': 'tel'
         })
     )
 
@@ -134,6 +174,15 @@ class RegistroForm(UserCreationForm):
         widget=forms.DateInput(attrs={
             'class': 'form-control',
             'type': 'date'
+        })
+    )
+
+    foto_perfil = forms.FileField(
+        required=False,
+        label='Foto o video de perfil',
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*,video/*'
         })
     )
 
@@ -190,6 +239,12 @@ class RegistroForm(UserCreationForm):
             raise forms.ValidationError('Este correo electrónico ya está registrado.')
         return email
 
+    def clean_telefono(self):
+        return _clean_telefono_value(self.cleaned_data.get('telefono'))
+
+    def clean_foto_perfil(self):
+        return _clean_profile_photo(self.cleaned_data.get('foto_perfil'))
+
     def __init__(self, *args, actor_user=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.actor_user = actor_user
@@ -227,6 +282,8 @@ class RegistroForm(UserCreationForm):
             perfil.telefono = self.cleaned_data.get('telefono', '')
             perfil.direccion = self.cleaned_data.get('direccion', '')
             perfil.fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
+            if self.cleaned_data.get('foto_perfil'):
+                perfil.foto_perfil = self.cleaned_data.get('foto_perfil')
             perfil.save()
         
         return user
@@ -353,7 +410,13 @@ class EditarPerfilForm(forms.ModelForm):
         fields = ['documento', 'telefono', 'direccion', 'foto_perfil', 'fecha_nacimiento']
         widgets = {
             'documento': forms.TextInput(attrs={'class': 'form-control'}),
-            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefono': forms.TextInput(attrs={
+                'class': 'form-control',
+                'inputmode': 'numeric',
+                'pattern': r'\d{7,15}',
+                'maxlength': '15',
+                'autocomplete': 'tel'
+            }),
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
             'foto_perfil': forms.FileInput(attrs={'class': 'form-control'}),
             'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
@@ -375,6 +438,12 @@ class EditarPerfilForm(forms.ModelForm):
 
         return documento
 
+    def clean_telefono(self):
+        return _clean_telefono_value(self.cleaned_data.get('telefono'))
+
+    def clean_foto_perfil(self):
+        return _clean_profile_photo(self.cleaned_data.get('foto_perfil'))
+
 
 class EditarMiPerfilForm(forms.ModelForm):
     """Formulario para que el usuario edite su perfil (sin documento)."""
@@ -383,8 +452,20 @@ class EditarMiPerfilForm(forms.ModelForm):
         model = PerfilUsuario
         fields = ['telefono', 'direccion', 'foto_perfil', 'fecha_nacimiento']
         widgets = {
-            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefono': forms.TextInput(attrs={
+                'class': 'form-control',
+                'inputmode': 'numeric',
+                'pattern': r'\d{7,15}',
+                'maxlength': '15',
+                'autocomplete': 'tel'
+            }),
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
             'foto_perfil': forms.FileInput(attrs={'class': 'form-control'}),
             'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
+
+    def clean_telefono(self):
+        return _clean_telefono_value(self.cleaned_data.get('telefono'))
+
+    def clean_foto_perfil(self):
+        return _clean_profile_photo(self.cleaned_data.get('foto_perfil'))

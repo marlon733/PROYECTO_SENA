@@ -549,7 +549,11 @@
                             <td class="ps-5">
                                 <div class="user-cell">
                                     <div class="user-avatar">
-                                        {% if usuario.perfil.foto_perfil %}
+                                        {% if usuario.perfil.foto_perfil and usuario.perfil.es_video_perfil %}
+                                            <span class="d-inline-flex align-items-center justify-content-center w-100 h-100" title="Video de perfil">
+                                                <i class="bi bi-play-circle-fill fs-5"></i>
+                                            </span>
+                                        {% elif usuario.perfil.foto_perfil %}
                                             <img src="{{ usuario.perfil.foto_perfil.url }}" alt="{{ usuario.get_full_name }}">
                                         {% else %}
                                             {{ usuario.first_name|first|upper }}{{ usuario.last_name|first|upper }}

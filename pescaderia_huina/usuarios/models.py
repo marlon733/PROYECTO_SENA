@@ -5,6 +5,16 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from uuid import uuid4
+
+
+def perfil_photo_upload_to(instance, filename):
+    """Genera rutas estables y nombres unicos para archivos de perfil."""
+    import os
+
+    extension = os.path.splitext(filename)[1].lower() or '.jpg'
+    user_id = instance.user_id or 'anon'
+    return f'perfil/user_{user_id}/{uuid4().hex}{extension}'
 
 class PerfilUsuario(models.Model):
     """
@@ -47,11 +57,11 @@ class PerfilUsuario(models.Model):
         help_text="Dirección de residencia"
     )
     
-    foto_perfil = models.ImageField(
-        upload_to='perfiles/', 
+    foto_perfil = models.FileField(
+        upload_to=perfil_photo_upload_to,
         blank=True, 
         null=True,
-        help_text="Foto de perfil del usuario"
+        help_text="Archivo de perfil (imagen o video)"
     )
     
     fecha_nacimiento = models.DateField(
@@ -77,6 +87,21 @@ class PerfilUsuario(models.Model):
     def get_rol(self):
         """Retorna el rol del usuario: 'Administrador' o 'Empleado'"""
         return 'Administrador' if self.user.is_staff else 'Empleado'
+
+    @property
+    def perfil_media_extension(self):
+        if not self.foto_perfil:
+            return ''
+        import os
+        return os.path.splitext(self.foto_perfil.name)[1].lower()
+
+    @property
+    def es_imagen_perfil(self):
+        return self.perfil_media_extension in {'.jpg', '.jpeg', '.png', '.webp', '.gif'}
+
+    @property
+    def es_video_perfil(self):
+        return self.perfil_media_extension in {'.mp4', '.webm', '.mov', '.m4v'}
 
 
 # Señales para crear/actualizar perfil automáticamente

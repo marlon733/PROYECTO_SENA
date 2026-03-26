@@ -150,7 +150,7 @@ def login_view(request):
         if esta_bloqueado:
             messages.error(
                 request, 
-                f'🔒 Demasiados intentos fallidos. Intenta de nuevo en {minutos_restantes} minutos.'
+                f' Demasiados intentos fallidos. Intenta de nuevo en {minutos_restantes} minutos.'
             )
             form = LoginForm()
             context = {'form': form, 'titulo': 'Iniciar Sesión'}
@@ -204,7 +204,7 @@ def login_view(request):
                             f' Documento o contraseña incorrectos. Te quedan {intentos_restantes} intentos.'
                         )
                     else:
-                        messages.error(request, '🔒 Tu cuenta ha sido bloqueada temporalmente por seguridad.')
+                        messages.error(request, 'Tu cuenta ha sido bloqueada temporalmente por seguridad.')
         else:
             messages.error(request, 'Por favor ingresa documento y contraseña.')
         
@@ -224,7 +224,7 @@ def login_view(request):
 @user_passes_test(es_staff, login_url='usuarios:login')
 def registro_view(request):
     if request.method == 'POST':
-        form = RegistroForm(request.POST, actor_user=request.user)
+        form = RegistroForm(request.POST, request.FILES, actor_user=request.user)
 
         if form.is_valid():
             user = form.save()
@@ -310,7 +310,7 @@ def crear_usuario_view(request):
     Vista para crear un nuevo usuario desde el panel admin
     """
     if request.method == 'POST':
-        form = RegistroForm(request.POST, actor_user=request.user)
+        form = RegistroForm(request.POST, request.FILES, actor_user=request.user)
         
         if form.is_valid():
             user = form.save()

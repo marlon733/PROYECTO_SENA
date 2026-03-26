@@ -25,6 +25,21 @@
     .filter-btn-group .btn.active {
         box-shadow: 0 0 0 3px rgba(15, 57, 118, 0.12);
     }
+
+    .active-filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.72rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        line-height: 1.1;
+        border: 1px solid #bfd5f5;
+        background: #e8f1ff;
+        color: #0f3976;
+        white-space: nowrap;
+    }
 </style>
 {% endblock %}
 
@@ -248,7 +263,12 @@
 
             const hasFilters = query || activeTipo || activeEstado;
             if (hasFilters) {
-                filterStatus.innerHTML = '<span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1"><i class="bi bi-funnel-fill me-1"></i> Mostrando ' + visible + ' de ' + totalRows + ' registros</span>';
+                const resumenFiltros = [];
+                if (query) resumenFiltros.push('Busqueda: "' + query + '"');
+                if (activeTipo) resumenFiltros.push('Tipo: ' + (activeTipo === 'natural' ? 'Natural' : 'Juridica'));
+                if (activeEstado) resumenFiltros.push('Estado: ' + (activeEstado === 'activo' ? 'Activo' : 'Inactivo'));
+
+                filterStatus.innerHTML = '<span class="active-filter-chip"><i class="bi bi-funnel-fill"></i>' + resumenFiltros.join(' | ') + '</span><span class="ms-2 text-muted small">Mostrando ' + visible + ' de ' + totalRows + ' registros</span>';
             } else {
                 filterStatus.textContent = 'Mostrando todos los registros';
             }

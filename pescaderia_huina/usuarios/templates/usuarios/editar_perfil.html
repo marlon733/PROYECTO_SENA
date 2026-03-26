@@ -271,7 +271,11 @@
                             <div class="avatar-container">
                                 <div class="avatar-ring"></div>
 
-                                {% if perfil_usuario.foto_perfil %}
+                                {% if perfil_usuario.foto_perfil and perfil_usuario.es_video_perfil %}
+                                    <video class="profile-avatar" id="avatarPreview" autoplay muted loop playsinline>
+                                        <source src="{{ perfil_usuario.foto_perfil.url }}">
+                                    </video>
+                                {% elif perfil_usuario.foto_perfil %}
                                     <img src="{{ perfil_usuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-avatar" id="avatarPreview">
                                 {% else %}
                                     <div class="profile-avatar d-flex align-items-center justify-content-center bg-light" id="avatarPlaceholder">
@@ -282,7 +286,7 @@
                                 <label for="id_foto_perfil" class="btn-upload-photo" title="Cambiar foto">
                                     <i class="bi bi-camera-fill"></i>
                                 </label>
-                                <input type="file" name="foto_perfil" id="id_foto_perfil" class="d-none" accept="image/*" onchange="previewImage(this)">
+                                <input type="file" name="foto_perfil" id="id_foto_perfil" class="d-none" accept="image/*,video/*" onchange="previewMedia(this)">
                             </div>
 
                             <div class="identity">
@@ -411,22 +415,41 @@
 </div>
 
 <script>
-    function previewImage(input) {
+    function previewMedia(input) {
         if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const isVideo = file.type.startsWith('video/');
             var reader = new FileReader();
             reader.onload = function(e) {
                 var preview = document.getElementById('avatarPreview');
-                if (!preview) {
-                    var container = document.querySelector('.avatar-container');
-                    var placeholder = container ? container.querySelector('.profile-avatar') : null;
-                    if (placeholder && placeholder.tagName === 'DIV') placeholder.remove();
+                var container = document.querySelector('.avatar-container');
 
-                    preview = document.createElement('img');
-                    preview.id = 'avatarPreview';
-                    preview.className = 'profile-avatar';
-                    if (container) container.insertBefore(preview, container.firstChild);
+                if (preview) {
+                    preview.remove();
                 }
+
+                var placeholder = container ? container.querySelector('#avatarPlaceholder') : null;
+                if (placeholder) {
+                    placeholder.remove();
+                }
+
+                if (!container) return;
+
+                if (isVideo) {
+                    preview = document.createElement('video');
+                    preview.autoplay = true;
+                    preview.muted = true;
+                    preview.loop = true;
+                    preview.playsInline = true;
+                } else {
+                    preview = document.createElement('img');
+                    preview.alt = 'Foto de perfil';
+                }
+
+                preview.id = 'avatarPreview';
+                preview.className = 'profile-avatar';
                 preview.src = e.target.result;
+                container.insertBefore(preview, container.firstChild);
             }
             reader.readAsDataURL(input.files[0]);
         }

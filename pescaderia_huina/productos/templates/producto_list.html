@@ -8,6 +8,32 @@
  
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/lista_pedidos.css' %}">
+<style>
+    .active-filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border: 1px solid transparent;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+
+    .active-filter-chip.search {
+        background: #e8f1ff;
+        color: #0f3976;
+        border-color: #bfd5f5;
+    }
+
+    .active-filter-chip.presentation {
+        background: #eef7f1;
+        color: #24613b;
+        border-color: #cce7d4;
+    }
+</style>
 {% endblock %}
  
 {% block content %}
@@ -33,9 +59,9 @@
                         <label class="filter-label">Buscar coincidencias</label>
                         <div class="search-input-group input-group shadow-sm">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" name="q" class="form-control {% if request.GET.q %}border-end-0{% endif %}" placeholder="Nombre del producto o proveedor..." value="{{ request.GET.q|default:'' }}">
-                            {% if request.GET.q %}
-                            <a href="{% url 'productos:productos_list' %}{% if request.GET.presentacion %}?presentacion={{ request.GET.presentacion }}{% endif %}" class="btn-clear-search" title="Limpiar texto">
+                            <input type="text" name="q" class="form-control {% if query %}border-end-0{% endif %}" placeholder="Nombre del producto o proveedor..." value="{{ query|default:'' }}">
+                            {% if query %}
+                            <a href="{% url 'productos:productos_list' %}{% if presentacion %}?presentacion={{ presentacion }}{% endif %}" class="btn-clear-search" title="Limpiar texto">
                                 <i class="bi bi-x-circle-fill fs-5"></i>
                             </a>
                             {% endif %}
@@ -48,7 +74,7 @@
                         <select name="presentacion" class="form-select shadow-sm">
                             <option value="">Todas las presentaciones</option>
                             {% for value, label in tipos_presentacion %}
-                                <option value="{{ value }}" {% if request.GET.presentacion == value %}selected{% endif %}>
+                                <option value="{{ value }}" {% if presentacion == value %}selected{% endif %}>
                                     {{ label }}
                                 </option>
                             {% endfor %}
@@ -61,7 +87,7 @@
                             <i class="bi bi-funnel me-1"></i> Filtrar
                         </button>
                         
-                        {% if request.GET.q or request.GET.presentacion %}
+                        {% if has_active_filters %}
                         <a href="{% url 'productos:productos_list' %}" class="btn btn-light border shadow-sm text-danger" title="Limpiar filtros" data-bs-toggle="tooltip">
                             <i class="bi bi-eraser-fill"></i>
                         </a>
@@ -69,25 +95,22 @@
                     </div>
                 </div>
  
-                {% if request.GET.q or request.GET.presentacion %}
+                {% if has_active_filters %}
+                {% if query or presentacion_label %}
                 <hr class="my-3 border-light">
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <span class="text-muted small me-1"><i class="bi bi-funnel-fill me-1"></i> Filtros activos:</span>
  
-                    {% if request.GET.q %}
-                        <span class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle px-2 py-1">
-                            <i class="bi bi-search me-1"></i> "{{ request.GET.q }}"
+                    {% if query %}
+                        <span class="active-filter-chip search">
+                            <i class="bi bi-search me-1"></i> "{{ query }}"
                         </span>
                     {% endif %}
  
-                    {% if request.GET.presentacion %}
-                        {% for value, label in tipos_presentacion %}
-                            {% if value == request.GET.presentacion %}
-                                <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle px-2 py-1">
-                                    <i class="bi bi-box-seam me-1"></i> {{ label }}
-                                </span>
-                            {% endif %}
-                        {% endfor %}
+                    {% if presentacion_label %}
+                        <span class="active-filter-chip presentation">
+                            <i class="bi bi-box-seam me-1"></i> {{ presentacion_label }}
+                        </span>
                     {% endif %}
  
                     <span class="ms-auto text-muted small">
@@ -98,6 +121,7 @@
                         {% endif %}
                     </span>
                 </div>
+                {% endif %}
                 {% endif %}
  
             </div>
