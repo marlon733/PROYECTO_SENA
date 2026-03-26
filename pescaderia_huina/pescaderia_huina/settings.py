@@ -111,7 +111,7 @@ else:
             'HOST': config('DB_HOST', default='aws-1-sa-east-1.pooler.supabase.com'),
             'PORT': config('DB_PORT', default='5432'),
             # OPTIMIZACIÓN: Connection pooling para mejor performance
-            'CONN_MAX_AGE': 600,
+            'CONN_MAX_AGE': 60,
             'OPTIONS': {
                 'connect_timeout': 10,
             }
