@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib import messages
 from .models import Producto
 from .forms import ProductoForm, ProveedorSelectForm, ProductoItemForm
 
@@ -121,8 +122,10 @@ def producto_editar(request, id):
         # Usamos el ProductoForm completo (que incluye el selector de proveedor individual)
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
-            form.save()
+            producto_actualizado = form.save()
+            messages.success(request, f'Cambios guardados para "{producto_actualizado.nombre}".')
             return redirect("productos:productos_list")
+        messages.error(request, 'No se pudo guardar. Revisa los campos marcados.')
     else:
         form = ProductoForm(instance=producto)
 

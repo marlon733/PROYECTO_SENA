@@ -82,3 +82,10 @@ class ProductoForm(forms.ModelForm):
             consulta = consulta | Q(id=self.instance.proveedor.id)
         self.fields['proveedor'].queryset = Proveedor.objects.filter(consulta).order_by('nombre_contacto')
 
+        # Si el valor guardado termina en .00, lo mostramos como entero para evitar
+        # que el navegador renderice visualmente los dos ceros finales.
+        if self.instance.pk and self.instance.precio is not None:
+            precio_actual = self.instance.precio
+            if precio_actual == precio_actual.to_integral_value():
+                self.initial['precio'] = int(precio_actual)
+

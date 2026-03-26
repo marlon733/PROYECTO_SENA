@@ -122,8 +122,8 @@ Tipo: <strong>{{ producto.get_tipo_presentacion_display }}</strong>
 </div>
 
 <div class="text-muted">
-<i class="bi bi-stack me-2"></i>
-Stock: <strong>{{ producto.stock|floatformat:0 }}</strong>
+<i class="bi bi-building me-2"></i>
+Proveedor: <strong>{% if producto.proveedor %}{{ producto.proveedor.nombre_contacto }}{% else %}Sin proveedor{% endif %}</strong>
 </div>
 
 </div>
