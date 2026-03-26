@@ -194,14 +194,14 @@ def login_view(request):
                     duration = _get_lock_duration(attempts)
                     messages.error(
                         request,
-                        f'❌ Documento o contraseña incorrectos. Tu cuenta se ha bloqueado por {duration} minutos.'
+                        f' Documento o contraseña incorrectos. Tu cuenta se ha bloqueado por {duration} minutos.'
                     )
                 else:
                     intentos_restantes = 4 - attempts
                     if intentos_restantes > 0:
                         messages.error(
                             request,
-                            f'❌ Documento o contraseña incorrectos. Te quedan {intentos_restantes} intentos.'
+                            f' Documento o contraseña incorrectos. Te quedan {intentos_restantes} intentos.'
                         )
                     else:
                         messages.error(request, '🔒 Tu cuenta ha sido bloqueada temporalmente por seguridad.')

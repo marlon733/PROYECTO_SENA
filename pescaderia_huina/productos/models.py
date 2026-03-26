@@ -81,16 +81,21 @@ class Producto(models.Model):
                 − cantidad vendida en ventas COMPLETADA
         """
         from django.db.models import Sum
+        from django.db import DatabaseError, InterfaceError
 
-        # ✅ Total recibido en pedidos con estado 'REC'
-        recibido = self.detallepedido_set.filter(
-            pedido__estado='REC'
-        ).aggregate(total=Sum('cantidad'))['total'] or 0
+        try:
+            # Total recibido en pedidos con estado REC
+            recibido = self.detallepedido_set.filter(
+                pedido__estado='REC'
+            ).aggregate(total=Sum('cantidad'))['total'] or 0
 
-        # ✅ Total vendido SOLO en ventas COMPLETADA (confirmadas)
-        # PENDIENTE no se resta porque aún no están confirmadas
-        vendido = self.ventaitem_set.filter(
-            venta__estado='COMPLETADA'
-        ).aggregate(total=Sum('cantidad'))['total'] or 0
+            # Total vendido solo en ventas completadas
+            vendido = self.ventaitem_set.filter(
+                venta__estado='COMPLETADA'
+            ).aggregate(total=Sum('cantidad'))['total'] or 0
 
-        return recibido - vendido
+            return recibido - vendido
+        except (DatabaseError, InterfaceError):
+            # Si la conexión está cerrada o hay error temporal de BD,
+            # devolvemos 0 para no romper el render de páginas críticas.
+            return 0
