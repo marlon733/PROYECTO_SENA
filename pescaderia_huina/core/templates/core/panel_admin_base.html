@@ -864,6 +864,11 @@
                         <li><a class="dropdown-item text-center small py-2 text-primary fw-bold" href="{% url 'pedidos:inventario_pedidos' %}">Ver inventario</a></li>
                     </ul>
                 </div>
+
+                <!-- BOTÓN DESCARGAR MANUAL -->
+                <a href="{% url 'core:descargar_manual' %}" class="topbar-icon-btn border-0 text-decoration-none" title="Descargar Manual">
+                    <i class="bi bi-question-circle"></i>
+                </a>
                 
                 <div class="topbar-user-chip d-none d-md-flex">
                     <div class="topbar-user-avatar">

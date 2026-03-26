@@ -1,10 +1,12 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import os
+from django.conf import settings
 
 def index(request):
     return render(request, 'core/index.html')
@@ -103,3 +105,20 @@ def pagina_mariscos(request):
 
 def pagina_pollos(request):
     return render(request, 'core/pollos.html')
+
+@login_required
+def descargar_manual_usuario(request):
+    """
+    Vista para descargar el manual de usuario en PDF
+    """
+    # Ruta del archivo PDF
+    pdf_path = os.path.join(settings.BASE_DIR, 'static', 'docs', 'Manual De Usuario Pescaderia Huina.pdf')
+    
+    # Verificar que el archivo existe
+    if not os.path.exists(pdf_path):
+        return HttpResponse('El archivo no fue encontrado', status=404)
+    
+    # Servir el archivo como descarga
+    response = FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="Manual De Usuario Pescaderia Huina.pdf"'
+    return response

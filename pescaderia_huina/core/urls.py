@@ -12,4 +12,5 @@ urlpatterns = [
     path('mariscos/', views.pagina_mariscos, name='mariscos'),
     path('pollos/', views.pagina_pollos, name='pollos'),
     path('inventario/', views.pagina_inventario, name='inventario'),
+    path('descargar-manual/', views.descargar_manual_usuario, name='descargar_manual'),
     ]
