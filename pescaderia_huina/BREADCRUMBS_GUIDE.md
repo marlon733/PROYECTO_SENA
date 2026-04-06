@@ -57,30 +57,30 @@ Solo reemplaza el bloque `{% block breadcrumb_items %}` en `core/templates/core/
 Una vez actualizado settings.py y panel_admin_base.html, el breadcrumb funcionará automáticamente en:
 
 #### ✅ Pedidos
-- `/pedidos/` → Dashboard / Pedidos
-- `/pedidos/nuevo/` → Dashboard / Pedidos / Nuevo Pedido
-- `/pedidos/editar/<id>/` → Dashboard / Pedidos / Editar
-- `/pedidos/detalle/<id>/` → Dashboard / Pedidos / Detalle
-- `/pedidos/inventario/` → Dashboard / Pedidos / Inventario
+- `/pedidos/` → Panel de control / Pedidos
+- `/pedidos/nuevo/` → Panel de control / Pedidos / Nuevo Pedido
+- `/pedidos/editar/<id>/` → Panel de control / Pedidos / Editar
+- `/pedidos/detalle/<id>/` → Panel de control / Pedidos / Detalle
+- `/pedidos/inventario/` → Panel de control / Pedidos / Inventario
 
 #### ✅ Productos
-- `/productos/` → Dashboard / Productos
-- `/productos/nuevo/` → Dashboard / Productos / Nuevo Producto
-- `/productos/<id>/editar/` → Dashboard / Productos / Editar
-- `/productos/<id>/eliminar/` → Dashboard / Productos / Eliminar
-- `/productos/<id>/` → Dashboard / Productos / Detalle
+- `/productos/` → Panel de control / Productos
+- `/productos/nuevo/` → Panel de control / Productos / Nuevo Producto
+- `/productos/<id>/editar/` → Panel de control / Productos / Editar
+- `/productos/<id>/eliminar/` → Panel de control / Productos / Eliminar
+- `/productos/<id>/` → Panel de control / Productos / Detalle
 
 #### ✅ Ventas
-- `/ventas/` → Dashboard / Ventas
-- `/ventas/crear/` → Dashboard / Ventas / Nueva Venta
-- `/ventas/<id>/editar/` → Dashboard / Ventas / Editar
-- `/ventas/venta/<id>/` → Dashboard / Ventas / Detalle
+- `/ventas/` → Panel de control / Ventas
+- `/ventas/crear/` → Panel de control / Ventas / Nueva Venta
+- `/ventas/<id>/editar/` → Panel de control / Ventas / Editar
+- `/ventas/venta/<id>/` → Panel de control / Ventas / Detalle
 
 #### ✅ Proveedores
-- `/proveedores/` → Dashboard / Proveedores
-- `/proveedores/nuevo/` → Dashboard / Proveedores / Nuevo
-- `/proveedores/detalle/<id>/` → Dashboard / Proveedores / Detalle
-- `/proveedores/modificar/<id>/` → Dashboard / Proveedores / Editar
+- `/proveedores/` → Panel de control / Proveedores
+- `/proveedores/nuevo/` → Panel de control / Proveedores / Nuevo
+- `/proveedores/detalle/<id>/` → Panel de control / Proveedores / Detalle
+- `/proveedores/modificar/<id>/` → Panel de control / Proveedores / Editar
 
 ## 🎨 Características del Breadcrumb
 

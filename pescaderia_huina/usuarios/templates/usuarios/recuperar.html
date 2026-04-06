@@ -261,6 +261,18 @@
             border-left: 4px solid #ff1744;
         }
 
+        .field-alert {
+            margin-top: 8px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #ff1744;
+            background: rgba(255, 23, 68, 0.08);
+            border: 1px solid rgba(255, 23, 68, 0.25);
+            display: none;
+        }
+
         button {
             width: 100%;
             padding: 14px 24px;
@@ -416,18 +428,20 @@
                 </div>
             {% endif %}
 
-            <form method="POST">
+            <form method="POST" id="form-recuperar">
                 {% csrf_token %}
                 
                 <div class="form-group">
                     <label>Correo Electrónico</label>
                     <input 
                         type="email" 
+                        id="email"
                         name="email" 
                         placeholder="tu.email@ejemplo.com"
                         required
                         autocomplete="email"
                     >
+                    <div id="email-alert" class="field-alert">Ingresa un correo electrónico válido.</div>
                 </div>
 
                 <button type="submit">
@@ -444,6 +458,42 @@
     </div>
 
 </div>
+
+<script>
+    (function () {
+        const form = document.getElementById('form-recuperar');
+        const emailInput = document.getElementById('email');
+        const emailAlert = document.getElementById('email-alert');
+
+        if (!form || !emailInput || !emailAlert) {
+            return;
+        }
+
+        const isEmailValid = (value) => {
+            const email = (value || '').trim();
+            if (!email) {
+                return false;
+            }
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        };
+
+        const toggleEmailAlert = () => {
+            const valid = isEmailValid(emailInput.value);
+            const shouldShow = emailInput.value.trim() !== '' && !valid;
+            emailAlert.style.display = shouldShow ? 'block' : 'none';
+            return valid;
+        };
+
+        emailInput.addEventListener('input', toggleEmailAlert);
+
+        form.addEventListener('submit', function (event) {
+            if (!toggleEmailAlert()) {
+                event.preventDefault();
+                emailInput.focus();
+            }
+        });
+    })();
+</script>
 
 </body>
 </html>
