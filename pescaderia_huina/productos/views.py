@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db.models.deletion import ProtectedError
 from django.forms import modelformset_factory
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -127,9 +129,34 @@ def producto_editar(request, id):
 @login_required
 def producto_eliminar(request, id):
     producto = get_object_or_404(Producto, id=id)
+    tiene_ventas = producto.ventas.exists() or producto.ventaitem_set.exists()
+    tiene_pedidos = producto.detallepedido_set.exists()
+    tiene_relaciones = tiene_ventas or tiene_pedidos
     
     if request.method == "POST":
-        producto.delete()
+        if tiene_relaciones:
+            messages.error(
+                request,
+                "No se puede eliminar este producto porque ya está asociado a ventas o pedidos."
+            )
+            return redirect("productos:productos_list")
+
+        try:
+            producto.delete()
+        except ProtectedError:
+            messages.error(
+                request,
+                "No se puede eliminar este producto porque tiene registros relacionados."
+            )
         return redirect("productos:productos_list")
         
-    return render(request, "producto_eliminar.html", {"producto": producto})
+    return render(
+        request,
+        "producto_eliminar.html",
+        {
+            "producto": producto,
+            "tiene_relaciones": tiene_relaciones,
+            "tiene_ventas": tiene_ventas,
+            "tiene_pedidos": tiene_pedidos,
+        },
+    )
