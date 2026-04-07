@@ -487,6 +487,7 @@
                                 {{ form.fecha_nacimiento.label }}{% if form.fecha_nacimiento.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
                             </label>
                             {{ form.fecha_nacimiento }}
+                            <div class="form-text text-muted mt-2 small">Debes tener al menos 15 años.</div>
                             {% if form.fecha_nacimiento.errors %}
                                 <div class="alert alert-danger d-flex align-items-start mt-2 py-2 px-3 rounded-4 border-0 bg-danger bg-opacity-10 text-danger small">
                                     <i class="bi bi-exclamation-octagon-fill me-2 mt-1"></i>

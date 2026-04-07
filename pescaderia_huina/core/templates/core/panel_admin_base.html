@@ -723,7 +723,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="{% url 'core:index' %}" class="nav-link"> 
-                        <i class="bi bi-shop-window"></i> <span>Ver Pagina Informativa</span>
+                        <i class="bi bi-shop-window"></i> <span>Ver Página Informativa</span>
                     </a>
                 </li>
                 
@@ -735,7 +735,7 @@
                 </li>
                  <li class="nav-item">
                     <a href="{% url 'pedidos:inventario_pedidos'%}" class="nav-link">
-                        <i class="bi bi-clipboard-check-fill"></i> <span>inventario</span>
+                        <i class="bi bi-clipboard-check-fill"></i> <span>Inventario</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -757,7 +757,7 @@
                 <li class="nav-header">Usuarios y Equipo</li>
                 <li class="nav-item">
                     <a href="{% url 'usuarios:lista_usuarios' %}" class="nav-link {% if 'usuarios' in request.path and 'lista' in request.path %}active{% endif %}">
-                        <i class="bi bi-people-fill"></i> <span>Gestion de Usuarios</span>
+                        <i class="bi bi-people-fill"></i> <span>Gestión de Usuarios</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -861,7 +861,7 @@
                         {% else %}
                             <li class="p-3 text-center small text-muted">No hay alertas</li>
                         {% endif %}
-                        <li><a class="dropdown-item text-center small py-2 text-primary fw-bold" href="{% url 'pedidos:inventario_pedidos' %}">Ver inventario</a></li>
+                        <li><a class="dropdown-item text-center small py-2 text-primary fw-bold" href="{% url 'pedidos:inventario_pedidos' %}">Ver Inventario</a></li>
                     </ul>
                 </div>
 

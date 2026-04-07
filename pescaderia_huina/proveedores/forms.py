@@ -44,3 +44,22 @@ class ProveedorForm(forms.ModelForm):
         super(ProveedorForm, self).__init__(*args, **kwargs)
         # Esto asegura que el label del NIT sea genérico por defecto
         self.fields['nit'].label = "Identificación"
+        self.fields['telefono'].required = True
+        self.fields['telefono'].error_messages.update({
+            'required': 'El teléfono es obligatorio.'
+        })
+
+    def clean_telefono(self):
+        telefono = (self.cleaned_data.get('telefono') or '').strip()
+
+        if not telefono:
+            raise forms.ValidationError('El teléfono es obligatorio.')
+
+        qs = Proveedor.objects.filter(telefono=telefono)
+        if self.instance and self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            raise forms.ValidationError('Este teléfono ya está registrado.')
+
+        return telefono

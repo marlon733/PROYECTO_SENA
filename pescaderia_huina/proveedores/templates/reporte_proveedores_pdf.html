@@ -4,9 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Reporte de Proveedores - Pescaderia Huina</title>
+    <title>Reporte de Proveedores - Pescadería Huina</title>
     <style>
-        /* ===== PAGINA ===== */
+        /* ===== PÁGINA ===== */
         @page {
             size: letter portrait;
             margin: 0cm 0cm 1.8cm 0cm;
@@ -431,12 +431,12 @@
         <table class="footer-inner">
             <tr>
                 <td class="footer-brand">
-                    PESCADERIA HUINA &nbsp;|&nbsp; Reporte Oficial de Proveedores
+                    PESCADERÍA HUINA &nbsp;|&nbsp; Reporte Oficial de Proveedores
                 </td>
                 <td class="footer-page">
                     Generado: {{ fecha_generacion|date:"d/m/Y H:i" }}
                     &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-                    Pagina <pdf:pagenumber> de <pdf:pagecount>
+                    Página <pdf:pagenumber> de <pdf:pagecount>
                 </td>
             </tr>
         </table>
@@ -459,8 +459,8 @@
 
             <!-- Company text -->
             <td style="padding:24px 20px; vertical-align:middle;">
-                <p class="company-name-txt">Pescaderia Huina</p>
-                <p class="company-name-sub">Tradicion y calidad del mar &nbsp;&bull;&nbsp; Sistema de Gestion Interno
+                <p class="company-name-txt">Pescadería Huina</p>
+                <p class="company-name-sub">Tradición y calidad del mar &nbsp;&bull;&nbsp; Sistema de Gestión Interno
                 </p>
             </td>
 
@@ -468,7 +468,7 @@
             <td style="text-align:right; padding:20px 28px; vertical-align:middle; background-color:#0a2d6b;">
                 <p class="report-type-label">Documento Oficial</p>
                 <p class="report-type-title">Directorio de<br>Proveedores</p>
-                <p class="report-meta-row">Fecha de emision: <span class="report-meta-val">{{
+                <p class="report-meta-row">Fecha de emisión: <span class="report-meta-val">{{
                         fecha_generacion|date:"d/m/Y" }}</span></p>
                 <p class="report-meta-row">Total registros: <span class="report-meta-val">{{ total_proveedores }}</span>
                 </p>

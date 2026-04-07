@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django_recaptcha.fields import ReCaptchaField
+from datetime import date
 from .models import PerfilUsuario
 
 
@@ -15,6 +16,16 @@ ROL_CHOICES = (
 
 ALLOWED_PROFILE_MEDIA_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.gif', '.mp4', '.webm', '.mov', '.m4v'}
 MAX_PROFILE_MEDIA_SIZE = 25 * 1024 * 1024  # 25MB
+
+
+def _max_birth_date_for_min_age(min_age=15):
+    """Retorna la fecha máxima de nacimiento permitida para cumplir edad mínima."""
+    today = date.today()
+    try:
+        return today.replace(year=today.year - min_age)
+    except ValueError:
+        # Ajuste para fechas como 29/02 en años no bisiestos.
+        return today.replace(year=today.year - min_age, day=28)
 
 
 def _clean_telefono_value(raw_value):
@@ -249,12 +260,27 @@ class RegistroForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.actor_user = actor_user
 
+        # Restringe el calendario para impedir seleccionar menores de 15 años.
+        max_birth_date = _max_birth_date_for_min_age(15)
+        self.fields['fecha_nacimiento'].widget.attrs['max'] = max_birth_date.isoformat()
+
         # Por seguridad: solo un administrador (staff) puede elegir/crear admins.
         can_choose_role = bool(actor_user and getattr(actor_user, 'is_authenticated', False) and actor_user.is_staff)
         if not can_choose_role:
             self.fields['rol'].initial = ROL_EMPLEADO
             self.fields['rol'].disabled = True
             self.fields['rol'].help_text = 'Solo un administrador puede asignar rol.'
+
+    def clean_fecha_nacimiento(self):
+        fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
+        if not fecha_nacimiento:
+            return fecha_nacimiento
+
+        max_birth_date = _max_birth_date_for_min_age(15)
+        if fecha_nacimiento > max_birth_date:
+            raise forms.ValidationError('Debes tener al menos 15 años para registrarte.')
+
+        return fecha_nacimiento
     
     def save(self, commit=True):
         """
@@ -422,6 +448,11 @@ class EditarPerfilForm(forms.ModelForm):
             'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        max_birth_date = _max_birth_date_for_min_age(15)
+        self.fields['fecha_nacimiento'].widget.attrs['max'] = max_birth_date.isoformat()
+
     def clean_documento(self):
         documento = (self.cleaned_data.get('documento') or '').strip()
 
@@ -440,6 +471,17 @@ class EditarPerfilForm(forms.ModelForm):
 
     def clean_telefono(self):
         return _clean_telefono_value(self.cleaned_data.get('telefono'))
+
+    def clean_fecha_nacimiento(self):
+        fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
+        if not fecha_nacimiento:
+            return fecha_nacimiento
+
+        max_birth_date = _max_birth_date_for_min_age(15)
+        if fecha_nacimiento > max_birth_date:
+            raise forms.ValidationError('Debes tener al menos 15 años.')
+
+        return fecha_nacimiento
 
     def clean_foto_perfil(self):
         return _clean_profile_photo(self.cleaned_data.get('foto_perfil'))
@@ -464,8 +506,24 @@ class EditarMiPerfilForm(forms.ModelForm):
             'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        max_birth_date = _max_birth_date_for_min_age(15)
+        self.fields['fecha_nacimiento'].widget.attrs['max'] = max_birth_date.isoformat()
+
     def clean_telefono(self):
         return _clean_telefono_value(self.cleaned_data.get('telefono'))
+
+    def clean_fecha_nacimiento(self):
+        fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
+        if not fecha_nacimiento:
+            return fecha_nacimiento
+
+        max_birth_date = _max_birth_date_for_min_age(15)
+        if fecha_nacimiento > max_birth_date:
+            raise forms.ValidationError('Debes tener al menos 15 años.')
+
+        return fecha_nacimiento
 
     def clean_foto_perfil(self):
         return _clean_profile_photo(self.cleaned_data.get('foto_perfil'))
