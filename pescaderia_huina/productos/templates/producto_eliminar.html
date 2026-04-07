@@ -141,6 +141,14 @@ Se borrará el producto y toda la información asociada a él.
 
 </div>
 
+{% if tiene_relaciones %}
+<div class="alert alert-warning text-start mb-4" role="alert">
+<strong>Este producto no se puede eliminar.</strong><br>
+Está asociado a
+{% if tiene_ventas %}ventas{% endif %}{% if tiene_ventas and tiene_pedidos %} y {% endif %}{% if tiene_pedidos %}pedidos{% endif %}.
+</div>
+{% endif %}
+
 
 <form method="POST">
 {% csrf_token %}
@@ -152,7 +160,7 @@ Se borrará el producto y toda la información asociada a él.
 Cancelar y Volver
 </a>
 
-<button type="submit" class="btn btn-danger-custom w-50 py-3">
+<button type="submit" class="btn btn-danger-custom w-50 py-3" {% if tiene_relaciones %}disabled title="Producto con historial en ventas/pedidos"{% endif %}>
 <i class="bi bi-trash"></i>
 Sí, Eliminar Producto
 </button>

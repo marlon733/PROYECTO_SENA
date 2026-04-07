@@ -11,7 +11,7 @@ def get_breadcrumb_items(request):
     según la URL actual del usuario.
     
     Estructura:
-    - Dashboard (siempre presente)
+    - Panel de control (siempre presente)
     - Módulo (pedidos, productos, ventas, proveedores, inventario)
     - Página (lista, crear, editar, detalle)
     """
@@ -19,14 +19,14 @@ def get_breadcrumb_items(request):
     path = request.path
     breadcrumb_items = []
     
-    # Siempre incluir Dashboard
+    # Siempre incluir Panel de control
     try:
         dashboard_url = reverse('core:dashboard')
     except NoReverseMatch:
         dashboard_url = '/dashboard/'
     
     breadcrumb_items.append({
-        'label': 'Dashboard',
+        'label': 'Panel de control',
         'url': dashboard_url,
         'active': path == '/dashboard/',
     })
