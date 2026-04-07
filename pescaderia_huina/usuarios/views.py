@@ -508,14 +508,17 @@ def editar_perfil_view(request, user_id=None):
     return render(request, 'usuarios/editar_perfil.html', context)
 def solicitar_recuperacion(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email = (request.POST.get('email') or '').strip()
+
+        if not email:
+            messages.error(request, 'Debes ingresar un correo electrónico.')
+            return render(request, 'usuarios/recuperar.html')
 
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
-            return render(request, 'usuarios/recuperar.html', {
-                'error': 'El correo no está registrado'
-            })
+            messages.error(request, 'El correo no está registrado.')
+            return render(request, 'usuarios/recuperar.html')
 
         codigo = str(random.randint(100000, 999999))
 
