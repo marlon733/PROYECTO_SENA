@@ -16,7 +16,6 @@
                             <h3 class="fw-semibold mb-1">Nuevo Producto</h3>
                             <p class="small mb-0 opacity-75">Completa la informacion para registrar los productos</p>
                         </div>
-                        <i class="bi bi-box-seam-fill display-6 opacity-50"></i>
                     </div>
 
                     <div class="card-body px-4 px-md-5 pt-5">
@@ -59,7 +58,15 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label text-muted small fw-semibold">Proveedor Asignado</label>
-                                    <div class="input-group">
+                                    <div class="provider-combobox position-relative">
+                                        <input type="text" id="proveedor-search" class="form-control mb-2" placeholder="Escribe para buscar proveedor..." autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="proveedor-results">
+                                        <div id="proveedor-results" class="provider-results list-group shadow-sm d-none"></div>
+                                    </div>
+                                    <div id="proveedor-selected" class="selected-provider-chip d-none">
+                                        <i class="bi bi-check-circle-fill me-1"></i>
+                                        <span id="proveedor-selected-label"></span>
+                                    </div>
+                                    <div class="input-group d-none">
                                         <span class="input-group-text border-end-0 bg-transparent text-muted">
                                             <i class="bi bi-building"></i>
                                         </span>
@@ -86,7 +93,7 @@
                                 <i class="bi bi-geo-alt me-1"></i> Productos a Registrar
                             </label>
 
-                            <div class="table-responsive mb-3">
+                            <div class="table-responsive mb-3 table-scroll-area">
                                 <table class="table table-borderless align-middle m-0" id="tabla-productos">
                                     <thead class="border-bottom">
                                         <tr class="text-uppercase small text-muted text-center">
@@ -94,7 +101,6 @@
                                             <th style="width: 30%;" class="text-start">Nombre Producto</th>
                                             <th style="width: 22%;">Presentacion</th>
                                             <th style="width: 16%;" class="text-end">Precio</th>
-                                            <th style="width: 7%;">Activo</th>
                                             <th style="width: 7%;">Accion</th>
                                         </tr>
                                     </thead>
@@ -118,16 +124,12 @@
                                                 {% if form.tipo_presentacion.errors %}<small class="text-danger d-block mt-1">{{ form.tipo_presentacion.errors.0 }}</small>{% endif %}
                                             </td>
                                             <td class="p-2 text-end">
-                                                <div class="input-group input-group-sm precio-group">
-                                                    <span class="input-group-text bg-transparent border-end-0">$</span>
+                                                <div class="input-group input-group-sm precio-group shadow-sm">
+                                                    <span class="input-group-text precio-prefix">$</span>
                                                     {{ form.precio }}
                                                 </div>
+                                                <small class="text-danger d-block mt-1 validation-feedback d-none"></small>
                                                 {% if form.precio.errors %}<small class="text-danger d-block mt-1">{{ form.precio.errors.0 }}</small>{% endif %}
-                                            </td>
-                                            <td class="p-2 text-center">
-                                                <div class="form-check d-flex justify-content-center">
-                                                    {{ form.estado }}
-                                                </div>
                                             </td>
                                             <td class="p-2 text-center">
                                                 <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-fila" title="Eliminar esta fila" data-bs-toggle="tooltip">
@@ -145,6 +147,13 @@
                                 <strong><span id="contador-filas">0</span> fila(s)</strong> listas para registrar
                             </div>
 
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                <div class="text-muted small">
+                                    <i class="bi bi-shield-check me-1"></i>
+                                    El sistema valida nombre y precio antes de guardar.
+                                </div>
+                            </div>
+
                             <div class="text-center">
                                 <button type="button" id="add-row" class="btn btn-outline-primary px-4 rounded-pill fw-bold">
                                     <i class="bi bi-plus-circle me-2"></i>Agregar Producto
@@ -152,12 +161,12 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                        <div class="d-flex justify-content-end gap-3 pt-4 border-top sticky-actions">
                             <a href="{% url 'productos:productos_list' %}" class="btn btn-light px-4 rounded-3 border">
                                 Cancelar
                             </a>
-                            <button type="submit" class="btn btn-primary-custom px-5 rounded-3 text-white shadow fw-bold">
-                                <i class="bi bi-save2 me-2"></i>Guardar Registro
+                            <button type="submit" class="btn btn-primary-custom px-5 rounded-3 text-white shadow fw-bold btn-submit-final">
+                                <i class="bi bi-box-seam me-2"></i>Guardar productos
                             </button>
                         </div>
 
@@ -178,14 +187,9 @@
             <td class="p-2">{{ formset.empty_form.nombre }}</td>
             <td class="p-2 text-center">{{ formset.empty_form.tipo_presentacion }}</td>
             <td class="p-2 text-end">
-                <div class="input-group input-group-sm precio-group">
-                    <span class="input-group-text bg-transparent border-end-0">$</span>
+                <div class="input-group input-group-sm precio-group shadow-sm">
+                    <span class="input-group-text precio-prefix">$</span>
                     {{ formset.empty_form.precio }}
-                </div>
-            </td>
-            <td class="p-2 text-center">
-                <div class="form-check d-flex justify-content-center">
-                    {{ formset.empty_form.estado }}
                 </div>
             </td>
             <td class="p-2 text-center">
@@ -221,6 +225,13 @@
     .header-blue { background: linear-gradient(135deg, #2C466B, #1f3554); }
     .btn-primary-custom { background: linear-gradient(135deg, #2C466B, #1f3554); border: none; }
     .btn-primary-custom:hover { background: linear-gradient(135deg, #1f3554, #16263d); transform: translateY(-2px); }
+    .sticky-actions {
+        position: sticky;
+        bottom: 0;
+        background: linear-gradient(180deg, rgba(255,255,255,0.8), #fff 35%);
+        backdrop-filter: blur(8px);
+        z-index: 3;
+    }
 
     #form-productos .card-body {
         color: var(--form-text-color);
@@ -250,6 +261,10 @@
         font-size: 0.95rem !important;
         font-weight: 700;
         letter-spacing: 0.02em;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #f8fafc;
     }
 
     #tabla-productos tbody td {
@@ -271,8 +286,72 @@
 
     #tabla-productos .precio-group { flex-wrap: nowrap; }
 
-    #tabla-productos .precio-group .input-group-text {
+    .table-scroll-area {
+        max-height: 68vh;
+        overflow: auto;
+    }
+
+    .provider-combobox {
+        z-index: 4;
+    }
+
+    .provider-results {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 4px);
+        max-height: 260px;
+        overflow-y: auto;
+        border-radius: 0.85rem;
+        border: 1px solid #d9e2f2;
+        background: #fff;
+        z-index: 20;
+    }
+
+    .provider-result-item {
+        border: 0;
+        border-bottom: 1px solid #eef2f7;
+        padding: 0.8rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+    }
+
+    .provider-result-item:last-child {
+        border-bottom: 0;
+    }
+
+    .provider-result-item:hover,
+    .provider-result-item.active {
+        background: #eef5ff;
+        color: #0f3976;
+    }
+
+    .provider-result-empty {
+        padding: 0.8rem 1rem;
+        color: #64748b;
+        font-size: 0.92rem;
+    }
+
+    .selected-provider-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: 0.25rem;
+        padding: 0.4rem 0.7rem;
+        border-radius: 999px;
+        background: #edf9f2;
+        color: #127447;
+        border: 1px solid #bfe7cf;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    #tabla-productos .precio-prefix {
+        background: #eef2f7;
+        border: 1px solid #cbd5e1;
         border-right: none;
+        color: #334155;
+        font-weight: 700;
     }
 
     #tabla-productos .precio-group .form-control {
@@ -383,6 +462,20 @@
     }
 
     .custom-validation-list li { margin-bottom: 0.2rem; }
+
+    .field-invalid {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.08) !important;
+    }
+
+    .field-valid {
+        border-color: #198754 !important;
+    }
+
+    .validation-feedback {
+        font-size: 0.82rem;
+        min-height: 1rem;
+    }
 </style>
 {% endblock %}
 
@@ -399,6 +492,12 @@
         const customAlertList = document.getElementById('custom-validation-list');
         const customAlertClose = document.getElementById('custom-validation-close');
         const formProductos = document.getElementById('form-productos');
+        const proveedorSearch = document.getElementById('proveedor-search');
+        const proveedorResults = document.getElementById('proveedor-results');
+        const proveedorSelected = document.getElementById('proveedor-selected');
+        const proveedorSelectedLabel = document.getElementById('proveedor-selected-label');
+        const selectProveedor = document.querySelector('select[name="proveedor"]');
+        const totalEstimado = document.getElementById('total-estimado');
 
         if (!addBtn || !container || !totalFormsInput || !emptyFormTemplate || !formProductos) {
             return;
@@ -441,6 +540,237 @@
             contadorFilas.textContent = filasActivas;
         }
 
+        function actualizarTotalEstimado() {
+            if (!totalEstimado) return;
+
+            let total = 0;
+            container.querySelectorAll('tr.producto-row').forEach(row => {
+                if (row.style.display === 'none') return;
+                const precioInput = row.querySelector('input[name*="precio"]');
+                const deleteCheckbox = row.querySelector('input[name*="DELETE"]');
+                if (deleteCheckbox && deleteCheckbox.checked) return;
+                if (!precioInput || !precioInput.value) return;
+                const valor = parseFloat(precioInput.value.replace(',', '.'));
+                if (!Number.isNaN(valor)) {
+                    total += valor;
+                }
+            });
+
+            totalEstimado.textContent = `$${Math.round(total).toLocaleString('es-CO')}`;
+        }
+
+        function setFieldState(field, ok, message) {
+            if (!field) return;
+            field.classList.toggle('field-invalid', !ok);
+            field.classList.toggle('field-valid', ok);
+
+            const feedback = field.closest('td, .col-12')?.querySelector('.validation-feedback');
+            if (feedback) {
+                feedback.textContent = ok ? '' : message;
+                feedback.classList.toggle('d-none', ok);
+            }
+        }
+
+        function validateRow(row) {
+            if (!row || row.style.display === 'none') return true;
+
+            const delCheckbox = row.querySelector('input[name*="DELETE"]');
+            if (delCheckbox && delCheckbox.checked) return true;
+
+            const selectTipo = row.querySelector('select[name*="tipo_producto"]');
+            const inputNombre = row.querySelector('input[name*="nombre"]');
+            const selectPresentacion = row.querySelector('select[name*="tipo_presentacion"]');
+            const inputPrecio = row.querySelector('input[name*="precio"]');
+
+            let ok = true;
+
+            const nombreValido = !!(inputNombre && inputNombre.value.trim());
+            const precioNumerico = inputPrecio ? parseFloat(inputPrecio.value.replace(',', '.')) : NaN;
+            const precioValido = !Number.isNaN(precioNumerico) && precioNumerico > 0;
+            const tipoValido = !!(selectTipo && selectTipo.value);
+            const presentacionValida = !!(selectPresentacion && selectPresentacion.value);
+
+            ok = tipoValido && nombreValido && presentacionValida && precioValido;
+
+            setFieldState(selectTipo, tipoValido, 'Selecciona un tipo.');
+            setFieldState(inputNombre, nombreValido, 'Escribe el nombre del producto.');
+            setFieldState(selectPresentacion, presentacionValida, 'Selecciona la presentación.');
+            setFieldState(inputPrecio, precioValido, 'El precio debe ser mayor a 0.');
+
+            return ok;
+        }
+
+        function bindRowLiveValidation(row) {
+            const selectTipo = row.querySelector('select[name*="tipo_producto"]');
+            const inputNombre = row.querySelector('input[name*="nombre"]');
+            const selectPresentacion = row.querySelector('select[name*="tipo_presentacion"]');
+            const inputPrecio = row.querySelector('input[name*="precio"]');
+
+            [selectTipo, inputNombre, selectPresentacion, inputPrecio].forEach(field => {
+                if (!field) return;
+                field.addEventListener('input', function() {
+                    validateRow(row);
+                    actualizarTotalEstimado();
+                });
+                field.addEventListener('change', function() {
+                    validateRow(row);
+                    actualizarTotalEstimado();
+                });
+                field.addEventListener('blur', function() {
+                    validateRow(row);
+                });
+            });
+        }
+
+        function filtrarProveedores(term) {
+            if (!selectProveedor || !proveedorResults) return;
+            const normalizado = (term || '').trim().toLowerCase();
+            const coincidencias = [];
+
+            Array.from(selectProveedor.options).forEach(option => {
+                if (!option.value) return;
+                const visible = !normalizado || option.textContent.toLowerCase().includes(normalizado);
+                option.hidden = !visible;
+                option.disabled = !visible;
+                if (visible) {
+                    coincidencias.push(option);
+                }
+            });
+
+            proveedorResults.innerHTML = '';
+
+            if (!coincidencias.length) {
+                proveedorResults.classList.remove('d-none');
+                proveedorSearch.setAttribute('aria-expanded', 'true');
+                const emptyItem = document.createElement('div');
+                emptyItem.className = 'provider-result-empty';
+                emptyItem.textContent = 'No hay proveedores que coincidan con tu búsqueda.';
+                proveedorResults.appendChild(emptyItem);
+                return;
+            }
+
+            coincidencias.slice(0, 12).forEach((option, index) => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'list-group-item list-group-item-action provider-result-item';
+                item.textContent = option.textContent;
+                item.dataset.value = option.value;
+                item.dataset.index = index;
+                item.addEventListener('click', function() {
+                    selectProviderValue(option.value, option.textContent);
+                });
+                proveedorResults.appendChild(item);
+            });
+
+            proveedorResults.classList.remove('d-none');
+            proveedorSearch.setAttribute('aria-expanded', 'true');
+
+            if (selectProveedor.selectedOptions.length && selectProveedor.selectedOptions[0].hidden) {
+                selectProveedor.value = '';
+            }
+        }
+
+        function closeProviderResults() {
+            if (!proveedorResults) return;
+            proveedorResults.classList.add('d-none');
+            proveedorSearch?.setAttribute('aria-expanded', 'false');
+        }
+
+        function showSelectedProvider(label) {
+            if (!proveedorSelected || !proveedorSelectedLabel) return;
+            proveedorSelectedLabel.textContent = label;
+            proveedorSelected.classList.remove('d-none');
+        }
+
+        function hideSelectedProvider() {
+            if (!proveedorSelected) return;
+            proveedorSelected.classList.add('d-none');
+        }
+
+        function selectProviderValue(value, label) {
+            if (!selectProveedor) return;
+            selectProveedor.value = value;
+            if (proveedorSearch) {
+                proveedorSearch.value = '';
+                proveedorSearch.placeholder = 'Buscar otro proveedor...';
+            }
+            showSelectedProvider(label);
+            closeProviderResults();
+        }
+
+        function normalizeText(value) {
+            return (value || '').trim().toLowerCase();
+        }
+
+        if (proveedorSearch) {
+            proveedorSearch.addEventListener('input', function() {
+                hideSelectedProvider();
+                filtrarProveedores(proveedorSearch.value);
+            });
+
+            proveedorSearch.addEventListener('focus', function() {
+                filtrarProveedores(proveedorSearch.value);
+            });
+
+            proveedorSearch.addEventListener('keydown', function(event) {
+                if (!proveedorResults) return;
+
+                const items = Array.from(proveedorResults.querySelectorAll('.provider-result-item'));
+                const activeIndex = items.findIndex(item => item.classList.contains('active'));
+
+                if (event.key === 'Escape') {
+                    closeProviderResults();
+                    return;
+                }
+
+                if (!items.length) return;
+
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    const nextIndex = activeIndex < items.length - 1 ? activeIndex + 1 : 0;
+                    items.forEach(item => item.classList.remove('active'));
+                    items[nextIndex].classList.add('active');
+                    items[nextIndex].scrollIntoView({ block: 'nearest' });
+                }
+
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    const prevIndex = activeIndex > 0 ? activeIndex - 1 : items.length - 1;
+                    items.forEach(item => item.classList.remove('active'));
+                    items[prevIndex].classList.add('active');
+                    items[prevIndex].scrollIntoView({ block: 'nearest' });
+                }
+
+                if (event.key === 'Enter') {
+                    const activeItem = proveedorResults.querySelector('.provider-result-item.active') || items[0];
+                    if (activeItem) {
+                        event.preventDefault();
+                        selectProviderValue(activeItem.dataset.value, activeItem.textContent);
+                    }
+                }
+            });
+        }
+
+        if (selectProveedor) {
+            selectProveedor.addEventListener('focus', function() {
+                if (proveedorSearch) proveedorSearch.select();
+            });
+            selectProveedor.addEventListener('change', function() {
+                if (selectProveedor.selectedOptions.length) {
+                    showSelectedProvider(selectProveedor.selectedOptions[0].textContent);
+                }
+                if (proveedorSearch) proveedorSearch.value = '';
+            });
+        }
+
+        document.addEventListener('click', function(event) {
+            if (!proveedorResults || !proveedorSearch) return;
+            const clickedInside = proveedorResults.contains(event.target) || proveedorSearch.contains(event.target);
+            if (!clickedInside) {
+                closeProviderResults();
+            }
+        });
+
         function marcarFilaEliminada(row, deleteBtn) {
             const deleteCheckbox = row.querySelector('input[name*="DELETE"]');
             if (deleteCheckbox) {
@@ -472,6 +802,7 @@
                 const row = deleteBtn.closest('tr.producto-row');
                 if (!row) return;
                 marcarFilaEliminada(row, deleteBtn);
+                actualizarTotalEstimado();
             });
         }
 
@@ -495,8 +826,10 @@
             totalFormsInput.value = currentIndex + 1;
 
             attachDeleteListener(newRow.querySelector('.btn-eliminar-fila'));
+            bindRowLiveValidation(newRow);
             initTooltips();
             actualizarContador();
+            actualizarTotalEstimado();
 
             const firstInput = newRow.querySelector('select, input[type="text"], input[type="number"]');
             if (firstInput) firstInput.focus();
@@ -506,8 +839,20 @@
             attachDeleteListener(btn);
         });
 
+        container.querySelectorAll('tr.producto-row').forEach(row => {
+            bindRowLiveValidation(row);
+        });
+
         initTooltips();
         actualizarContador();
+        actualizarTotalEstimado();
+
+        if (proveedorSearch && selectProveedor) {
+            proveedorSearch.value = '';
+            if (selectProveedor.selectedOptions.length) {
+                showSelectedProvider(selectProveedor.selectedOptions[0].textContent);
+            }
+        }
 
         formProductos.addEventListener('submit', function(e) {
             hideCustomAlert();
@@ -524,6 +869,28 @@
                 e.preventDefault();
                 showCustomAlert('Selecciona un proveedor', ['Debes seleccionar un proveedor antes de guardar.']);
                 if (selectProveedor) selectProveedor.focus();
+                return;
+            }
+
+            if (proveedorSearch) {
+                const textoProveedor = normalizeText(proveedorSearch.value);
+                const opcionActiva = Array.from(selectProveedor.options).find(option => option.value === selectProveedor.value);
+                if (!opcionActiva || normalizeText(opcionActiva.textContent) !== textoProveedor) {
+                    const coincidenciaExacta = Array.from(selectProveedor.options).find(option => normalizeText(option.textContent) === textoProveedor);
+                    if (coincidenciaExacta) {
+                        selectProveedor.value = coincidenciaExacta.value;
+                    } else if (textoProveedor) {
+                        e.preventDefault();
+                        showCustomAlert('Proveedor no encontrado', ['El texto ingresado no coincide con ningún proveedor activo.']);
+                        proveedorSearch.focus();
+                        return;
+                    }
+                }
+            }
+
+            if (!selectProveedor.value) {
+                e.preventDefault();
+                showCustomAlert('Selecciona un proveedor', ['Debes seleccionar un proveedor antes de guardar.']);
                 return;
             }
 
@@ -557,10 +924,12 @@
                     erroresValidacion.push(`Fila ${idx + 1}: Falta el precio`);
                     filaConError = true;
                 }
-                if (inputPrecio && inputPrecio.value && isNaN(parseFloat(inputPrecio.value))) {
+                if (inputPrecio && inputPrecio.value && (isNaN(parseFloat(inputPrecio.value)) || parseFloat(inputPrecio.value) <= 0)) {
                     erroresValidacion.push(`Fila ${idx + 1}: Precio no valido`);
                     filaConError = true;
                 }
+
+                validateRow(row);
 
                 if (!filaConError) productosValidos++;
             });

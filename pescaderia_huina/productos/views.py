@@ -13,6 +13,7 @@ from .forms import ProductoForm, ProveedorSelectForm, ProductoItemForm
 @login_required
 def productos_list(request):
     query = (request.GET.get('q') or '').strip()
+    tipo_producto = (request.GET.get('tipo_producto') or '').strip()
     presentacion = (request.GET.get('presentacion') or '').strip()
     
     # .select_related('proveedor') optimiza la consulta para traer el nombre del proveedor de una vez
@@ -24,8 +25,15 @@ def productos_list(request):
             Q(proveedor__nombre_contacto__icontains=query) # También busca por nombre del proveedor
         )
 
+    if tipo_producto:
+        productos = productos.filter(tipo_producto=tipo_producto)
+
     if presentacion:
         productos = productos.filter(tipo_presentacion=presentacion)
+
+    tipo_producto_label = ''
+    if tipo_producto:
+        tipo_producto_label = dict(Producto.TIPO_PRODUCTO).get(tipo_producto, '')
 
     presentacion_label = ''
     if presentacion:
@@ -43,11 +51,14 @@ def productos_list(request):
 
     context = {
         'productos': productos,
+        'tipos_producto': Producto.TIPO_PRODUCTO,
         'tipos_presentacion': Producto.TIPO_PRESENTACION,
         'query': query,
+        'tipo_producto': tipo_producto,
+        'tipo_producto_label': tipo_producto_label,
         'presentacion': presentacion,
         'presentacion_label': presentacion_label,
-        'has_active_filters': bool(query or presentacion),
+        'has_active_filters': bool(query or tipo_producto or presentacion),
     }
 
     return render(request, "producto_list.html", context)

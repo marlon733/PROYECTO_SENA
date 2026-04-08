@@ -8,7 +8,10 @@ class ProveedorSelectForm(forms.Form):
     proveedor = forms.ModelChoiceField(
         queryset=Proveedor.objects.filter(estado=True).order_by('nombre_contacto'),
         empty_label="Seleccione el Proveedor...",
-        widget=forms.Select(attrs={'class': 'form-select form-select-lg fw-bold border-primary'}),
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-lg fw-bold border-primary',
+            'data-provider-select': 'true',
+        }),
         required=True
     )
 
@@ -39,7 +42,7 @@ class ProductoItemForm(forms.ModelForm):
             "tipo_producto": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "nombre": forms.TextInput(attrs={"class": "form-control form-control-sm", "placeholder": "Nombre del producto"}),
             "tipo_presentacion": forms.Select(attrs={"class": "form-select form-select-sm"}),
-            "estado": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "estado": forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -50,6 +53,7 @@ class ProductoItemForm(forms.ModelForm):
         self.fields['tipo_presentacion'].required = True
         self.fields['precio'].required = True
         self.fields['estado'].required = False
+        self.fields['estado'].initial = True
 
 
 # Mantenemos tu formulario original para la edición individual
@@ -81,6 +85,7 @@ class ProductoForm(forms.ModelForm):
         if self.instance.pk and self.instance.proveedor:
             consulta = consulta | Q(id=self.instance.proveedor.id)
         self.fields['proveedor'].queryset = Proveedor.objects.filter(consulta).order_by('nombre_contacto')
+        self.fields['estado'].required = False
 
         # Si el valor guardado termina en .00, lo mostramos como entero para evitar
         # que el navegador renderice visualmente los dos ceros finales.

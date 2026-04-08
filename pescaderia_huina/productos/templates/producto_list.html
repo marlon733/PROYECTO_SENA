@@ -28,6 +28,12 @@
         border-color: #bfd5f5;
     }
 
+    .active-filter-chip.product {
+        background: #fff6e8;
+        color: #8a4b00;
+        border-color: #f4d0a6;
+    }
+
     .active-filter-chip.presentation {
         background: #eef7f1;
         color: #24613b;
@@ -54,18 +60,17 @@
             <div class="card-body p-4">
                 <div class="row g-3 align-items-end">
  
-                    <!-- Búsqueda por texto -->
+                    <!-- Filtro por tipo de producto -->
                     <div class="col-md-5">
-                        <label class="filter-label">Buscar coincidencias</label>
-                        <div class="search-input-group input-group shadow-sm">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" name="q" class="form-control {% if query %}border-end-0{% endif %}" placeholder="Nombre del producto o proveedor..." value="{{ query|default:'' }}">
-                            {% if query %}
-                            <a href="{% url 'productos:productos_list' %}{% if presentacion %}?presentacion={{ presentacion }}{% endif %}" class="btn-clear-search" title="Limpiar texto">
-                                <i class="bi bi-x-circle-fill fs-5"></i>
-                            </a>
-                            {% endif %}
-                        </div>
+                        <label class="filter-label">Tipo de producto</label>
+                        <select name="tipo_producto" class="form-select shadow-sm">
+                            <option value="">Todos los tipos</option>
+                            {% for value, label in tipos_producto %}
+                                <option value="{{ value }}" {% if tipo_producto == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
  
                     <!-- Filtro por tipo de presentación -->
@@ -96,14 +101,14 @@
                 </div>
  
                 {% if has_active_filters %}
-                {% if query or presentacion_label %}
+                {% if query or tipo_producto_label or presentacion_label %}
                 <hr class="my-3 border-light">
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <span class="text-muted small me-1"><i class="bi bi-funnel-fill me-1"></i> Filtros activos:</span>
  
-                    {% if query %}
-                        <span class="active-filter-chip search">
-                            <i class="bi bi-search me-1"></i> "{{ query }}"
+                    {% if tipo_producto_label %}
+                        <span class="active-filter-chip product">
+                            <i class="bi bi-tag me-1"></i> {{ tipo_producto_label }}
                         </span>
                     {% endif %}
  
@@ -189,14 +194,14 @@
                                         <i class="bi bi-box2 text-primary" style="font-size: 5rem;"></i>
                                     </div>
                                     <h4 class="fw-bold text-dark">
-                                        {% if request.GET.q or request.GET.presentacion %}
+                                        {% if request.GET.q or request.GET.tipo_producto or request.GET.presentacion %}
                                             Sin resultados para los filtros aplicados
                                         {% else %}
                                             No hay productos registrados
                                         {% endif %}
                                     </h4>
                                     <p class="text-muted">
-                                        {% if request.GET.q or request.GET.presentacion %}
+                                        {% if request.GET.q or request.GET.tipo_producto or request.GET.presentacion %}
                                             Intenta con otros términos o <a href="{% url 'productos:productos_list' %}">limpia los filtros</a>.
                                         {% else %}
                                             Comienza registrando un nuevo producto.
